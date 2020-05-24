@@ -59,15 +59,15 @@ void PatternEditor::redrawSelected(){
 	char* data = (char*) malloc(50);
 
 	if(action.type == AutoAction::LIGHTS){
-		sprintf(data, "%s %s", TextActions[action.type], static_cast<LightsParams*>(action.params)->state == LightsParams::ON ? "ON" : "OFF");
+		sprintf(data, "%s %s", TextActions[action.type], LightsParams::fromVoidPtr(action.params)->state == LightsParams::ON ? "ON" : "OFF");
 	}else if(action.type == AutoAction::MOVE){
 		sprintf(data, "%s %s %.0fs", TextActions[action.type],
-				static_cast<MoveParams*>(action.params)->direction == MoveParams::FORWARD ? "F" : "B",
-				static_cast<MoveParams*>(action.params)->millis / 1000.0f);
+				MoveParams::fromVoidPtr(action.params)->direction == MoveParams::FORWARD ? "F" : "B",
+				MoveParams::fromVoidPtr(action.params)->millis / 1000.0f);
 	}else if(action.type == AutoAction::TURN){
 		sprintf(data, "%s %s %.0fs", TextActions[action.type],
-				static_cast<TurnParams*>(action.params)->direction == TurnParams::LEFT ? "L" : "R",
-				static_cast<TurnParams*>(action.params)->millis / 1000.0f);
+				TurnParams::fromVoidPtr(action.params)->direction == TurnParams::LEFT ? "L" : "R",
+				TurnParams::fromVoidPtr(action.params)->millis / 1000.0f);
 	}
 
 	//delete item.title;
@@ -112,7 +112,7 @@ void PatternEditor::start(){
 				AutoAction& action = instance->actions[instance->actionList.getSelected()];
 
 				if(instance->editingIndex == 0){
-					LightsParams* params = static_cast<LightsParams*>(action.params);
+					LightsParams* params = LightsParams::fromVoidPtr(action.params);
 					if(params->state == LightsParams::ON) params->state = LightsParams::OFF;
 					else params->state = LightsParams::ON;
 				}else if(instance->editingIndex == 1){

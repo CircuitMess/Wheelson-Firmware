@@ -1,4 +1,4 @@
-src/Apps contains different *apps* selectable in the main menu. Too add a new entry to the menu, add it in the MainMenu constructor.
+src/Apps contains different *apps* selectable in the main menu. To add a new entry to the menu, add it in the MainMenu constructor.
 
 Buttons and other board-specific defines should be in src/defs.hpp
 
