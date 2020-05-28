@@ -23,9 +23,12 @@ public:
 private:
 	static PatternEditor* instance;
 
-	Vector<AutoAction> actions;
+	Fleha fleha;
 
-	void fillMenu();
+	Vector<AutoAction> actions;
+	uint selectedAction = 0;
+
+	void drawTimeline();
 	void buildUI();
 };
 

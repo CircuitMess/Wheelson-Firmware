@@ -13,10 +13,17 @@
 #include "Bitmaps/light_off.hpp"
 #include "Bitmaps/light_on.hpp"
 #include "Bitmaps/color.hpp"
+#include "Bitmaps/border.hpp"
+
+const uint16_t* ActionSprites[] = {
+		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+};
+
+
 
 PatternEditor* PatternEditor::instance = nullptr;
 
-PatternEditor::PatternEditor(Display& display) : Context(display){
+PatternEditor::PatternEditor(Display& display) : Context(display), fleha(&screen, display.getWidth(), display.getHeight()){
 	instance = this;
 
 	ActionSelector a(display);
@@ -54,22 +61,12 @@ void PatternEditor::addAction(AutoAction::Type type){
 	}
 
 	actions.push_back(action);
-	fillMenu();
 }
 
 void PatternEditor::draw(){
 	screen.clear();
 	screen.draw();
-	screen.getSprite()->drawIcon(arrow_up, 30, 10, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(arrow_down, 30, 30, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(arrow_left, 30, 50, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(arrow_right, 30, 70, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(light_on, 30, 90, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(light_off, 50, 90, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(tone, 50, 70, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(tune, 50, 50, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(add, 50, 30, 18, 18, 1, TFT_TRANSPARENT);
-	screen.getSprite()->drawIcon(color, 70, 10, 18, 18, 2, TFT_TRANSPARENT);
+	drawTimeline();
 	screen.commit();
 }
 
@@ -87,11 +84,20 @@ void PatternEditor::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
 
+		if(instance->selectedAction == 0){
+			instance->selectedAction = instance->actions.size();
+		}else{
+			instance->selectedAction--;
+		}
+
+		instance->draw();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
 
+		instance->selectedAction = (instance->selectedAction + 1) % (instance->actions.size() + 1);
+		instance->draw();
 	});
 
 	draw();
@@ -104,11 +110,38 @@ void PatternEditor::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_D);
 }
 
-void PatternEditor::fillMenu(){
+void PatternEditor::drawTimeline(){
+	Sprite* canvas = screen.getSprite();
 
+	const uint margin = 5;
+	const uint x = 10;
+	int y = 10;
+	uint i = 0;
+
+	for(const auto& action : actions){
+		canvas->drawIcon(ActionSprites[action.type], x, y, 18, 18, 1, TFT_TRANSPARENT);
+		if(i == selectedAction){
+			canvas->drawIcon(border, x, y, 18, 18, 1, TFT_TRANSPARENT);
+		}
+
+		y += 18 + margin;
+		i++;
+	}
+
+	canvas->drawIcon(add, x, y, 18, 18, 1, TFT_TRANSPARENT);
+	if(i == selectedAction){
+		canvas->drawIcon(border, x, y, 18, 18, 1, TFT_TRANSPARENT);
+	}
 }
 
 void PatternEditor::buildUI(){
-	fillMenu();
+	addAction(AutoAction::FORWARD);
+	addAction(AutoAction::LEFT);
+	addAction(AutoAction::FORWARD);
+	addAction(AutoAction::RIGHT);
+	addAction(AutoAction::LIGHT_ON);
+	addAction(AutoAction::BACKWARD);
+
+	screen.addChild(&fleha);
 }
 
