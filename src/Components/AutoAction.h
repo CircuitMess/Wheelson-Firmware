@@ -2,66 +2,34 @@
 #define AUTOCAR_AUTOACTION_H
 
 #include <Arduino.h>
+#include <Display/Color.h>
 
 extern char* TextActions[3];
 
-struct MoveParams {
-	enum Direction { FORWARD, BACKWARD } direction;
-	uint millis;
-
-	MoveParams(Direction direction, uint millis) : direction(direction), millis(millis){}
-
-	static MoveParams* fromVoidPtr(void* params){
-		return static_cast<MoveParams*>(params);
-	}
+struct DurationActionParams {
+	uint millis = 3000;
 };
 
-struct TurnParams {
-	enum Direction { LEFT, RIGHT } direction;
-	uint millis;
+struct MoveParams : DurationActionParams {
 
-	TurnParams(Direction direction, uint millis) : direction(direction), millis(millis){}
-
-	static TurnParams* fromVoidPtr(void* params){
-		return static_cast<TurnParams*>(params);
-	}
 };
 
-struct LightsParams {
-	enum State { OFF, ON } state;
-
-	explicit LightsParams(State state) : state(state){}
-
-	static LightsParams* fromVoidPtr(void* params){
-		return static_cast<LightsParams*>(params);
-	}
+struct LightParams {
+	Color color = 0xFFFF;
 };
 
 struct TuneParams {
-	uint tune;
-	uint8_t volume;
-
-	TuneParams(uint tune, uint8_t volume) : tune(tune), volume(volume){ }
-
-	static TuneParams* fromVoidPtr(void* params){
-		return static_cast<TuneParams*>(params);
-	}
+	uint tune = 0;
+	uint8_t volume = 10;
 };
 
-struct ToneParams {
-	uint frequency;
-	uint8_t volume;
-	uint millis;
-
-	ToneParams(uint frequency, uint8_t volume, uint millis) : frequency(frequency), volume(volume), millis(millis){ }
-
-	static ToneParams* fromVoidPtr(void* params){
-		return static_cast<ToneParams*>(params);
-	}
+struct ToneParams : DurationActionParams {
+	uint frequency = 2000;
+	uint8_t volume = 10;
 };
 
 struct AutoAction {
-	enum Type { MOVE, TURN, LIGHTS, TUNE, TONE } type;
+	enum Type { FORWARD, BACKWARD, LEFT, RIGHT, LIGHT_ON, LIGHT_OFF, TONE, TUNE } type;
 	void* params;
 };
 

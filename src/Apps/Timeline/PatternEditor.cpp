@@ -3,37 +3,53 @@
 #include "PatternEditor.h"
 #include "../../defs.hpp"
 
+#include "Bitmaps/arrow_down.hpp"
+#include "Bitmaps/arrow_up.hpp"
+#include "Bitmaps/arrow_left.hpp"
+#include "Bitmaps/arrow_right.hpp"
+#include "Bitmaps/add.hpp"
+#include "Bitmaps/tune.hpp"
+#include "Bitmaps/tone.hpp"
+#include "Bitmaps/light_off.hpp"
+#include "Bitmaps/light_on.hpp"
+#include "Bitmaps/color.hpp"
+
 PatternEditor* PatternEditor::instance = nullptr;
 
-PatternEditor::PatternEditor(Display& display) : Context(display), actionList(&screen, "Actions"){
+PatternEditor::PatternEditor(Display& display) : Context(display){
 	instance = this;
-	actionSelector = new ActionSelector(display);
+
+	ActionSelector a(display);
 
 	buildUI();
 	pack();
 }
 
-void PatternEditor::returned(void* data){
-	int act = *static_cast<int*>(data);
-	delete data;
+void PatternEditor::addAction(AutoAction::Type type){
+	AutoAction action = { type, nullptr };
 
-	AutoAction action = { static_cast<AutoAction::Type>(act) };
-
-	switch(action.type){
-		case AutoAction::Type::MOVE:
-			action.params = new MoveParams(MoveParams::Direction::FORWARD, 1000);
+	switch(type){
+		case AutoAction::Type::FORWARD:
+		case AutoAction::Type::BACKWARD:
+		case AutoAction::Type::LEFT:
+		case AutoAction::Type::RIGHT:
+			action.params = new MoveParams();
 			break;
 
-		case AutoAction::Type::TURN:
-			action.params = new TurnParams(TurnParams::Direction::LEFT, 1000);
+		case AutoAction::Type::LIGHT_ON:
+			action.params = new LightParams();
 			break;
 
-		case AutoAction::Type::LIGHTS:
-			action.params = new LightsParams(LightsParams::State::ON);
+		case AutoAction::Type::TONE:
+			action.params = new ToneParams();
+			break;
+
+		case AutoAction::Type::TUNE:
+			action.params = new TuneParams();
 			break;
 
 		default:
-			logln("Invalid AutoAction type passed from ActionSelector");
+			logln("Invalid AutoAction type passed to PatternEditor::addAction");
 			return;
 	}
 
@@ -42,42 +58,18 @@ void PatternEditor::returned(void* data){
 }
 
 void PatternEditor::draw(){
+	screen.clear();
 	screen.draw();
-	screen.commit();
-}
-
-const int moves[3][2] = {
-		{ 68, 100 },
-		{ 68, 100 },
-		{ 100, 10 }
-};
-
-void PatternEditor::redrawSelected(){
-	ListMenu::ListMenuItem& item = actionList.getSelectedItem();
-	AutoAction& action = actions[actionList.getSelected()];
-
-	char* data = (char*) malloc(50);
-
-	if(action.type == AutoAction::LIGHTS){
-		sprintf(data, "%s %s", TextActions[action.type], LightsParams::fromVoidPtr(action.params)->state == LightsParams::ON ? "ON" : "OFF");
-	}else if(action.type == AutoAction::MOVE){
-		sprintf(data, "%s %s %.0fs", TextActions[action.type],
-				MoveParams::fromVoidPtr(action.params)->direction == MoveParams::FORWARD ? "F" : "B",
-				MoveParams::fromVoidPtr(action.params)->millis / 1000.0f);
-	}else if(action.type == AutoAction::TURN){
-		sprintf(data, "%s %s %.0fs", TextActions[action.type],
-				TurnParams::fromVoidPtr(action.params)->direction == TurnParams::LEFT ? "L" : "R",
-				TurnParams::fromVoidPtr(action.params)->millis / 1000.0f);
-	}
-
-	//delete item.title;
-	item.title = data;
-	if(editingIndex == -1) return;
-
-	actionList.drawItem(actionList.getSelected());
-	item.image->getSprite()->drawRect(0, 0, 118, 16, TFT_YELLOW);
-	item.image->getSprite()->fillRect(moves[action.type][editingIndex], 14, 10, 2, TFT_CYAN);
-	item.image->draw();
+	screen.getSprite()->drawIcon(arrow_up, 30, 10, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(arrow_down, 30, 30, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(arrow_left, 30, 50, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(arrow_right, 30, 70, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(light_on, 30, 90, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(light_off, 50, 90, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(tone, 50, 70, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(tune, 50, 50, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(add, 50, 30, 18, 18, 1, TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(color, 70, 10, 18, 18, 2, TFT_TRANSPARENT);
 	screen.commit();
 }
 
@@ -90,70 +82,16 @@ void PatternEditor::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 
-		if(instance->actionList.getSelected() == instance->actions.size()){
-			instance->actionSelector->push(instance);
-		}else{
-			instance->editingIndex = 0;
-			instance->stop();
-
-			instance->redrawSelected();
-
-			Input::getInstance()->setBtnPressCallback(BTN_A, [](){
-				instance->stop();
-				instance->start();
-				instance->editingIndex = -1;
-				instance->actionList.draw();
-				instance->screen.commit();
-			});
-
-			Input::getInstance()->setBtnPressCallback(BTN_B, [](){
-				if(instance == nullptr) return;
-
-				AutoAction& action = instance->actions[instance->actionList.getSelected()];
-
-				if(instance->editingIndex == 0){
-					LightsParams* params = LightsParams::fromVoidPtr(action.params);
-					if(params->state == LightsParams::ON) params->state = LightsParams::OFF;
-					else params->state = LightsParams::ON;
-				}else if(instance->editingIndex == 1){
-					MoveParams* params = static_cast<MoveParams*>(action.params);
-					params->millis += 1000;
-				}
-
-				instance->redrawSelected();
-			});
-
-			Input::getInstance()->setBtnPressCallback(BTN_C, [](){
-				if(instance == nullptr) return;
-
-				if(instance->actions[instance->actionList.getSelected()].type == AutoAction::Type::LIGHTS) return;
-
-				instance->editingIndex = (instance->editingIndex+1) % 2;
-				instance->redrawSelected();
-			});
-
-			Input::getInstance()->setBtnPressCallback(BTN_D, [](){
-				if(instance == nullptr) return;
-
-				if(instance->actions[instance->actionList.getSelected()].type == AutoAction::Type::LIGHTS) return;
-
-				if(instance->editingIndex == 0) instance->editingIndex = 1;
-				else instance->editingIndex = 0;
-				instance->redrawSelected();
-			});
-		}
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
-		instance->actionList.selectPrev();
-		instance->screen.commit();
+
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
-		instance->actionList.selectNext();
-		instance->screen.commit();
+
 	});
 
 	draw();
@@ -167,27 +105,10 @@ void PatternEditor::stop(){
 }
 
 void PatternEditor::fillMenu(){
-	if(actions.empty()){
-		actionList.addItem("+ Add");
-	}else{
-		actionList.addItem(TextActions[actions.back().type]);
-		actionList.relocate(actions.size(), actions.size()-1);
-		redrawSelected();
-		actionList.setSelected(actions.size());
 
-		actionList.reflow();
-		actionList.repos();
-	}
 }
 
 void PatternEditor::buildUI(){
 	fillMenu();
-
-	actionList.setWHType(PARENT, PARENT);
-	actionList.reflow();
-	actionList.repos();
-
-	screen.addChild(&actionList);
-	screen.repos();
 }
 

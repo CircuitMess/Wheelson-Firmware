@@ -8,6 +8,8 @@
 #include "ActionSelector.h"
 #include "../../Components/AutoAction.h"
 
+#include "../../Elements/Fleha.hpp"
+
 class PatternEditor : public Context {
 public:
 	PatternEditor(Display& display);
@@ -16,22 +18,15 @@ public:
 	void start() override;
 	void stop() override;
 
-	void returned(void* data) override;
+	void addAction(AutoAction::Type type);
 
 private:
 	static PatternEditor* instance;
 
-	ListMenu actionList;
-	ActionSelector* actionSelector = nullptr;
-
 	Vector<AutoAction> actions;
-
-	int editingIndex = -1;
 
 	void fillMenu();
 	void buildUI();
-
-	void redrawSelected();
 };
 
 
