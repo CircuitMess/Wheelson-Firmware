@@ -18,8 +18,10 @@ include_directories(~/Arduino/libraries/CircuitOS/src)
 AUX_SOURCE_DIRECTORY(src SOURCES)
 AUX_SOURCE_DIRECTORY(src/Apps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Apps/Timeline SOURCES)
+AUX_SOURCE_DIRECTORY(src/Apps/Timeline/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Bitmaps SOURCES)
 AUX_SOURCE_DIRECTORY(src/Components SOURCES)
+AUX_SOURCE_DIRECTORY(src/Elements SOURCES)
 
 add_definitions(-DDEBUG)
 
