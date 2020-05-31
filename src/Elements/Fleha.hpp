@@ -1,11 +1,11 @@
 #ifndef AUTOCAR_FLEHA_H
 #define AUTOCAR_FLEHA_H
 
-#include <UI/Drawable.h>
+#include <UI/CustomElement.h>
 
-class Fleha : public Drawable {
+class Fleha : public CustomElement {
 public:
-	Fleha(ElementContainer* parent, uint width, uint height) : Drawable(parent, width, height){ }
+	Fleha(ElementContainer* parent, uint width, uint height) : CustomElement(parent, width, height){ }
 
 	void draw() override {
 		Sprite* canvas = getSprite();
