@@ -24,11 +24,12 @@ ActionSelector::ActionSelector(PatternEditor* editor) : editor(editor), Modal(*e
 
 void ActionSelector::draw(){
 	getScreen().draw();
+	getScreen().commit();
+}
 
+void ActionSelector::selectAction(){
 	Element* selected = actionGrid.getChild(selectedAction);
 	selectedBorder.setPos(selected->getX(), selected->getY());
-
-	getScreen().commit();
 }
 
 void ActionSelector::start(){
@@ -51,6 +52,7 @@ void ActionSelector::start(){
 			instance->selectedAction--;
 		}
 
+		instance->selectAction();
 		instance->draw();
 	});
 
@@ -58,6 +60,7 @@ void ActionSelector::start(){
 		if(instance == nullptr) return;
 
 		instance->selectedAction = (instance->selectedAction + 1) % (sizeof(types) / sizeof(AutoAction::type));
+		instance->selectAction();
 		instance->draw();
 	});
 
@@ -74,7 +77,7 @@ void ActionSelector::stop(){
 void ActionSelector::unpack(){
 	Context::unpack();
 	selectedAction = 0;
-	selectedBorder.setPos(5, 5);
+	selectAction();
 }
 
 

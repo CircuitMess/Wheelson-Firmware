@@ -31,6 +31,7 @@ private:
 	BitmapElement selectedBorder;
 
 	uint selectedAction = 0;
+	void selectAction();
 
 	void fillMenu();
 	void buildUI();
