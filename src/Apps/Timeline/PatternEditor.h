@@ -9,6 +9,7 @@
 #include "../../Components/AutoAction.h"
 
 #include "../../Elements/Fleha.hpp"
+#include "ActionEditor.h"
 
 class PatternEditor : public Context {
 public:
@@ -19,16 +20,23 @@ public:
 	void stop() override;
 
 	void addAction(AutoAction::Type type);
+	void returned(void* data) override;
 
 private:
 	static PatternEditor* instance;
 
+	ActionEditor aEditor;
+
+	Layout layers;
+	ScrollLayout scroll;
+	LinearLayout timelineList;
 	Fleha fleha;
+
+	ActionSelector selector;
 
 	Vector<AutoAction> actions;
 	uint selectedAction = 0;
 
-	void drawTimeline();
 	void buildUI();
 };
 

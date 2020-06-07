@@ -3,33 +3,46 @@
 #include "PatternEditor.h"
 #include "../../defs.hpp"
 
-#include "Bitmaps/arrow_down.hpp"
-#include "Bitmaps/arrow_up.hpp"
-#include "Bitmaps/arrow_left.hpp"
-#include "Bitmaps/arrow_right.hpp"
+#include "Bitmaps/actions.hpp"
 #include "Bitmaps/add.hpp"
-#include "Bitmaps/tune.hpp"
-#include "Bitmaps/tone.hpp"
-#include "Bitmaps/light_off.hpp"
-#include "Bitmaps/light_on.hpp"
-#include "Bitmaps/color.hpp"
-#include "Bitmaps/border.hpp"
+#include "../../Elements/ActionItem.h"
 
 const uint16_t* ActionSprites[] = {
 		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+};
+
+const char* ActionText[] = {
+		"Drive forward", "Drive backward", "Turn left", "Turn right", "Lights ON", "Lights OFF", "Honk tone", "Play tune"
 };
 
 
 
 PatternEditor* PatternEditor::instance = nullptr;
 
-PatternEditor::PatternEditor(Display& display) : Context(display), fleha(&screen, display.getWidth(), display.getHeight()){
-	instance = this;
+PatternEditor::PatternEditor(Display& display) : Context(display),
+		layers(&screen), fleha(&layers, display.getWidth(), display.getHeight()),
+		scroll(&layers), timelineList(&scroll, VERTICAL),
+		selector(this), aEditor(this){
 
-	ActionSelector a(display);
+	instance = this;
 
 	buildUI();
 	pack();
+}
+
+void PatternEditor::returned(void* data){
+	int* type = static_cast<int*>(data);
+
+	if(*type != -1){
+		addAction(static_cast<AutoAction::Type>(*type));
+		instance->timelineList.reflow();
+		instance->timelineList.getChildren().relocate(instance->actions.size(), instance->actions.size()-1);
+		instance->timelineList.repos();
+		instance->selectedAction++;
+		instance->scroll.scrollIntoView(instance->timelineList.getChildren().size() - 1, 5);
+	}
+
+	delete type;
 }
 
 void PatternEditor::addAction(AutoAction::Type type){
@@ -61,12 +74,11 @@ void PatternEditor::addAction(AutoAction::Type type){
 	}
 
 	actions.push_back(action);
+	timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
 }
 
 void PatternEditor::draw(){
-	screen.clear();
 	screen.draw();
-	drawTimeline();
 	screen.commit();
 }
 
@@ -79,24 +91,36 @@ void PatternEditor::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 
+		if(instance->selectedAction == instance->actions.size()){
+			instance->selector.push(instance);
+		}else{
+			instance->aEditor.push(instance);
+		}
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
 
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
 		if(instance->selectedAction == 0){
-			instance->selectedAction = instance->actions.size();
+			instance->selectedAction = instance->timelineList.getChildren().size() - 1;
 		}else{
 			instance->selectedAction--;
 		}
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
 
+		instance->scroll.scrollIntoView(instance->selectedAction, 5);
 		instance->draw();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
 
-		instance->selectedAction = (instance->selectedAction + 1) % (instance->actions.size() + 1);
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+		instance->selectedAction = (instance->selectedAction + 1) % (instance->timelineList.getChildren().size());
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+
+		instance->scroll.scrollIntoView(instance->selectedAction, 5);
 		instance->draw();
 	});
 
@@ -110,38 +134,33 @@ void PatternEditor::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_D);
 }
 
-void PatternEditor::drawTimeline(){
-	Sprite* canvas = screen.getSprite();
-
-	const uint margin = 5;
-	const uint x = 10;
-	int y = 10;
-	uint i = 0;
-
-	for(const auto& action : actions){
-		canvas->drawIcon(ActionSprites[action.type], x, y, 18, 18, 1, TFT_TRANSPARENT);
-		if(i == selectedAction){
-			canvas->drawIcon(border, x, y, 18, 18, 1, TFT_TRANSPARENT);
-		}
-
-		y += 18 + margin;
-		i++;
-	}
-
-	canvas->drawIcon(add, x, y, 18, 18, 1, TFT_TRANSPARENT);
-	if(i == selectedAction){
-		canvas->drawIcon(border, x, y, 18, 18, 1, TFT_TRANSPARENT);
-	}
-}
-
 void PatternEditor::buildUI(){
-	addAction(AutoAction::FORWARD);
-	addAction(AutoAction::LEFT);
-	addAction(AutoAction::FORWARD);
-	addAction(AutoAction::RIGHT);
-	addAction(AutoAction::LIGHT_ON);
-	addAction(AutoAction::BACKWARD);
+	layers.setWHType(PARENT, PARENT);
+	layers.addChild(&fleha);
+	layers.addChild(&scroll);
+	layers.reflow();
 
-	screen.addChild(&fleha);
+	scroll.setWHType(PARENT, PARENT);
+	scroll.addChild(&timelineList);
+	scroll.reflow();
+
+	timelineList.setWHType(PARENT, CHILDREN);
+	timelineList.setPadding(5);
+	timelineList.setGutter(5);
+	timelineList.reflow();
+
+	addAction(AutoAction::FORWARD);
+	addAction(AutoAction::LIGHT_ON);
+	addAction(AutoAction::TUNE);
+	addAction(AutoAction::BACKWARD);
+	reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[0])->setSelected(true);
+	timelineList.addChild(new ActionItem(&timelineList, add, "New action"));
+	timelineList.reflow();
+	timelineList.repos();
+
+	selector.setPos(27, 43);
+	// selector.setBorder(1, C_HEX(0x00ffff));
+
+	screen.addChild(&layers);
 }
 

@@ -5,6 +5,7 @@
 #include <Input/InputGPIO.h>
 
 #include "src/MainMenu.h"
+#include "src/Components/ActionProcessor.h"
 
 Display display(128, 160, 18, 2);
 Input* input = nullptr;
@@ -21,6 +22,8 @@ void setup(){
 	menu = new MainMenu(display);
 	menu->unpack();
 	menu->start();
+
+	ActionProcessor* processor = new ActionProcessor();
 }
 
 void loop(){
