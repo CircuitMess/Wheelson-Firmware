@@ -80,7 +80,6 @@ void ActionSelector::unpack(){
 	selectAction();
 }
 
-
 void ActionSelector::fillMenu(){
 	for(const auto& type : types){
 		actionGrid.addChild(new BitmapElement(&actionGrid, SelectorActionSprites[type], 18, 18));

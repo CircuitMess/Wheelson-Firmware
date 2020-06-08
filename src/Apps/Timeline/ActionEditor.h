@@ -6,6 +6,7 @@
 #include <Support/Modal.h>
 #include <Elements/GridMenu.h>
 #include "../../Elements/Fleha.hpp"
+#include "../../Components/AutoAction.h"
 
 class PatternEditor;
 
@@ -17,12 +18,22 @@ public:
 	void start() override;
 	void stop() override;
 
+	void initAction(AutoAction::Type type);
+
+	void unpack() override;
+
 private:
 	static ActionEditor* instance;
 
 	PatternEditor* editor = nullptr;
 
+	Layout layers;
 	Fleha fleha;
+	ScrollLayout scroll;
+	LinearLayout list;
+
+	uint selectedSetting = 0;
+	void selectSetting(uint i);
 
 	void fillMenu();
 	void buildUI();

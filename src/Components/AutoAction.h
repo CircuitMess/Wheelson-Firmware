@@ -18,13 +18,13 @@ struct LightParams {
 	Color color = 0xFFFF;
 };
 
-struct TuneParams {
-	uint tune = 0;
+struct ToneParams : DurationActionParams {
+	uint frequency = 2000;
 	uint8_t volume = 10;
 };
 
-struct ToneParams : DurationActionParams {
-	uint frequency = 2000;
+struct TuneParams {
+	uint tune = 0;
 	uint8_t volume = 10;
 };
 

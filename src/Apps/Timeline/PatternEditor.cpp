@@ -94,6 +94,7 @@ void PatternEditor::start(){
 		if(instance->selectedAction == instance->actions.size()){
 			instance->selector.push(instance);
 		}else{
+			instance->aEditor.initAction(instance->actions[instance->selectedAction].type);
 			instance->aEditor.push(instance);
 		}
 	});
