@@ -66,6 +66,7 @@ void TimelineApp::stop(){
 }
 
 void TimelineApp::fillMenu(){
+	int selected = menu.getSelected();
 	menu.clearItems();
 
 	int i = 0;
@@ -82,6 +83,7 @@ void TimelineApp::fillMenu(){
 	}
 
 	menu.addItem("New");
+	menu.setSelected(selected);
 	menu.reflow();
 	menu.repos();
 }

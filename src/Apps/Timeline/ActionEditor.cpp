@@ -11,29 +11,29 @@
 
 Vector<Vector<Setting>> settings = {
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::OPTION, "", icon_color, new SettingOption({ "Red", "Blue", "Green" }))
+			Setting(Setting::Type::OPTION, "", icon_color, new SettingOption({ "Red", "Blue", "Green" }), offsetof(MoveParams, millis))
 		},
 		{},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100)),
-			Setting(Setting::Type::NUMERIC, "Hz", icon_freq,  new SettingNumeric(500, 5000, 500)),
-			Setting(Setting::Type::NUMERIC, "", icon_volume,  new SettingNumeric(1, 10, 1))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(ToneParams, millis)),
+			Setting(Setting::Type::NUMERIC, "Hz", icon_freq,  new SettingNumeric(500, 5000, 500), offsetof(ToneParams, frequency)),
+			Setting(Setting::Type::NUMERIC, "", icon_volume,  new SettingNumeric(1, 10, 1), offsetof(ToneParams, volume))
 		},
 		{
-			Setting(Setting::Type::OPTION, "", icon_color,  new SettingOption({ "HONK", "CHONK", "NewFresh", "SimpleMini" })),
-			Setting(Setting::Type::NUMERIC, "", icon_volume,  new SettingNumeric(1, 10, 1))
+			Setting(Setting::Type::OPTION, "", icon_color,  new SettingOption({ "HONK", "CHONK", "NewFresh", "SimpleMini" }), offsetof(TuneParams, tune)),
+			Setting(Setting::Type::NUMERIC, "", icon_volume,  new SettingNumeric(1, 10, 1), offsetof(TuneParams, volume))
 		}
 };
 
@@ -47,7 +47,9 @@ ActionEditor::ActionEditor(Timeline* timeline) : Modal(*timeline, 90, 90), timel
 	buildUI();
 }
 
-void ActionEditor::initAction(AutoAction::Type type){
+void ActionEditor::initAction(AutoAction::Type type, AutoAction* action){
+	this->action = action;
+
 	for(auto& item : list.getChildren()){
 		delete item;
 	}
@@ -55,7 +57,9 @@ void ActionEditor::initAction(AutoAction::Type type){
 	list.getChildren().clear();
 
 	for(const auto& setting : settings[type]){
-		ActionEditItem* item = new ActionEditItem(&list, &setting);
+		volatile byte* bptr = (byte*) action->params;
+		volatile void* vptr = bptr + setting.offset;
+		ActionEditItem* item = new ActionEditItem(&list, &setting, (void*) vptr);
 		list.addChild(item);
 	}
 
@@ -122,6 +126,8 @@ void ActionEditor::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_C);
 	Input::getInstance()->removeBtnPressCallback(BTN_D);
+
+	action = nullptr;
 }
 
 void ActionEditor::unpack(){

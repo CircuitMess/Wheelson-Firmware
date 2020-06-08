@@ -18,7 +18,7 @@ public:
 	void start() override;
 	void stop() override;
 
-	void initAction(AutoAction::Type type);
+	void initAction(AutoAction::Type type, AutoAction* action);
 
 	void unpack() override;
 
@@ -32,6 +32,7 @@ private:
 	ScrollLayout scroll;
 	LinearLayout list;
 
+	AutoAction* action = nullptr;
 	uint selectedSetting = 0;
 	void selectSetting(uint i);
 

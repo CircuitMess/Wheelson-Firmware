@@ -2,22 +2,22 @@
 #include "ActionEditItem.h"
 #include "../Apps/Timeline/Bitmaps/border.hpp"
 
-ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting) : setting(setting),
+ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr) : setting(setting), value((int*) valptr),
 		LinearLayout(parent, HORIZONTAL), icon(this, setting->icon, 18, 18), text(this, 0, 18){
 
 	setWHType(PARENT, FIXED);
 	setHeight(this->icon.getHeight());
 	setGutter(5);
 
-	switch(setting->type){
+	/*switch(setting->type){
 		case Setting::Type::NUMERIC:
-			value = static_cast<SettingNumeric*>(setting->params)->min;
+			*value = static_cast<SettingNumeric*>(setting->params)->min;
 			break;
 		case Setting::Type::OPTION:
 		case Setting::Type::BOOLEAN:
-			value = 0;
+			*value = 0;
 			break;
-	}
+	}*/
 
 	text.setFont(0).setColor(TFT_WHITE).setSize(1);
 	setText();
@@ -31,16 +31,16 @@ void ActionEditItem::trig(){
 	switch(setting->type){
 		case Setting::Type::NUMERIC: {
 			const SettingNumeric* params = static_cast<const SettingNumeric*>(setting->params);
-			value = min(value + params->step, params->max);
+			*value = min(*value + params->step, params->max);
 			break;
 		}
 		case Setting::Type::OPTION: {
 			const SettingOption* params = static_cast<const SettingOption*>(setting->params);
-			value = (value + 1) % params->options.size();
+			*value = (*value + 1) % params->options.size();
 			break;
 		}
 		case Setting::Type::BOOLEAN: {
-			value = !value;
+			*value = !*value;
 			break;
 		}
 	}
@@ -52,16 +52,16 @@ void ActionEditItem::trigAlt(){
 	switch(setting->type){
 		case Setting::Type::NUMERIC: {
 			const SettingNumeric* params = static_cast<const SettingNumeric*>(setting->params);
-			// value = max(value - params->step * 2, params->min);
-			value = params->min;
+			// *value = max(*value - params->step * 2, params->min);
+			*value = params->min;
 			break;
 		}
 		case Setting::Type::OPTION: {
 			const SettingOption* params = static_cast<const SettingOption*>(setting->params);
-			if(value == 0){
-				value = params->options.size() - 1;
+			if(*value == 0){
+				*value = params->options.size() - 1;
 			}else{
-				value--;
+				*value--;
 			}
 			break;
 		}
@@ -77,16 +77,16 @@ void ActionEditItem::setText(){
 
 	switch(setting->type){
 		case Setting::Type::NUMERIC: {
-			stream << value;
+			stream << *value;
 			break;
 		}
 		case Setting::Type::OPTION: {
 			const SettingOption* params = static_cast<const SettingOption*>(setting->params);
-			stream << params->options[value];
+			stream << params->options[*value];
 			break;
 		}
 		case Setting::Type::BOOLEAN:
-			stream << (value ? "Y" : "N") << "ay";
+			stream << (*value ? "Y" : "N") << "ay";
 			break;
 	}
 

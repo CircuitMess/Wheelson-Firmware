@@ -13,9 +13,10 @@ struct Setting {
 	std::string ps;
 	const uint16_t* icon = nullptr;
 	void* params = nullptr;
+	size_t offset;
 
-	Setting(Type type, const std::string& ps, const uint16_t* icon, void* params) : type(type), ps(ps), icon(icon),
-																					params(params){ }
+	Setting(Type type, const std::string& ps, const uint16_t* icon, void* params, size_t offset = 0) :
+			type(type), ps(ps), icon(icon), params(params), offset(offset){ }
 };
 
 struct SettingNumeric {
@@ -34,7 +35,7 @@ struct SettingOption {
 
 class ActionEditItem : public LinearLayout {
 public:
-	ActionEditItem(ElementContainer* parent, const Setting* setting);
+	ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr);
 
 	void reflow() override;
 	void reposChildren() override;
@@ -51,10 +52,12 @@ private:
 
 	const Setting* setting;
 	bool selected = false;
-	int value = 0;
+	int* value = nullptr;
 
 	void setText();
 };
+
+
 
 
 #endif //AUTOCAR_ACTIONEDITITEM_H

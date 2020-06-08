@@ -65,6 +65,9 @@ void Timeline::addAction(AutoAction::Type type){
 			action.params = new LightParams();
 			break;
 
+		case AutoAction::Type::LIGHT_OFF:
+			break;
+
 		case AutoAction::Type::TONE:
 			action.params = new ToneParams();
 			break;
@@ -99,7 +102,9 @@ void Timeline::start(){
 		if(instance->selectedAction == instance->actions->size()){
 			instance->selector.push(instance);
 		}else{
-			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type);
+			if(instance->actions->at(instance->selectedAction).type == AutoAction::Type::LIGHT_OFF) return;
+
+			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type, &instance->actions->at(instance->selectedAction));
 			instance->aEditor.push(instance);
 		}
 	});
