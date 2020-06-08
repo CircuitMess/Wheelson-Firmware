@@ -8,7 +8,11 @@ MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 2){
 
 	instance = this;
 
-	menuItems.push_back({ "Simple", new TimelineApp(display), new Image(&appMenu, 35, 35) });
+	menuItems.push_back({ "Simple", new TimelineApp(display), new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 2", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 3", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 4", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 5", nullptr, new Image(&appMenu, 40, 40) });
 
 	for(auto& item : menuItems){
 		addSprite(item.image);
@@ -23,17 +27,20 @@ void MainMenu::start(){
 		if(instance == nullptr) return;
 
 		Context* app = instance->menuItems[instance->appMenu.getSelected()].context;
+		if(app == nullptr) return;
 		app->push(instance);
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
 		instance->appMenu.selectPrev();
+		instance->screen.commit();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
 		instance->appMenu.selectNext();
+		instance->screen.commit();
 	});
 
 	draw();
@@ -68,7 +75,7 @@ void MainMenu::buildUI(){
 	fillMenu();
 
 	appMenu.setWHType(PARENT, PARENT);
-	appMenu.setTitleColor(TFT_NAVY, TFT_WHITE);
+	appMenu.setTitleColor(TFT_GOLD, TFT_BLACK);
 	appMenu.reflow();
 
 	screen.addChild(&appMenu);
