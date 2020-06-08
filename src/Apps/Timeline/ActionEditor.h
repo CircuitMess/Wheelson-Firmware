@@ -8,11 +8,11 @@
 #include "../../Elements/Fleha.hpp"
 #include "../../Components/AutoAction.h"
 
-class PatternEditor;
+class Timeline;
 
 class ActionEditor : public Modal {
 public:
-	explicit ActionEditor(PatternEditor* editor);
+	explicit ActionEditor(Timeline* timeline);
 
 	void draw() override;
 	void start() override;
@@ -25,7 +25,7 @@ public:
 private:
 	static ActionEditor* instance;
 
-	PatternEditor* editor = nullptr;
+	Timeline* timeline = nullptr;
 
 	Layout layers;
 	Fleha fleha;

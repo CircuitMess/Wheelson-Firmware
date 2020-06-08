@@ -1,17 +1,85 @@
-#include <Support/ContextTransition.h>
-#include <sstream>
 #include "Timeline.h"
 #include "../../defs.hpp"
+#include "Bitmaps/actions.hpp"
+#include "Bitmaps/add.hpp"
+#include "../../Elements/ActionItem.h"
+
+#include <Support/ContextTransition.h>
+#include <Util/Debug.h>
+
+const uint16_t* ActionSprites[] = {
+		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+};
+
+const char* ActionText[] = {
+		"Drive forward", "Drive backward", "Turn left", "Turn right", "Lights ON", "Lights OFF", "Honk tone", "Play tune"
+};
+
+
 
 Timeline* Timeline::instance = nullptr;
 
-Timeline::Timeline(Display& display) : Context(display), editor(new PatternEditor(display)),
-									   menu(&screen, "Patterns"){
+Timeline::Timeline(Display& display) : Context(display),
+									   layers(&screen), fleha(&layers, display.getWidth(), display.getHeight()),
+									   scroll(&layers), timelineList(&scroll, VERTICAL),
+									   selector(this), aEditor(this){
 
 	instance = this;
 
 	buildUI();
 	pack();
+}
+
+void Timeline::initPattern(Vector<AutoAction>* actions){
+	this->actions = actions;
+	fillMenu();
+}
+
+void Timeline::returned(void* data){
+	int* type = static_cast<int*>(data);
+
+	if(*type != -1){
+		addAction(static_cast<AutoAction::Type>(*type));
+		instance->timelineList.reflow();
+		instance->timelineList.getChildren().relocate(instance->actions->size(), instance->actions->size()-1);
+		instance->timelineList.repos();
+		instance->selectedAction++;
+		instance->scroll.scrollIntoView(instance->timelineList.getChildren().size() - 1, 5);
+	}
+
+	delete type;
+}
+
+void Timeline::addAction(AutoAction::Type type){
+	AutoAction action = { type, nullptr };
+
+	switch(type){
+		case AutoAction::Type::FORWARD:
+		case AutoAction::Type::BACKWARD:
+		case AutoAction::Type::LEFT:
+		case AutoAction::Type::RIGHT:
+			action.params = new MoveParams();
+			break;
+
+		case AutoAction::Type::LIGHT_ON:
+			action.params = new LightParams();
+			break;
+
+		case AutoAction::Type::TONE:
+			action.params = new ToneParams();
+			break;
+
+		case AutoAction::Type::TUNE:
+			action.params = new TuneParams();
+			break;
+
+		default:
+			logln("Invalid AutoAction type passed to Timeline::addAction");
+			return;
+	}
+
+	actions->push_back(action);
+	timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
 }
 
 void Timeline::draw(){
@@ -28,34 +96,41 @@ void Timeline::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 
-		if(instance->menu.getSelected() == instance->patterns.size()){
-			instance->patterns.emplace_back();
-			instance->editor->initPattern(&instance->patterns.back());
+		if(instance->selectedAction == instance->actions->size()){
+			instance->selector.push(instance);
 		}else{
-			instance->editor->initPattern(&instance->patterns[instance->menu.getSelected()]);
+			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type);
+			instance->aEditor.push(instance);
 		}
-
-		instance->editor->push(instance);
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
-		instance->menu.selectPrev();
-		instance->screen.commit();
+
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+		if(instance->selectedAction == 0){
+			instance->selectedAction = instance->timelineList.getChildren().size() - 1;
+		}else{
+			instance->selectedAction--;
+		}
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+
+		instance->scroll.scrollIntoView(instance->selectedAction, 5);
+		instance->draw();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
-		instance->menu.selectNext();
-		instance->screen.commit();
+
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+		instance->selectedAction = (instance->selectedAction + 1) % (instance->timelineList.getChildren().size());
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+
+		instance->scroll.scrollIntoView(instance->selectedAction, 5);
+		instance->draw();
 	});
 
 	draw();
-}
-
-void Timeline::unpack(){
-	Context::unpack();
-	fillMenu();
 }
 
 void Timeline::stop(){
@@ -66,31 +141,44 @@ void Timeline::stop(){
 }
 
 void Timeline::fillMenu(){
-	menu.clearItems();
+	for(auto child : timelineList.getChildren()){
+		delete child;
+	}
+	timelineList.getChildren().clear();
 
-	int i = 0;
-	std::ostringstream buffer;
-	for(const auto& pattern : patterns){
-		buffer.str(std::string());
-		buffer << "Pattern " << ++i;
-		std::string str = buffer.str();
+	if(actions == nullptr) return;
 
-		char* title = static_cast<char*>(malloc(str.size() + 1));
-		memset(title, 0, str.size() + 1);
-		memcpy(title, str.c_str(), str.size());
-		menu.addItem(title);
+	for(const auto& action : *actions){
+		timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
 	}
 
-	menu.addItem("New");
-	menu.reflow();
-	menu.repos();
+	ActionItem* item = new ActionItem(&timelineList, add, "New action");
+	timelineList.addChild(item);
+
+	reinterpret_cast<ActionItem*>(timelineList.getChildren().front())->setSelected(true);
+	selectedAction = 0;
+
+	timelineList.reflow();
+	timelineList.repos();
 }
 
 void Timeline::buildUI(){
-	menu.setWHType(PARENT, PARENT);
-	fillMenu();
+	layers.setWHType(PARENT, PARENT);
+	layers.addChild(&fleha);
+	layers.addChild(&scroll);
+	layers.reflow();
 
-	screen.addChild(&menu);
-	screen.repos();
+	scroll.setWHType(PARENT, PARENT);
+	scroll.addChild(&timelineList);
+	scroll.reflow();
+
+	timelineList.setWHType(PARENT, CHILDREN);
+	timelineList.setPadding(5);
+	timelineList.setGutter(5);
+
+	selector.setPos(27, 43);
+	// selector.setBorder(1, C_HEX(0x00ffff));
+
+	screen.addChild(&layers);
 }
 

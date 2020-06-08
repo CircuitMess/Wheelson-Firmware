@@ -1,6 +1,6 @@
 #include "ActionSelector.h"
 #include "../../defs.hpp"
-#include "PatternEditor.h"
+#include "Timeline.h"
 #include "Bitmaps/actions.hpp"
 
 const AutoAction::Type types[] = {
@@ -14,9 +14,9 @@ const uint16_t* SelectorActionSprites[] = {
 
 ActionSelector* ActionSelector::instance = nullptr;
 
-ActionSelector::ActionSelector(PatternEditor* editor) : editor(editor), Modal(*editor, 74, 74),
-		layers(&screen), fleha(&layers, 74, 74, true), actionGrid(&layers, 3),
-		selectedBorder(&layers, border, 18, 18){
+ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*timeline, 74, 74),
+													 layers(&screen), fleha(&layers, 74, 74, true), actionGrid(&layers, 3),
+													 selectedBorder(&layers, border, 18, 18){
 
 	instance = this;
 	buildUI();

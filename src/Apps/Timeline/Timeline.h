@@ -5,7 +5,11 @@
 #include <CircuitOS.h>
 #include <Support/Context.h>
 #include <Elements/ListMenu.h>
-#include "PatternEditor.h"
+#include "ActionSelector.h"
+#include "../../Components/AutoAction.h"
+
+#include "../../Elements/Fleha.hpp"
+#include "ActionEditor.h"
 
 class Timeline : public Context {
 public:
@@ -15,15 +19,25 @@ public:
 	void start() override;
 	void stop() override;
 
-	void unpack() override;
+	void addAction(AutoAction::Type type);
+	void returned(void* data) override;
+
+	void initPattern(Vector<AutoAction>* actions);
 
 private:
 	static Timeline* instance;
 
-	ListMenu menu;
-	PatternEditor* editor = nullptr;
+	ActionEditor aEditor;
 
-	Vector<Vector<AutoAction>> patterns;
+	Layout layers;
+	ScrollLayout scroll;
+	LinearLayout timelineList;
+	Fleha fleha;
+
+	ActionSelector selector;
+
+	Vector<AutoAction>* actions = nullptr;
+	uint selectedAction = 0;
 
 	void fillMenu();
 	void buildUI();

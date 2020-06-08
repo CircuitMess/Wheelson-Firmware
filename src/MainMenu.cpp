@@ -1,6 +1,6 @@
 #include "defs.hpp"
 #include "MainMenu.h"
-#include "Apps/Timeline/Timeline.h"
+#include "Apps/Timeline/TimelineApp.h"
 
 MainMenu* MainMenu::instance = nullptr;
 
@@ -8,7 +8,7 @@ MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 2){
 
 	instance = this;
 
-	menuItems.push_back({ "Simple", new Timeline(display), new Image(&appMenu, 35, 35) });
+	menuItems.push_back({ "Simple", new TimelineApp(display), new Image(&appMenu, 35, 35) });
 
 	for(auto& item : menuItems){
 		addSprite(item.image);

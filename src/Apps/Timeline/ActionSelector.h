@@ -8,11 +8,11 @@
 #include <Support/Modal.h>
 #include "../../Elements/Fleha.hpp"
 
-class PatternEditor;
+class Timeline;
 
 class ActionSelector : public Modal {
 public:
-	ActionSelector(PatternEditor* editor);
+	ActionSelector(Timeline* timeline);
 
 	void draw();
 	void start();
@@ -23,7 +23,7 @@ public:
 private:
 	static ActionSelector* instance;
 
-	PatternEditor* editor = nullptr;
+	Timeline* timeline = nullptr;
 
 	Layout layers;
 	Fleha fleha;
