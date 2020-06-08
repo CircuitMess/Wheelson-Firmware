@@ -30,13 +30,18 @@ PatternEditor::PatternEditor(Display& display) : Context(display),
 	pack();
 }
 
+void PatternEditor::initPattern(Vector<AutoAction>* actions){
+	this->actions = actions;
+	fillMenu();
+}
+
 void PatternEditor::returned(void* data){
 	int* type = static_cast<int*>(data);
 
 	if(*type != -1){
 		addAction(static_cast<AutoAction::Type>(*type));
 		instance->timelineList.reflow();
-		instance->timelineList.getChildren().relocate(instance->actions.size(), instance->actions.size()-1);
+		instance->timelineList.getChildren().relocate(instance->actions->size(), instance->actions->size()-1);
 		instance->timelineList.repos();
 		instance->selectedAction++;
 		instance->scroll.scrollIntoView(instance->timelineList.getChildren().size() - 1, 5);
@@ -73,7 +78,7 @@ void PatternEditor::addAction(AutoAction::Type type){
 			return;
 	}
 
-	actions.push_back(action);
+	actions->push_back(action);
 	timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
 }
 
@@ -91,10 +96,10 @@ void PatternEditor::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 
-		if(instance->selectedAction == instance->actions.size()){
+		if(instance->selectedAction == instance->actions->size()){
 			instance->selector.push(instance);
 		}else{
-			instance->aEditor.initAction(instance->actions[instance->selectedAction].type);
+			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type);
 			instance->aEditor.push(instance);
 		}
 	});
@@ -135,6 +140,28 @@ void PatternEditor::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_D);
 }
 
+void PatternEditor::fillMenu(){
+	for(auto child : timelineList.getChildren()){
+		delete child;
+	}
+	timelineList.getChildren().clear();
+
+	if(actions == nullptr) return;
+
+	for(const auto& action : *actions){
+		timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
+	}
+
+	ActionItem* item = new ActionItem(&timelineList, add, "New action");
+	timelineList.addChild(item);
+
+	reinterpret_cast<ActionItem*>(timelineList.getChildren().front())->setSelected(true);
+	selectedAction = 0;
+
+	timelineList.reflow();
+	timelineList.repos();
+}
+
 void PatternEditor::buildUI(){
 	layers.setWHType(PARENT, PARENT);
 	layers.addChild(&fleha);
@@ -148,16 +175,6 @@ void PatternEditor::buildUI(){
 	timelineList.setWHType(PARENT, CHILDREN);
 	timelineList.setPadding(5);
 	timelineList.setGutter(5);
-	timelineList.reflow();
-
-	addAction(AutoAction::FORWARD);
-	addAction(AutoAction::LIGHT_ON);
-	addAction(AutoAction::TUNE);
-	addAction(AutoAction::BACKWARD);
-	reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[0])->setSelected(true);
-	timelineList.addChild(new ActionItem(&timelineList, add, "New action"));
-	timelineList.reflow();
-	timelineList.repos();
 
 	selector.setPos(27, 43);
 	// selector.setBorder(1, C_HEX(0x00ffff));

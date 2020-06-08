@@ -41,7 +41,7 @@ Vector<Vector<Setting>> settings = {
 ActionEditor* ActionEditor::instance = nullptr;
 
 ActionEditor::ActionEditor(PatternEditor* editor) : Modal(*editor, 90, 90), editor(editor),
-		layers(&screen), fleha(&layers, 90, 90), scroll(&layers), list(&scroll, VERTICAL){
+		layers(&screen), fleha(&layers, 90, 90, true), scroll(&layers), list(&scroll, VERTICAL){
 
 	instance = this;
 	buildUI();

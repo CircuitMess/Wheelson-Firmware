@@ -22,6 +22,8 @@ public:
 	void addAction(AutoAction::Type type);
 	void returned(void* data) override;
 
+	void initPattern(Vector<AutoAction>* actions);
+
 private:
 	static PatternEditor* instance;
 
@@ -34,9 +36,10 @@ private:
 
 	ActionSelector selector;
 
-	Vector<AutoAction> actions;
+	Vector<AutoAction>* actions = nullptr;
 	uint selectedAction = 0;
 
+	void fillMenu();
 	void buildUI();
 };
 

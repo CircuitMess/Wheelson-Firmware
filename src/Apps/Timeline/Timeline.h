@@ -15,11 +15,15 @@ public:
 	void start() override;
 	void stop() override;
 
+	void unpack() override;
+
 private:
 	static Timeline* instance;
 
-	ListMenu patternMenu;
+	ListMenu menu;
 	PatternEditor* editor = nullptr;
+
+	Vector<Vector<AutoAction>> patterns;
 
 	void fillMenu();
 	void buildUI();
