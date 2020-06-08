@@ -15,7 +15,7 @@ const uint16_t* SelectorActionSprites[] = {
 ActionSelector* ActionSelector::instance = nullptr;
 
 ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*timeline, 74, 74),
-													 layers(&screen), fleha(&layers, 74, 74, true), actionGrid(&layers, 3),
+													 layers(&screen), fleha(&layers, 74, 74), actionGrid(&layers, 3),
 													 selectedBorder(&layers, border, 18, 18){
 
 	instance = this;
@@ -103,6 +103,8 @@ void ActionSelector::buildUI(){
 	actionGrid.setGutter(5);
 	actionGrid.reflow();
 	actionGrid.repos();
+
+	fleha.border = true;
 
 	screen.addChild(&layers);
 }

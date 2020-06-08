@@ -179,6 +179,10 @@ void Timeline::buildUI(){
 	selector.setPos(27, 43);
 	// selector.setBorder(1, C_HEX(0x00ffff));
 
+	fleha.bgColor = TFT_BLACK;
+	fleha.borderTopColor = TFT_YELLOW;
+	fleha.borderBotColor = TFT_GOLD;
+
 	screen.addChild(&layers);
 }
 

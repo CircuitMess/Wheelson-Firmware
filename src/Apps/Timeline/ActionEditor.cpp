@@ -41,7 +41,7 @@ Vector<Vector<Setting>> settings = {
 ActionEditor* ActionEditor::instance = nullptr;
 
 ActionEditor::ActionEditor(Timeline* timeline) : Modal(*timeline, 90, 90), timeline(timeline),
-												 layers(&screen), fleha(&layers, 90, 90, true), scroll(&layers), list(&scroll, VERTICAL){
+												 layers(&screen), fleha(&layers, 90, 90), scroll(&layers), list(&scroll, VERTICAL){
 
 	instance = this;
 	buildUI();
@@ -154,6 +154,8 @@ void ActionEditor::buildUI(){
 	list.setPadding(5);
 	list.setGutter(5);
 	list.reflow();
+
+	fleha.border = true;
 
 	screen.addChild(&layers);
 }
