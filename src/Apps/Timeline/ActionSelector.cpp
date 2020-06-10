@@ -81,8 +81,8 @@ void ActionSelector::buildUI(){
 	fillMenu();
 
 	// Don't do this, please. Should implement a function in GridMenu and ListMenu to return container element.
-	Layout* container = dynamic_cast<Layout*>(menu.getChild(1));
-	container = dynamic_cast<Layout*>(container->getChild(0));
+	Layout* container = static_cast<Layout*>(menu.getChild(1));
+	container = static_cast<Layout*>(container->getChild(0));
 
 	container->setPadding(10);
 	container->setGutter(8);

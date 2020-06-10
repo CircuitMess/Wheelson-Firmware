@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Support/Context.h>
 #include <Elements/GridMenu.h>
+#include "Apps/AutonomousDriving/autonomousApp.h"
 
 struct LauncherItem {
 	std::string title;
