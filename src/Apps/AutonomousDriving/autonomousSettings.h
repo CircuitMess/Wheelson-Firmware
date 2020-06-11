@@ -6,7 +6,6 @@
 
 struct SettingsStruct {
 	double contrastSetting = 122;
-	bool motorsStop = true;
 };
 
 SettingsStruct* settings();

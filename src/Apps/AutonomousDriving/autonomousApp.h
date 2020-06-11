@@ -36,6 +36,7 @@ private:
 	const uint16_t contrastDuration = 2000;
 
     Motors* motors;
+    bool driving = false;
     AutoAction::Type currentDirection = AutoAction::FORWARD;
 	Task processTask;
 	static void updateFeedTask(Task* task);

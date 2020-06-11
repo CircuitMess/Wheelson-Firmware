@@ -58,7 +58,7 @@ void AutonomousApp::processFrame()
 		currentDirection = AutoAction::FORWARD;
 	}
 
-	if(settings()->motorsStop) return;
+	if(!driving) return;
 
 	switch(currentDirection){
 		case AutoAction::LEFT:
@@ -105,7 +105,7 @@ void AutonomousApp::draw()
 
 	if(imageBuffer == nullptr){
 		canvas->print("Camera error");
-	}else if(settings()->motorsStop){
+	}else if(!driving){
 		canvas->print("Motors stopped");
 	}else{
 		canvas->print(DirectionStrings[currentDirection]);
@@ -150,9 +150,11 @@ void AutonomousApp::start()
 
 	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		instance->contrastShown = -1;
-		instance->motors->stopAll();
-		settings()->motorsStop = !settings()->motorsStop;
-		// Settings::store();
+		instance->driving = !instance->driving;
+
+		if(!instance->driving){
+			instance->motors->stopAll();
+		}
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
@@ -160,6 +162,7 @@ void AutonomousApp::start()
 		instance->pop();
 	});
 
+	driving = false;
 	UpdateManager::addListener(this);
 	processTask.start(10);
 }
