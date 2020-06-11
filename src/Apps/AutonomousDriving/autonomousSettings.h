@@ -5,9 +5,10 @@
 #include <Util/Settings.h>
 
 struct SettingsStruct {
-	uint8_t contrastSetting;
-	bool motorsStop;
+	double contrastSetting = 122;
+	bool motorsStop = true;
 };
 
 SettingsStruct* settings();
+
 #endif

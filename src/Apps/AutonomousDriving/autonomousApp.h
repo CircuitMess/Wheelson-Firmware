@@ -4,18 +4,12 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
 #include <Support/Context.h>
-#include "../../defs.hpp"
-#include <Sync/Mutex.h>
-#include "esp_camera.h"
-#include <JPEGDecoder.h>
-#include "autonomousSettings.h"
-#include <stdlib.h>
+#include <Update/UpdateListener.h>
+#include <Util/Task.h>
 #include <UI/Image.h>
 #include "../../Components/Motors.h"
 #include "../../Components/AutoAction.h"
-#include <Util/Task.h>
-#include <Update/UpdateListener.h>
-#include <Update/UpdateManager.h>
+#include "../../Components/CameraFeed.h"
 
 class AutonomousApp : public Context, public UpdateListener {
 public:
@@ -24,38 +18,32 @@ public:
 	void draw() override;
 	void start() override;
 	void stop() override;
-    static AutonomousApp* getInstance();
-    void update(uint _time) override;
+
+    void update(uint micros) override;
 
 private:
+	static const char* DirectionStrings[];
 	static AutonomousApp* instance;
-    Mutex mutexContrast;
-    Mutex mutexMotors;
-    bool showContrast = 1;
-    bool motorsStop = 0;
-    uint32_t contrastMillis = millis();
-    double contrastThreshold = 122.0; //0 - 255
-    uint16_t contrastDuration = 2000;
-    static void contrastUp();
-    static void contrastDown();
-    static void toggleMotors();
-    void jpegToArray(uint16_t *frameBuffer);
-	Image baseImage;
-    Motors *motors;
-    void getCameraFrame(Task*);
-    camera_fb_t * fb = NULL;
-    uint16_t *imageStream = nullptr;
+
+	CameraFeed feed;
+
+	Image contrastPopup;
+
+	uint16_t* frameBuffers[2];
+	const uint16_t* imageBuffer = nullptr;
+
+	ulong contrastShown = -1;
+	const uint16_t contrastDuration = 2000;
+
+    Motors* motors;
     AutoAction::Type currentDirection = AutoAction::FORWARD;
-    static void exit();
-    Task videoFeedTask;
-    Task drawTask;
-    static void updateFeedTask(Task*);
-    void initCamera();
-    void updateMotorsAction();
-    Mutex feedMutex;
-    Image contrastPopup;
-    Mutex directionMutex;
-    static void updateDrawTask(Task* task);
+	Task processTask;
+	static void updateFeedTask(Task* task);
+	void processFrame();
+
+	bool debug = true;
+	uint frameMicros = 0;
+	uint camMicros = 0;
 };
 
 #endif
