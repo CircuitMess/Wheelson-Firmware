@@ -111,12 +111,14 @@ void AutonomousApp::draw()
 		canvas->print(DirectionStrings[currentDirection]);
 	}
 
-	float frameTime = (float) (micros() - frameMicros) / 1000000.0f;
-	float camTime = (float) (micros() - camMicros) / 1000000.0f;
-  	frameMicros = micros();
+	if(debug){
+		float frameTime = (float) (micros() - frameMicros) / 1000000.0f;
+		float camTime = (float) (micros() - camMicros) / 1000000.0f;
+		frameMicros = micros();
+		canvas->setCursor(7, 2);
+		canvas->printf("S: %.0f fps  /  C: %.0f fps\n", 1.0f / frameTime, 1.0f / camTime);
+	}
 
-  	canvas->setCursor(7, 2);
-  	canvas->printf("S: %.0f fps  /  C: %.0f fps\n", 1.0f / frameTime, 1.0f / camTime);
     screen.commit();
 }
 void AutonomousApp::start()
@@ -133,8 +135,6 @@ void AutonomousApp::start()
 	contrastPopup.getSprite()->printCenter("Contrast");
 	contrastPopup.getSprite()->drawRect(4, 20, 116, 8, TFT_WHITE);
 	contrastPopup.getSprite()->drawRect(5, 21, 114, 6, TFT_WHITE);
-
-
 
 	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
 		instance->contrastShown = millis();
@@ -177,7 +177,7 @@ void AutonomousApp::stop(){
 void AutonomousApp::updateFeedTask(Task* task){
 	while(task->running){
 		if(instance->packed) return;
-		
+
 		if(instance == nullptr){
 			delay(1);
 			continue;
