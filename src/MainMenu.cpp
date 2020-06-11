@@ -1,15 +1,19 @@
 #include "defs.hpp"
 #include "MainMenu.h"
-#include "Apps/Timeline/Timeline.h"
+#include "Apps/Timeline/TimelineApp.h"
 
 MainMenu* MainMenu::instance = nullptr;
 
-MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 2){
+MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 3){
 
 	instance = this;
 
-	menuItems.push_back({ "Simple", new Timeline(display), new Image(&appMenu, 35, 35) });
-	menuItems.push_back({ "Autonomous", new AutonomousApp(display), new Image(&appMenu, 35, 35)});
+	menuItems.push_back({ "Simple", new Timeline(display), new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "Autonomous", new AutonomousApp(display), new Image(&appMenu, 40, 40)});
+	menuItems.push_back({ "App 2", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 3", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 4", nullptr, new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "App 5", nullptr, new Image(&appMenu, 40, 40) });
 
 	for(auto& item : menuItems){
 		addSprite(item.image);
@@ -24,6 +28,7 @@ void MainMenu::start(){
 		if(instance == nullptr) return;
 
 		Context* app = instance->menuItems[instance->appMenu.getSelected()].context;
+		if(app == nullptr) return;
 		app->push(instance);
 	});
 
@@ -32,8 +37,7 @@ void MainMenu::start(){
 		Serial.println("LEFT PRESS");
 		delay(5);
 		instance->appMenu.selectPrev();
-		instance->getScreen().commit();
-		// instance->draw();
+		instance->screen.commit();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
@@ -41,7 +45,7 @@ void MainMenu::start(){
 		Serial.println("RIGHT PRESS");
 		delay(5);
 		instance->appMenu.selectNext();
-		instance->getScreen().commit();
+		instance->screen.commit();
 	});
 
 	draw();
@@ -76,7 +80,7 @@ void MainMenu::buildUI(){
 	fillMenu();
 
 	appMenu.setWHType(PARENT, PARENT);
-	appMenu.setTitleColor(TFT_NAVY, TFT_WHITE);
+	appMenu.setTitleColor(TFT_GOLD, TFT_BLACK);
 	appMenu.reflow();
 
 	screen.addChild(&appMenu);

@@ -3,27 +3,35 @@
 
 #include <Arduino.h>
 #include <CircuitOS.h>
-#include <Support/Context.h>
 #include <Elements/GridMenu.h>
+#include <UI/BitmapElement.h>
+#include <Support/Modal.h>
+#include "../../Elements/Fleha.hpp"
 
-class ActionSelector : public Context {
+class Timeline;
+
+class ActionSelector : public Modal {
 public:
-	ActionSelector(Display& display);
+	ActionSelector(Timeline* timeline);
 
-	void draw() override;
-	void start() override;
-	void stop() override;
+	void draw();
+	void start();
+	void stop();
 
 	void unpack() override;
 
 private:
 	static ActionSelector* instance;
 
-	GridMenu menu;
+	Timeline* timeline = nullptr;
 
-	Image driveImage;
-	Image turnImage;
-	Image lightImage;
+	Layout layers;
+	Fleha fleha;
+	GridLayout actionGrid;
+	BitmapElement selectedBorder;
+
+	uint selectedAction = 0;
+	void selectAction();
 
 	void fillMenu();
 	void buildUI();

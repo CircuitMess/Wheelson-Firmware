@@ -1,48 +1,67 @@
 #include "ActionSelector.h"
 #include "../../defs.hpp"
+#include "Timeline.h"
+#include "Bitmaps/actions.hpp"
+
+const AutoAction::Type types[] = {
+		AutoAction::Type::FORWARD, AutoAction::Type::BACKWARD, AutoAction::Type::LEFT, AutoAction::Type::RIGHT,
+		AutoAction::Type::LIGHT_ON, AutoAction::Type::LIGHT_OFF, AutoAction::Type::TONE, AutoAction::Type::TUNE
+};
+
+const uint16_t* SelectorActionSprites[] = {
+		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+};
 
 ActionSelector* ActionSelector::instance = nullptr;
 
-ActionSelector::ActionSelector(Display& display) : Context(display), menu(&screen, 2),
-		driveImage(&menu, 50, 50), turnImage(&menu, 50, 50), lightImage(&menu, 108, 35) {
+ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*timeline, 74, 74),
+													 layers(&screen), fleha(&layers, 74, 74), actionGrid(&layers, 3),
+													 selectedBorder(&layers, border, 18, 18){
 
 	instance = this;
-
-	addSprite(&driveImage);
-	addSprite(&turnImage);
-	addSprite(&lightImage);
-
 	buildUI();
-	pack();
 }
 
 void ActionSelector::draw(){
-	screen.draw();
-	screen.commit();
+	getScreen().draw();
+	getScreen().commit();
+}
+
+void ActionSelector::selectAction(){
+	Element* selected = actionGrid.getChild(selectedAction);
+	selectedBorder.setPos(selected->getX(), selected->getY());
 }
 
 void ActionSelector::start(){
 	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		if(instance == nullptr) return;
-		instance->pop();
+		instance->pop(new int(-1));
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
-		int* data = new int(instance->menu.getSelected());
-		instance->pop(data);
+		instance->pop(new int(instance->selectedAction));
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
 		if(instance == nullptr) return;
-		instance->menu.selectPrev();
-		instance->screen.commit();
+
+		if(instance->selectedAction == 0){
+			instance->selectedAction = sizeof(types) / sizeof(AutoAction::type) - 1;
+		}else{
+			instance->selectedAction--;
+		}
+
+		instance->selectAction();
+		instance->draw();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
 		if(instance == nullptr) return;
-		instance->menu.selectNext();
-		instance->screen.commit();
+
+		instance->selectedAction = (instance->selectedAction + 1) % (sizeof(types) / sizeof(AutoAction::type));
+		instance->selectAction();
+		instance->draw();
 	});
 
 	draw();
@@ -57,39 +76,35 @@ void ActionSelector::stop(){
 
 void ActionSelector::unpack(){
 	Context::unpack();
-
-	driveImage.getSprite()->clear(TFT_GREEN);
-	turnImage.getSprite()->clear(TFT_GREEN);
-	lightImage.getSprite()->clear(TFT_WHITE);
-
-	driveImage.getSprite()->fillRect(21, 21, 8, 8, TFT_BLACK);
-	turnImage.getSprite()->fillRect(19, 19, 12, 12, TFT_BLACK);
-
-	lightImage.getSprite()->fillRect(0, 17, 108, 3, TFT_BLACK);
-	for(int i = 11; i < 100; i += 12){
-		lightImage.getSprite()->fillRect(i, 0, 1, 35, TFT_BLACK);
-	}
+	selectedAction = 0;
+	selectAction();
 }
 
 void ActionSelector::fillMenu(){
-	menu.addItem({ "Drive", &driveImage });
-	menu.addItem({ "Turn", &turnImage });
-	menu.addItem({ "Lights", &lightImage });
+	for(const auto& type : types){
+		actionGrid.addChild(new BitmapElement(&actionGrid, SelectorActionSprites[type], 18, 18));
+	}
 }
 
 void ActionSelector::buildUI(){
 	fillMenu();
 
-	// Don't do this, please. Should implement a function in GridMenu and ListMenu to return container element.
-	Layout* container = static_cast<Layout*>(menu.getChild(1));
-	container = static_cast<Layout*>(container->getChild(0));
+	layers.setWHType(FIXED, FIXED);
+	layers.setWidth(74);
+	layers.setHeight(74);
 
-	container->setPadding(10);
-	container->setGutter(8);
+	layers.addChild(&fleha);
+	layers.addChild(&actionGrid);
+	layers.addChild(&selectedBorder);
+	layers.reflow();
 
-	menu.setWHType(PARENT, PARENT);
-	menu.reflow();
-	menu.repos();
+	actionGrid.setWHType(PARENT, PARENT);
+	actionGrid.setPadding(5);
+	actionGrid.setGutter(5);
+	actionGrid.reflow();
+	actionGrid.repos();
 
-	screen.addChild(&menu);
+	fleha.border = true;
+
+	screen.addChild(&layers);
 }

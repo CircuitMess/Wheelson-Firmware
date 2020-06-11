@@ -22,6 +22,7 @@ AutonomousApp::AutonomousApp(Display& display) :
 	initCamera();
     pack();
 }
+
 void AutonomousApp::getCameraFrame(Task* task)
 {
 	uint32_t timerMillis = millis();
@@ -107,6 +108,8 @@ void AutonomousApp::getCameraFrame(Task* task)
 	// Serial.printf("Estimated framerate %.2f\n", (float)(1000.0/(float)timerMillis));
 	// Serial.println("-------------");
 }
+
+uint frameMicros = 0;
 void AutonomousApp::draw()
 {
 	screen.getSprite()->clear(TFT_WHITE);
@@ -175,6 +178,12 @@ void AutonomousApp::draw()
 			screen.getSprite()->print("Camera error");
 		}
 	}
+
+	float frameTime = (float) (micros() - frameMicros) / 1000000.0f;
+  	frameMicros = micros();
+
+  	screen.getSprite()->setCursor(5, 5);
+  	screen.getSprite()->printf("%.0f fps", 1.0f / frameTime);
     screen.commit();
 }
 void AutonomousApp::start()

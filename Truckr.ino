@@ -3,7 +3,7 @@
 #include <Support/Context.h>
 #include <Update/UpdateManager.h>
 #include <Input/InputGPIO.h>
-#include <Input/InputI2c.h>
+#include <Input/InputI2C.h>
 #include "src/MainMenu.h"
 #include "src/defs.hpp"
 #include <Sync/Mutex.h>
@@ -14,6 +14,7 @@
 #include <NeoPixelAnimator.h>
 #include <NeoPixelBrightnessBus.h>
 #define CAMERA_MODEL_AI_THINKER
+#include "src/Components/ActionProcessor.h"
 
 Display display(160, 128, -1, 3);
 InputI2C* input = nullptr;
@@ -50,10 +51,12 @@ void setup(){
 	menu = new MainMenu(display);
 	menu->unpack();
 	menu->start();
-	
+
 	UpdateManager::addListener(input);
 	UpdateManager::startTask();
 	vTaskDelete(NULL);
+
+	ActionProcessor* processor = new ActionProcessor();
 }
 
 void loop(){
