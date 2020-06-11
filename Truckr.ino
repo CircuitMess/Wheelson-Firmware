@@ -52,6 +52,7 @@ void setup(){
 	menu->unpack();
 	menu->start();
 
+	Task::setPinned(true);
 	UpdateManager::addListener(input);
 	UpdateManager::startTask();
 	vTaskDelete(NULL);

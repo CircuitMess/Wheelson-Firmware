@@ -14,12 +14,13 @@ build: $(DIR)/build/$(NAME).bin
 $(DIR)/build/$(NAME).bin: $(srcFiles) $(headerFiles) $(DIR)/$(NAME).ino
 	@mkdir -p $(DIR)/build
 	cd $(DIR); \
-	$(ACLI) compile --fqbn cm:esp32:ringo --optimize-for-debug -o build/$(NAME).bin $(NAME).ino
+	$(ACLI) compile --fqbn esp32:esp32:esp32cam --optimize-for-debug -o build/$(NAME).bin $(NAME).ino
 
 upload: $(DIR)/build/$(NAME).bin
 	@cd $(DIR); \
-	$(ACLI) upload --fqbn cm:esp32:ringo -p $(PORT) -i build/$(NAME).bin
+	$(ACLI) upload --fqbn esp32:esp32:esp32cam -p $(PORT) -i build/$(NAME).bin
 
 clean:
 	cd $(DIR); \
 	rm -rf build
+
