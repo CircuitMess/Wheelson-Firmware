@@ -37,14 +37,34 @@ void ActionProcessor::processAction(){
 	switch(currentAction->type){
 		case AutoAction::Type::FORWARD: {
 			MoveParams* params = static_cast<MoveParams*>(currentAction->params);
-			// start motore
+			Motors::getInstance()->leftMotor(MOTOR_FORWARD);
+			Motors::getInstance()->rightMotor(MOTOR_FORWARD);
 			if(params->millis != 0){
 				delay(params->millis);
 				stopCurrentAction();
 			}
 			break;
 		}
-
+		case AutoAction::Type::LEFT: {
+			MoveParams* params = static_cast<MoveParams*>(currentAction->params);
+			Motors::getInstance()->leftMotor(MOTOR_STOP);
+			Motors::getInstance()->rightMotor(MOTOR_FORWARD);
+			if(params->millis != 0){
+				delay(params->millis);
+				stopCurrentAction();
+			}
+			break;
+		}
+		case AutoAction::Type::RIGHT: {
+			MoveParams* params = static_cast<MoveParams*>(currentAction->params);
+			Motors::getInstance()->leftMotor(MOTOR_FORWARD);
+			Motors::getInstance()->rightMotor(MOTOR_STOP);
+			if(params->millis != 0){
+				delay(params->millis);
+				stopCurrentAction();
+			}
+			break;
+		}
 		default:
 			logln("ActionProcessor received unrecognized task");
 	}
@@ -56,7 +76,17 @@ void ActionProcessor::stopCurrentAction(){
 	switch(currentAction->type){
 		case AutoAction::Type::FORWARD: {
 			MoveParams* params = static_cast<MoveParams*>(currentAction->params); // ako ti trebaju parametri
-			// zaustavi motore
+			Motors::getInstance()->stopAll();
+			break;
+		}
+		case AutoAction::Type::LEFT: {
+			MoveParams* params = static_cast<MoveParams*>(currentAction->params);
+			Motors::getInstance()->stopAll();
+			break;
+		}
+		case AutoAction::Type::RIGHT: {
+			MoveParams* params = static_cast<MoveParams*>(currentAction->params);
+			Motors::getInstance()->stopAll();
 			break;
 		}
 

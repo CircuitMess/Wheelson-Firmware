@@ -4,11 +4,12 @@
 
 MainMenu* MainMenu::instance = nullptr;
 
-MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 2){
+MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 3){
 
 	instance = this;
 
-	menuItems.push_back({ "Simple", new TimelineApp(display), new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "Simple", new Timeline(display), new Image(&appMenu, 40, 40) });
+	menuItems.push_back({ "Autonomous", new AutonomousApp(display), new Image(&appMenu, 40, 40)});
 	menuItems.push_back({ "App 2", nullptr, new Image(&appMenu, 40, 40) });
 	menuItems.push_back({ "App 3", nullptr, new Image(&appMenu, 40, 40) });
 	menuItems.push_back({ "App 4", nullptr, new Image(&appMenu, 40, 40) });
@@ -23,7 +24,7 @@ MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 2){
 }
 
 void MainMenu::start(){
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		if(instance == nullptr) return;
 
 		Context* app = instance->menuItems[instance->appMenu.getSelected()].context;
@@ -31,14 +32,18 @@ void MainMenu::start(){
 		app->push(instance);
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
 		if(instance == nullptr) return;
+		Serial.println("LEFT PRESS");
+		delay(5);
 		instance->appMenu.selectPrev();
 		instance->screen.commit();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
 		if(instance == nullptr) return;
+		Serial.println("RIGHT PRESS");
+		delay(5);
 		instance->appMenu.selectNext();
 		instance->screen.commit();
 	});
@@ -47,9 +52,9 @@ void MainMenu::start(){
 }
 
 void MainMenu::stop(){
-	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_C);
-	Input::getInstance()->removeBtnPressCallback(BTN_D);
+	Input::getInstance()->removeBtnPressCallback(BTN_A);
+	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
+	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
 }
 
 void MainMenu::unpack(){

@@ -4,6 +4,7 @@
 #include <Update/UpdateListener.h>
 #include <Sync/Queue.h>
 #include <Util/Task.h>
+#include "Motors.h"
 #include "AutoAction.h"
 
 /**
