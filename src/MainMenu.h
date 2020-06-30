@@ -9,7 +9,7 @@
 struct LauncherItem {
 	std::string title;
 	Context* context;
-	Image* image;
+	Element* image;
 };
 
 class MainMenu : public Context {

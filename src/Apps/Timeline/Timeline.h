@@ -5,13 +5,15 @@
 #include <CircuitOS.h>
 #include <Support/Context.h>
 #include <Elements/ListMenu.h>
+#include <Update/UpdateListener.h>
+#include <JPEGDecoder.h>
 #include "ActionSelector.h"
 #include "../../Components/AutoAction.h"
 
 #include "../../Elements/Fleha.hpp"
 #include "ActionEditor.h"
 
-class Timeline : public Context {
+class Timeline : public Context, public UpdateListener {
 public:
 	Timeline(Display& display);
 
@@ -22,7 +24,11 @@ public:
 	void addAction(AutoAction::Type type);
 	void returned(void* data) override;
 
-	void initPattern(Vector<AutoAction>* actions);
+	enum Modus { EDIT, PLAY } modus = EDIT;
+
+	void initPattern(Vector<AutoAction>* actions, Modus modus = EDIT);
+
+	void update(uint micros) override;
 
 private:
 	static Timeline* instance;

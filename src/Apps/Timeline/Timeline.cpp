@@ -3,18 +3,21 @@
 #include "Bitmaps/actions.hpp"
 #include "Bitmaps/add.hpp"
 #include "../../Elements/ActionItem.h"
+#include "../../Components/ActionProcessor.h"
 
+#include <Input/Input.h>
 #include <Support/ContextTransition.h>
 #include <Util/Debug.h>
+#include <Update/UpdateManager.h>
+#include <sstream>
+#include <iomanip>
+#include <Input/Input.h>
+
+Mutex* screenMutex = nullptr;
 
 const uint16_t* ActionSprites[] = {
 		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
 };
-
-const char* ActionText[] = {
-		"Drive forward", "Drive backward", "Turn left", "Turn right", "Lights ON", "Lights OFF", "Honk tone", "Play tune"
-};
-
 
 
 Timeline* Timeline::instance = nullptr;
@@ -26,13 +29,17 @@ Timeline::Timeline(Display& display) : Context(display),
 
 	instance = this;
 
+	screenMutex = Motors::getInstance()->mutex;
+
 	buildUI();
 	pack();
 }
 
-void Timeline::initPattern(Vector<AutoAction>* actions){
+void Timeline::initPattern(Vector<AutoAction>* actions, Modus modus){
 	this->actions = actions;
+	this->modus = modus;
 	fillMenu();
+	instance->scroll.setScroll(0, 0);
 }
 
 void Timeline::returned(void* data){
@@ -41,7 +48,7 @@ void Timeline::returned(void* data){
 	if(*type != -1){
 		addAction(static_cast<AutoAction::Type>(*type));
 		instance->timelineList.reflow();
-		instance->timelineList.getChildren().relocate(instance->actions->size(), instance->actions->size()-1);
+		instance->timelineList.getChildren().relocate(instance->actions->size(), instance->actions->size() - 1);
 		instance->timelineList.repos();
 		instance->selectedAction++;
 		instance->scroll.scrollIntoView(instance->timelineList.getChildren().size() - 1, 5);
@@ -87,16 +94,63 @@ void Timeline::addAction(AutoAction::Type type){
 
 void Timeline::draw(){
 	screen.draw();
+	screenMutex->lock();
 	screen.commit();
+	screenMutex->unlock();
 }
 
+int timeleft = 0;
+
 void Timeline::start(){
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+	draw();
+
+	if(modus == PLAY){
+		ActionProcessor::getInstance()->setActionListener([](){
+			if(instance == nullptr) return;
+
+			uint oldSelected = instance->selectedAction;
+			reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+			instance->selectedAction = max((int)(instance->actions->size() - ActionProcessor::getInstance()->count() - 1), 0);
+			reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+
+			const AutoAction& action = instance->actions->at(instance->selectedAction);
+			Vector<AutoAction::Type> durationTypes = { AutoAction::Type::FORWARD, AutoAction::Type::BACKWARD,
+													   AutoAction::Type::LEFT, AutoAction::Type::RIGHT,
+													   AutoAction::Type::TONE };
+
+			if(durationTypes.indexOf(action.type) != (uint) -1){
+				timeleft = static_cast<DurationActionParams*>(action.params)->millis * 1000;
+				Serial.printf("setting timeleft to %d", timeleft);
+			}else{
+				timeleft = 0;
+			}
+
+			if(durationTypes.indexOf(instance->actions->at(oldSelected).type) != (uint) -1){
+				TextElement* text = reinterpret_cast<TextElement*>(reinterpret_cast<ActionItem*>(instance->timelineList.getChild(oldSelected))->getChild(1));
+				text->setText(ActionText[instance->actions->at(oldSelected).type]);
+				delay(10);
+				text->draw();
+			}
+
+			instance->scroll.scrollIntoView(instance->selectedAction, 5);
+		});
+
+		ActionProcessor::getInstance()->setDoneListener([](){
+			if(instance == nullptr) return;
+			instance->pop();
+		});
+
+		timeleft = 0;
+		UpdateManager::addListener(this);
+		return;
+	}
+
+	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 		instance->pop();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		if(instance == nullptr) return;
 
 		if(instance->selectedAction == instance->actions->size()){
@@ -104,45 +158,49 @@ void Timeline::start(){
 		}else{
 			if(instance->actions->at(instance->selectedAction).type == AutoAction::Type::LIGHT_OFF) return;
 
-			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type, &instance->actions->at(instance->selectedAction));
+			instance->aEditor.initAction(instance->actions->at(instance->selectedAction).type,
+										 &instance->actions->at(instance->selectedAction));
 			instance->aEditor.push(instance);
 		}
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_UP, [](){
 		if(instance == nullptr) return;
 
-		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(
+				false);
 		if(instance->selectedAction == 0){
 			instance->selectedAction = instance->timelineList.getChildren().size() - 1;
 		}else{
 			instance->selectedAction--;
 		}
-		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(
+				true);
 
 		instance->scroll.scrollIntoView(instance->selectedAction, 5);
 		instance->draw();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_DOWN, [](){
 		if(instance == nullptr) return;
 
-		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(false);
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(
+				false);
 		instance->selectedAction = (instance->selectedAction + 1) % (instance->timelineList.getChildren().size());
-		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(true);
+		reinterpret_cast<ActionItem*>(instance->timelineList.getChildren()[instance->selectedAction])->setSelected(
+				true);
 
 		instance->scroll.scrollIntoView(instance->selectedAction, 5);
 		instance->draw();
 	});
-
-	draw();
 }
 
 void Timeline::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_C);
-	Input::getInstance()->removeBtnPressCallback(BTN_D);
+	Input::getInstance()->removeBtnPressCallback(BTN_UP);
+	Input::getInstance()->removeBtnPressCallback(BTN_DOWN);
+	UpdateManager::removeListener(this);
 }
 
 void Timeline::fillMenu(){
@@ -157,8 +215,10 @@ void Timeline::fillMenu(){
 		timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
 	}
 
-	ActionItem* item = new ActionItem(&timelineList, add, "New action");
-	timelineList.addChild(item);
+	if(modus == EDIT){
+		ActionItem* item = new ActionItem(&timelineList, add, "New action");
+		timelineList.addChild(item);
+	}
 
 	reinterpret_cast<ActionItem*>(timelineList.getChildren().front())->setSelected(true);
 	selectedAction = 0;
@@ -181,13 +241,30 @@ void Timeline::buildUI(){
 	timelineList.setPadding(5);
 	timelineList.setGutter(5);
 
-	selector.setPos(27, 43);
-	// selector.setBorder(1, C_HEX(0x00ffff));
-
 	fleha.bgColor = TFT_BLACK;
-	fleha.borderTopColor = TFT_YELLOW;
-	fleha.borderBotColor = TFT_GOLD;
+	fleha.borderTopColor = fleha.borderBotColor = TFT_RED;
 
 	screen.addChild(&layers);
+}
+
+void Timeline::update(uint micros){
+	if(timeleft <= 0) return;
+
+	timeleft -= micros;
+	TextElement* text = reinterpret_cast<TextElement*>(reinterpret_cast<ActionItem*>(timelineList.getChild(selectedAction))->getChild(1));
+	const AutoAction& action = actions->at(selectedAction);
+	auto time = max(0.0f, (float) timeleft / 1000000);
+
+	std::ostringstream buffer;
+	buffer.precision(2);
+	buffer << ActionText[action.type] << " ";
+	buffer << std::fixed << std::setprecision(2) << std::setw(2) << time << "s";
+	text->setText(buffer.str());
+	text->getSprite()->fillRect(text->getTotalX(), text->getTotalY(), text->getWidth(), text->getHeight(), TFT_BLACK);
+	text->draw();
+
+	screenMutex->lock();
+	screen.commit();
+	screenMutex->unlock();
 }
 

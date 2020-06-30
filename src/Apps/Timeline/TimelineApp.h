@@ -7,7 +7,7 @@
 #include <Elements/ListMenu.h>
 #include "Timeline.h"
 
-class TimelineApp : public Context {
+class TimelineApp : public Context, public UpdateListener {
 public:
 	TimelineApp(Display& display);
 
@@ -17,13 +17,22 @@ public:
 
 	void unpack() override;
 
+	void update(uint micros) override;
+
+	float filling = -1;
+	ListMenu menu;
+
 private:
 	static TimelineApp* instance;
 
-	ListMenu menu;
+	// ListMenu menu;
 	Timeline* timeline = nullptr;
 
 	Vector<Vector<AutoAction>> patterns;
+
+	void play(uint index);
+
+	// float filling = -1;
 
 	void fillMenu();
 	void buildUI();

@@ -29,7 +29,16 @@ public:
 	 */
 	void addAction(AutoAction* action);
 
+	static ActionProcessor* getInstance();
+
 	static void actionProcessorTask(Task* task);
+
+	AutoAction* getCurrentAction() const;
+
+	void setActionListener(void (* actionListener)());
+	void setDoneListener(void (* doneListener)());
+
+	uint count();
 
 private:
 	static ActionProcessor* instance;
@@ -38,6 +47,9 @@ private:
 	Queue actionQueue;
 
 	AutoAction* currentAction = nullptr;
+
+	void (*actionListener)() = nullptr;
+	void (*doneListener)() = nullptr;
 
 	void processAction();
 	void stopCurrentAction();

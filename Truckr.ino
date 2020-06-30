@@ -16,12 +16,15 @@
 #define CAMERA_MODEL_AI_THINKER
 #include "src/Components/ActionProcessor.h"
 
+#include <NeoPixelBus.h>
+#include <NeoPixelAnimator.h>
+#include <NeoPixelBrightnessBus.h>
+
 Display display(160, 128, -1, 3);
 InputI2C* input = nullptr;
 I2cExpander i2c;
-Mutex i2cMutex;
 Context* menu = nullptr;
-Motors motors(&i2c, &i2cMutex);
+Motors motors(&i2c);
 const uint16_t PixelCount = 4; // the sample images are meant for 144 pixels
 const uint16_t PixelPin = 32;
 const uint16_t AnimCount = 200;
@@ -30,10 +33,10 @@ NeoPixelBrightnessBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPi
 void setup(){
 	Serial.begin(115200);
 	strip.Begin();
-	strip.ClearTo(RgbColor(0,0,0));
-    strip.Show();
-	strip.SetBrightness(0);
-	
+	strip.ClearTo(RgbColor(255, 255, 255));
+	strip.SetBrightness(255);
+	strip.Show();
+
 	psramInit();
 	Serial.print("PSRAM found: ");
 	Serial.println(psramFound());
@@ -42,11 +45,12 @@ void setup(){
 
 	Settings::init(new SettingsStruct, sizeof(SettingsStruct));
 
+	ActionProcessor* processor = new ActionProcessor();
 	i2c.begin(I2C_EXPANDER_ADDRESS, 14, 15);
 	i2c.pinMode(14, OUTPUT);
 	i2c.pinWrite(14, 0);
 	motors.begin(11, 10, 12, 13);
-	input = new InputI2C(&i2c, &i2cMutex);
+	input = new InputI2C(&i2c);
 
 	menu = new MainMenu(display);
 	menu->unpack();
@@ -55,9 +59,8 @@ void setup(){
 	Task::setPinned(true);
 	UpdateManager::addListener(input);
 	UpdateManager::startTask();
-	vTaskDelete(NULL);
 
-	ActionProcessor* processor = new ActionProcessor();
+	vTaskDelete(NULL);
 }
 
 void loop(){

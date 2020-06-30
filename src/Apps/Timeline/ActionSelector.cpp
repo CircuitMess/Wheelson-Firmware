@@ -1,4 +1,5 @@
 #include "ActionSelector.h"
+#include <Input/Input.h>
 #include "../../defs.hpp"
 #include "Timeline.h"
 #include "Bitmaps/actions.hpp"
@@ -33,17 +34,17 @@ void ActionSelector::selectAction(){
 }
 
 void ActionSelector::start(){
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 		instance->pop(new int(-1));
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		if(instance == nullptr) return;
 		instance->pop(new int(instance->selectedAction));
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
 		if(instance == nullptr) return;
 
 		if(instance->selectedAction == 0){
@@ -56,7 +57,7 @@ void ActionSelector::start(){
 		instance->draw();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
 		if(instance == nullptr) return;
 
 		instance->selectedAction = (instance->selectedAction + 1) % (sizeof(types) / sizeof(AutoAction::type));
@@ -70,8 +71,8 @@ void ActionSelector::start(){
 void ActionSelector::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_C);
-	Input::getInstance()->removeBtnPressCallback(BTN_D);
+	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
+	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
 }
 
 void ActionSelector::unpack(){
@@ -105,6 +106,8 @@ void ActionSelector::buildUI(){
 	actionGrid.repos();
 
 	fleha.border = true;
+	fleha.bgColor = TFT_DARKGREY;
+	fleha.borderTopColor = fleha.borderBotColor = TFT_LIGHTGREY;
 
 	screen.addChild(&layers);
 }

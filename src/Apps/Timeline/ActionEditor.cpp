@@ -1,6 +1,7 @@
 #include "ActionEditor.h"
 #include "../../defs.hpp"
 #include "Timeline.h"
+#include <Input/Input.h>
 
 #include "Bitmaps/time.hpp"
 #include "Bitmaps/color.hpp"
@@ -11,24 +12,24 @@
 
 Vector<Vector<Setting>> settings = {
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 10000, 500), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 10000, 500), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 10000, 500), offsetof(MoveParams, millis))
 		},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(MoveParams, millis))
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 10000, 500), offsetof(MoveParams, millis))
 		},
 		{
 			Setting(Setting::Type::OPTION, "", icon_color, new SettingOption({ "Red", "Blue", "Green" }), offsetof(MoveParams, millis))
 		},
 		{},
 		{
-			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 2000, 100), offsetof(ToneParams, millis)),
-			Setting(Setting::Type::NUMERIC, "Hz", icon_freq,  new SettingNumeric(500, 5000, 500), offsetof(ToneParams, frequency)),
+			Setting(Setting::Type::NUMERIC, "ms", icon_time,  new SettingNumeric(500, 10000, 500), offsetof(ToneParams, millis)),
+			Setting(Setting::Type::NUMERIC, "Hz", icon_freq,  new SettingNumeric(500, 10000, 200), offsetof(ToneParams, frequency)),
 			Setting(Setting::Type::NUMERIC, "", icon_volume,  new SettingNumeric(1, 10, 1), offsetof(ToneParams, volume))
 		},
 		{
@@ -75,24 +76,27 @@ void ActionEditor::draw(){
 }
 
 void ActionEditor::start(){
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+	auto ret = [](){
 		if(instance == nullptr) return;
 		instance->pop();
-	});
+	};
 
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_A, ret);
+	Input::getInstance()->setBtnPressCallback(BTN_B, ret);
+
+	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
 		if(instance == nullptr) return;
 		reinterpret_cast<ActionEditItem*>(instance->list.getChildren()[instance->selectedSetting])->trig();
 		instance->draw();
 	});
 
-	Input::getInstance()->setButtonHeldCallback(BTN_B, 300, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
 		if(instance == nullptr) return;
 		reinterpret_cast<ActionEditItem*>(instance->list.getChildren()[instance->selectedSetting])->trigAlt();
 		instance->draw();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_UP, [](){
 		if(instance == nullptr) return;
 
 		uint selected;
@@ -107,7 +111,7 @@ void ActionEditor::start(){
 		instance->draw();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_DOWN, [](){
 		if(instance == nullptr) return;
 
 		uint selected = (instance->selectedSetting + 1) % instance->list.getChildren().size();
@@ -122,10 +126,11 @@ void ActionEditor::start(){
 
 void ActionEditor::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
-	//Input::getInstance()->removeButtonHeldCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_C);
-	Input::getInstance()->removeBtnPressCallback(BTN_D);
+	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
+	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
+	Input::getInstance()->removeBtnPressCallback(BTN_UP);
+	Input::getInstance()->removeBtnPressCallback(BTN_DOWN);
 
 	action = nullptr;
 }
@@ -162,6 +167,8 @@ void ActionEditor::buildUI(){
 	list.reflow();
 
 	fleha.border = true;
+	fleha.bgColor = TFT_DARKGREY;
+	fleha.borderTopColor = fleha.borderBotColor = TFT_LIGHTGREY;
 
 	screen.addChild(&layers);
 }

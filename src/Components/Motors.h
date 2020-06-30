@@ -7,7 +7,7 @@
 #define MOTOR_FORWARD 0
 #define MOTOR_BACKWARD 1
 #define MOTOR_STOP 2
-
+// TODO: enum
 
 class Motors
 {
@@ -18,13 +18,13 @@ public:
 	void rightMotor(uint8_t action);
 	void stopAll();
 	static Motors* getInstance();
+	Mutex* mutex;
 private:
 	void motor(bool motor, uint8_t action);
 	uint8_t pinA[2];
 	uint8_t pinB[2];
 	uint8_t currentAction[2];
 	I2cExpander* i2c;
-	Mutex* mutex;
 	static Motors* instance;
 };
 

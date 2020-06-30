@@ -52,8 +52,7 @@ void ActionEditItem::trigAlt(){
 	switch(setting->type){
 		case Setting::Type::NUMERIC: {
 			const SettingNumeric* params = static_cast<const SettingNumeric*>(setting->params);
-			// *value = max(*value - params->step * 2, params->min);
-			*value = params->min;
+			*value = max(*value - params->step, params->min);
 			break;
 		}
 		case Setting::Type::OPTION: {
@@ -61,11 +60,12 @@ void ActionEditItem::trigAlt(){
 			if(*value == 0){
 				*value = params->options.size() - 1;
 			}else{
-				*value--;
+				(*value)--;
 			}
 			break;
 		}
 		case Setting::Type::BOOLEAN:
+			*value = !*value;
 			break;
 	}
 

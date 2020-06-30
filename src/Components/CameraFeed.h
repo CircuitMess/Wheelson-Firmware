@@ -10,8 +10,12 @@ public:
 	void loadFrame();
 	uint16_t* getBuffer() const;
 
+	void toggleProcessFeed();
+
 private:
 	uint16_t* buffer;
+
+	bool processFeed = true;
 
 	void jpegToArray(uint16_t *buffer);
 };

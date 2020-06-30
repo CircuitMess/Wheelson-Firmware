@@ -2,8 +2,9 @@
 
 #include <esp_camera.h>
 #include <JPEGDecoder.h>
-#include <set>
+#include <TFT_eSPI.h>
 #include "../defs.hpp"
+#include "../Apps/AutonomousDriving/autonomousSettings.h"
 
 CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) malloc(width * height * sizeof(uint16_t))){
 
@@ -59,6 +60,14 @@ void CameraFeed::loadFrame(){
 	esp_camera_fb_return(fb);
 
 	jpegToArray(buffer);
+
+	if(!processFeed) return;
+
+	for(int i = 0; i < 128 * 160; i++){
+		uint16_t color = buffer[i];
+		double luminance = 0.2126 * ((color & 0xF800) >> 8) + 0.7152 * ((color & 0x07E0) >> 3) + 0.0722 * ((color & 0x1F) << 3);
+		buffer[i] = (luminance > settings()->contrastSetting) * TFT_WHITE;
+	}
 }
 
 void CameraFeed::jpegToArray(uint16_t* buffer){
@@ -126,6 +135,10 @@ void CameraFeed::jpegToArray(uint16_t* buffer){
 			}
 		}
 	}
+}
+
+void CameraFeed::toggleProcessFeed(){
+	processFeed = !processFeed;
 }
 
 uint16_t* CameraFeed::getBuffer() const{

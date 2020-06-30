@@ -1,6 +1,8 @@
 #include "defs.hpp"
 #include "MainMenu.h"
 #include "Apps/Timeline/TimelineApp.h"
+#include "Bitmaps/apps/apps.hpp"
+#include <Input/Input.h>
 
 MainMenu* MainMenu::instance = nullptr;
 
@@ -8,16 +10,11 @@ MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 3){
 
 	instance = this;
 
-	menuItems.push_back({ "Simple", new Timeline(display), new Image(&appMenu, 40, 40) });
-	menuItems.push_back({ "Autonomous", new AutonomousApp(display), new Image(&appMenu, 40, 40)});
-	menuItems.push_back({ "App 2", nullptr, new Image(&appMenu, 40, 40) });
-	menuItems.push_back({ "App 3", nullptr, new Image(&appMenu, 40, 40) });
-	menuItems.push_back({ "App 4", nullptr, new Image(&appMenu, 40, 40) });
-	menuItems.push_back({ "App 5", nullptr, new Image(&appMenu, 40, 40) });
-
-	for(auto& item : menuItems){
-		addSprite(item.image);
-	}
+	menuItems.push_back({ "Simple programming mode", new TimelineApp(display), new BitmapElement(&appMenu, app_action, 40, 40) });
+	menuItems.push_back({ "Autonomous driving mode", new AutonomousApp(display), new BitmapElement(&appMenu, app_autonomous, 40, 40) });
+	menuItems.push_back({ "Object tracking", nullptr, new BitmapElement(&appMenu, app_tracking, 40, 40) });
+	menuItems.push_back({ "QR tracker", nullptr, new BitmapElement(&appMenu, app_qr, 40, 40) });
+	menuItems.push_back({ "Settings", nullptr, new BitmapElement(&appMenu, app_settings, 40, 40) });
 
 	buildUI();
 	pack();
@@ -80,7 +77,7 @@ void MainMenu::buildUI(){
 	fillMenu();
 
 	appMenu.setWHType(PARENT, PARENT);
-	appMenu.setTitleColor(TFT_GOLD, TFT_BLACK);
+	appMenu.setTitleColor(TFT_RED, TFT_BLACK);
 	appMenu.reflow();
 
 	screen.addChild(&appMenu);

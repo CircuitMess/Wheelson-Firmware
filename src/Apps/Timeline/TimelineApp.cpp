@@ -1,7 +1,10 @@
 #include <Support/ContextTransition.h>
+#include <Update/UpdateManager.h>
 #include <sstream>
 #include "TimelineApp.h"
 #include "../../defs.hpp"
+#include "../../Components/ActionProcessor.h"
+#include <Input/Input.h>
 
 TimelineApp* TimelineApp::instance = nullptr;
 
@@ -14,19 +17,102 @@ TimelineApp::TimelineApp(Display& display) : Context(display), timeline(new Time
 	pack();
 }
 
+void TimelineApp::play(uint index){
+	const Vector<AutoAction>& pattern = patterns[index];
+
+	for(const AutoAction& action : pattern){
+
+		AutoAction* nAction = static_cast<AutoAction*>(malloc(sizeof(AutoAction)));
+		memcpy(nAction, &action, sizeof(AutoAction));
+
+		const size_t sizes[8] = {
+			sizeof(MoveParams),
+			sizeof(MoveParams),
+			sizeof(MoveParams),
+			sizeof(MoveParams),
+			sizeof(LightParams),
+			0,
+			sizeof(ToneParams),
+			sizeof(TuneParams)
+		};
+
+		size_t size = sizes[action.type];
+		if(size != 0){
+			nAction->params = malloc(size);
+			memcpy(nAction->params, action.params, size);
+		}
+
+		ActionProcessor::getInstance()->addAction(nAction);
+	}
+
+	Serial.println("Starting ActionProcessor");
+	ActionProcessor::getInstance()->start();
+}
+
+bool playing = false;
+bool editing = false;
+
+void TimelineApp::update(uint micros){
+	if(filling != -1){
+		filling = min(filling + (float) micros * 255 / 1000000, 255.0f);
+		// menu.setSelectedFill(filling);
+		menu.draw();
+		screen.commit();
+	}
+
+	if(filling >= 255){
+		instance->filling = -1;
+		UpdateManager::removeListener(instance);
+		// instance->menu.setSelectedFill(0);
+
+		if(editing) return;
+
+		instance->menu.draw();
+		instance->screen.commit();
+
+		if(instance->menu.getSelected() == instance->patterns.size()) return;
+
+		playing = true;
+		instance->timeline->initPattern(&instance->patterns[instance->menu.getSelected()], Timeline::Modus::PLAY);
+		instance->timeline->push(instance);
+		instance->play(instance->menu.getSelected());
+	}
+}
+
 void TimelineApp::draw(){
 	screen.draw();
 	screen.commit();
 }
 
 void TimelineApp::start(){
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+	playing = editing = false;
+
+	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 		instance->pop();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+
+	});
+
+	Input::getInstance()->setBtnReleaseCallback(BTN_A, [](){
 		if(instance == nullptr) return;
+
+		instance->filling = -1;
+		UpdateManager::removeListener(instance);
+		// instance->menu.setSelectedFill(0);
+
+		if(!playing){
+			instance->screen.commit();
+		}
+
+		editing = true;
+
+		if(playing){
+			playing = false;
+			return;
+		}
 
 		if(instance->menu.getSelected() == instance->patterns.size()){
 			instance->patterns.emplace_back();
@@ -38,13 +124,22 @@ void TimelineApp::start(){
 		instance->timeline->push(instance);
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_C, [](){
+	Input::getInstance()->setButtonHeldCallback(BTN_A, 100, [](){
+		if(instance == nullptr) return;
+		if(instance->packed) return; // TODO: remove when btmHeldCallback is added to CircuitOS
+
+		instance->filling = 0;
+		// instance->menu.setSelectedFill(0);
+		UpdateManager::addListener(instance);
+	});
+
+	Input::getInstance()->setBtnPressCallback(BTN_UP, [](){
 		if(instance == nullptr) return;
 		instance->menu.selectPrev();
 		instance->screen.commit();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_D, [](){
+	Input::getInstance()->setBtnPressCallback(BTN_DOWN, [](){
 		if(instance == nullptr) return;
 		instance->menu.selectNext();
 		instance->screen.commit();
@@ -60,9 +155,12 @@ void TimelineApp::unpack(){
 
 void TimelineApp::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
+	Input::getInstance()->removeBtnReleaseCallback(BTN_A);
+	// Input::getInstance()->removeBtnHeldCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_C);
-	Input::getInstance()->removeBtnPressCallback(BTN_D);
+	Input::getInstance()->removeBtnPressCallback(BTN_UP);
+	Input::getInstance()->removeBtnPressCallback(BTN_DOWN);
+	UpdateManager::removeListener(this);
 }
 
 void TimelineApp::fillMenu(){
@@ -89,6 +187,7 @@ void TimelineApp::fillMenu(){
 }
 
 void TimelineApp::buildUI(){
+	menu.setTitleColor(TFT_RED, TFT_BLACK);
 	menu.setWHType(PARENT, PARENT);
 	fillMenu();
 

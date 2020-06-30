@@ -2,6 +2,11 @@
 #include "autonomousSettings.h"
 #include "autonomousApp.h"
 #include "../../defs.hpp"
+#include <Input/Input.h>
+
+#include <NeoPixelBus.h>
+#include <NeoPixelAnimator.h>
+#include <NeoPixelBrightnessBus.h>
 
 AutonomousApp* AutonomousApp::instance = nullptr;
 
@@ -26,6 +31,8 @@ AutonomousApp::AutonomousApp(Display& display) :
     pack();
 }
 
+int lastTop = 80;
+int lastBottom = 80;
 void AutonomousApp::processFrame()
 {
 	volatile const uint16_t* frame = imageBuffer;
@@ -33,17 +40,19 @@ void AutonomousApp::processFrame()
 	uint16_t leftCounted = 0;
 	uint16_t rightCounted = 0;
 
-	for(uint16_t i = 0; i < 160 * 120; i++){
+	/*for(uint16_t i = 0; i < 160 * 120; i++){
 		uint16_t color = frame[i];
 		// uint8_t r = (frame[i] & 0xF800) >> 8;
 		// uint8_t g = (frame[i] & 0x07E0) >> 3;
 		// uint8_t b = (frame[i] & 0x1F) << 3;
 		double luminance = 0.2126 * ((color & 0xF800) >> 8) + 0.7152 * ((color & 0x07E0) >> 3) + 0.0722 * ((color & 0x1F) << 3);
 
+		int x = (i % 160);
+		int y = i - x * 160;
 		if(luminance < settings()->contrastSetting){
-			if((i % 160) < 80){
+			if(x < 60){
 				leftCounted++;
-			}else{
+			}else if(x > 100){
 				rightCounted++;
 			}
 		}
@@ -57,8 +66,59 @@ void AutonomousApp::processFrame()
 	}else{
 		currentDirection = AutoAction::FORWARD;
 	}
+	 */
+
+	int totalCounted = 0;
+	float top = 0;
+	for(int i = 0; i < 160 * 10; i++){
+		uint16_t color = frame[i];
+		double luminance = 0.2126 * ((color & 0xF800) >> 8) + 0.7152 * ((color & 0x07E0) >> 3) + 0.0722 * ((color & 0x1F) << 3);
+
+		int x = (i % 160);
+		if(luminance < settings()->contrastSetting){
+			totalCounted++;
+			top += x;
+		}
+	}
+	if(totalCounted < 50){
+		top = lastTop;
+	}else{
+		top /= totalCounted;
+		lastTop = top;
+	}
+
+	totalCounted = 0;
+	float bottom = 0;
+	for(int i = 160 * 117; i < 160 * 128; i++){
+		uint16_t color = frame[i];
+		double luminance = 0.2126 * ((color & 0xF800) >> 8) + 0.7152 * ((color & 0x07E0) >> 3) + 0.0722 * ((color & 0x1F) << 3);
+
+		int x = (i % 160);
+		if(luminance < settings()->contrastSetting){
+			totalCounted++;
+			bottom += x;
+		}
+	}
+	bottom /= totalCounted;
 
 	if(!driving) return;
+
+	uint a = 40, b = 120;
+	if(top < b && top > a  && bottom < b && bottom > a){
+		if(fabs(top - bottom) < 30){
+			currentDirection = AutoAction::FORWARD;
+		}else if(top > bottom){
+			currentDirection = AutoAction::RIGHT;
+		}else if(top < bottom){
+			currentDirection = AutoAction::LEFT;
+		}
+	}else if(fabs(top - bottom) > 30){
+		currentDirection = AutoAction::FORWARD;
+	}else if(top < a || bottom < a){
+		currentDirection = AutoAction::LEFT;
+	}else if(top > b || bottom > b){
+		currentDirection = AutoAction::RIGHT;
+	}
 
 	switch(currentDirection){
 		case AutoAction::LEFT:
@@ -99,9 +159,14 @@ void AutonomousApp::draw()
 		contrastPopup.draw();
 	}
 
-	canvas->fillRoundRect(0, 106, 160, 36, 4, TFT_RED);
-	canvas->fillRoundRect(2, 108, 156, 34, 3, TFT_DARKGREY);
+	if(!debug){
+		canvas->fillRoundRect(0, 106, 160, 36, 4, TFT_RED);
+		canvas->fillRoundRect(2, 108, 156, 34, 3, TFT_DARKGREY);
+	}else{
+		canvas->setTextColor(TFT_RED);
+	}
 	canvas->setCursor(7,109);
+
 
 	if(imageBuffer == nullptr){
 		canvas->print("Camera error");
@@ -112,6 +177,7 @@ void AutonomousApp::draw()
 	}
 
 	if(debug){
+		canvas->setTextColor(TFT_RED);
 		float frameTime = (float) (micros() - frameMicros) / 1000000.0f;
 		float camTime = (float) (micros() - camMicros) / 1000000.0f;
 		frameMicros = micros();
@@ -121,8 +187,14 @@ void AutonomousApp::draw()
 
     screen.commit();
 }
+
+bool processPress = false;
+
 void AutonomousApp::start()
 {
+	Settings::retrieve();
+	Serial.printf("Settings retrieved, contrast: %.2f\n", settings()->contrastSetting);
+
 	contrastPopup.getSprite()->clear(TFT_GREEN);
 	contrastPopup.getSprite()->setChroma(TFT_GREEN);
 	contrastPopup.getSprite()->fillRoundRect(0, 0, contrastPopup.getWidth(), contrastPopup.getHeight(), 3, TFT_RED);
@@ -139,16 +211,26 @@ void AutonomousApp::start()
 	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
 		instance->contrastShown = millis();
 		settings()->contrastSetting = max(settings()->contrastSetting - 5, 0.0);
-		// Settings::store();
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
 		instance->contrastShown = millis();
 		settings()->contrastSetting = min(settings()->contrastSetting + 5, 255.0);
-		// Settings::store();
 	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
+	Input::getInstance()->setButtonHeldCallback(BTN_A, 500, [](){
+		processPress = true;
+		if(instance == nullptr) return;
+		instance->feed.toggleProcessFeed();
+
+	});
+
+	Input::getInstance()->setBtnReleaseCallback(BTN_A, [](){
+		if(processPress){
+			processPress = false;
+			return;
+		}
+
 		instance->contrastShown = -1;
 		instance->driving = !instance->driving;
 
@@ -170,11 +252,14 @@ void AutonomousApp::start()
 void AutonomousApp::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
 	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
-	Input::getInstance()->removeBtnPressCallback(BTN_A);
+	Input::getInstance()->removeBtnReleaseCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 
 	UpdateManager::removeListener(this);
 	processTask.stop();
+
+	Settings::store();
+	Serial.printf("Settings stored, contrast: %.2f\n", settings()->contrastSetting);
 }
 
 void AutonomousApp::updateFeedTask(Task* task){

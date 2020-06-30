@@ -4,10 +4,10 @@
 #include <Arduino.h>
 #include <Display/Color.h>
 
-extern char* TextActions[3];
+extern const char* ActionText[];
 
 struct DurationActionParams {
-	uint millis = 3000;
+	int millis = 3000;
 };
 
 struct MoveParams : DurationActionParams {
@@ -15,17 +15,17 @@ struct MoveParams : DurationActionParams {
 };
 
 struct LightParams {
-	Color color = 0xFFFF;
+	int color = 0;
 };
 
 struct ToneParams : DurationActionParams {
-	uint frequency = 2000;
-	uint8_t volume = 10;
+	int frequency = 2000;
+	int volume = 10;
 };
 
 struct TuneParams {
-	uint tune = 0;
-	uint8_t volume = 10;
+	int tune = 0;
+	int volume = 10;
 };
 
 struct AutoAction {

@@ -1,5 +1,5 @@
 #include "AutoAction.h"
 
-char* TextActions[3] = {
-	"Move", "Turn", "Lights"
+const char* ActionText[] = {
+		"Drive forward", "Drive backward", "Turn left", "Turn right", "Lights ON", "Lights OFF", "Honk tone", "Play tune"
 };
