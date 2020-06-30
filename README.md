@@ -1,3 +1,8 @@
+# CircuitMess Wheelson
+<img src="https://www.circuitmess.com/wp-content/uploads/2020/06/Wheelson_1.jpg">
+
+[Support our work on Kickstarter](https://www.kickstarter.com/projects/albertgajsak/circuitmess-stem-box)
+
 src/Apps contains different *apps* selectable in the main menu. To add a new entry to the menu, add it in the MainMenu constructor.
 
 Buttons and other board-specific defines should be in src/defs.hpp
@@ -16,3 +21,5 @@ make <target>
 ```
 
 Pretty simple :)
+
+Will probably add PlatformIO support if the need arises. Hit us up with an issue if you'd like us to add a platformio config.
