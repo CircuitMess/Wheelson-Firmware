@@ -1,34 +1,77 @@
 cmake_minimum_required(VERSION 3.15)
-project(AutoCar)
+project(Wheelson-Firmware)
+set(PORT /dev/ttyUSB0)
+set(DEVICE cm:esp32:wheelson) # Arduino device FQBN
+set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_STANDARD 14)
+set(ROOT ${CMAKE_SOURCE_DIR})
+if (WIN32 OR CYGWIN)
+    set(Arduino15 $ENV{APPDATA}/../Local/Arduino15)
+    set(ArduinoLibs $ENV{USERPROFILE}/OneDrive/Documents/Arduino/libraries)
 
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/libraries/Wire/src)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/libraries/FS/src)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/libraries/SD/src)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/libraries/SPI/src)
+    string(REPLACE "\\" "/" Arduino15 ${Arduino15})
+    string(REPLACE "\\" "/" ArduinoLibs ${ArduinoLibs})
 
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/cores/esp32)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/tools/sdk)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/tools/sdk/include)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/tools/sdk/include/esp32)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/tools/sdk/include/freertos)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.0.4/tools/sdk/include/esp32-camera/)
-include_directories(~/Arduino/libraries/TFT_eSPI)
-include_directories(~/Arduino/libraries/NeoPixelBus/src)
-include_directories(~/Arduino/libraries/JPEGDecoder/src)
-include_directories(~/Arduino/libraries/CircuitOS/src)
+    if (CYGWIN)
+        string(REGEX REPLACE "^([A-Za-z]):" "/cygdrive/\\1" Arduino15 ${Arduino15})
+        string(REGEX REPLACE "^([A-Za-z]):" "/cygdrive/\\1" ArduinoLibs ${ArduinoLibs})
+        string(REGEX REPLACE "^/cygdrive/([A-Za-z])" "\\1:/" ROOT ${ROOT})
+    endif ()
+else ()
+    set(Arduino15 ~/.arduino15)
+    set(ArduinoLibs ~/Arduino/libraries)
+endif ()
 
-AUX_SOURCE_DIRECTORY(src SOURCES)
-AUX_SOURCE_DIRECTORY(src/Apps SOURCES)
-AUX_SOURCE_DIRECTORY(src/Apps/Timeline SOURCES)
-AUX_SOURCE_DIRECTORY(src/Apps/Timeline/Bitmaps SOURCES)
-AUX_SOURCE_DIRECTORY(src/Apps/AutonomousDriving SOURCES)
-AUX_SOURCE_DIRECTORY(src/Bitmaps SOURCES)
-AUX_SOURCE_DIRECTORY(src/Components SOURCES)
-AUX_SOURCE_DIRECTORY(src/Elements SOURCES)
+# Include directories
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/Wire/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/FS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/SD/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/SPI/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/WiFi/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/SPIFFS/src)
 
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/cores/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/esp32)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/freertos)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/driver/driver)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/spi_flash)
+include_directories(~/.arduino15/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/esp32-camera/)
+
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/CircuitOS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/TFT_eSPI)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/TFT_eSPI/Extensions)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/U8g2_for_TFT_eSPI/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/JPEGDecoder/src)
+
+
+# Source directories
+file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
+
+
+# Defines
 add_definitions(-DDEBUG)
+add_definitions(-DESP32)
 
-SET_SOURCE_FILES_PROPERTIES(Truckr.ino PROPERTIES LANGUAGE CXX)
-add_executable(AutoCar ${SOURCES} Truckr.ino)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+set(BUILD ${ROOT}/build)
+
+SET_SOURCE_FILES_PROPERTIES(${CMAKE_PROJECT_NAME}.ino PROPERTIES LANGUAGE CXX)
+
+add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf
+        COMMAND arduino-cli compile --fqbn ${DEVICE} --output-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_PROJECT_NAME}.ino
+        DEPENDS ${CMAKE_PROJECT_NAME}.ino ${SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+add_custom_target(CMBuild
+        SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf)
+
+add_custom_target(CMUpload ALL
+        COMMAND arduino-cli upload --fqbn ${DEVICE} -p ${PORT} --input-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        DEPENDS CMBuild
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+add_executable(${CMAKE_PROJECT_NAME}.bin ${CMAKE_PROJECT_NAME}.ino ${SOURCES})
