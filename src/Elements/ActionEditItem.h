@@ -47,12 +47,18 @@ public:
 	void draw() override;
 
 private:
-	BitmapElement icon;
+	//BitmapElement icon;
 	TextElement text;
 
 	const Setting* setting;
 	bool selected = false;
 	int* value = nullptr;
+
+	fs::File iconFile;
+	fs::File borderFile;
+	Color* buffer = nullptr;
+	Color* borderBuffer = nullptr;
+	static const char* const SettingsSprites[4];
 
 	void setText();
 };
