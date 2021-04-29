@@ -141,7 +141,7 @@ void Timeline::start(){
 		});
 
 		timeleft = 0;
-		UpdateManager::addListener(this);
+		LoopManager::addListener(this);
 		return;
 	}
 
@@ -247,7 +247,7 @@ void Timeline::buildUI(){
 	screen.addChild(&layers);
 }
 
-void Timeline::update(uint micros){
+void Timeline::loop(uint micros){
 	if(timeleft <= 0) return;
 
 	timeleft -= micros;

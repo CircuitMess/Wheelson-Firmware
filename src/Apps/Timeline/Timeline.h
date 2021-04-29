@@ -5,15 +5,15 @@
 #include <CircuitOS.h>
 #include <Support/Context.h>
 #include <Elements/ListMenu.h>
-#include <Update/UpdateListener.h>
-#include <JPEGDecoder.h>
+#include <Loop/LoopListener.h>
+//#include <JPEGDecoder.h>
 #include "ActionSelector.h"
 #include "../../Components/AutoAction.h"
 
 #include "../../Elements/Fleha.hpp"
 #include "ActionEditor.h"
 
-class Timeline : public Context, public UpdateListener {
+class Timeline : public Context, public LoopListener {
 public:
 	Timeline(Display& display);
 
@@ -28,7 +28,7 @@ public:
 
 	void initPattern(Vector<AutoAction>* actions, Modus modus = EDIT);
 
-	void update(uint micros) override;
+	void loop(uint micros) override;
 
 private:
 	static Timeline* instance;
