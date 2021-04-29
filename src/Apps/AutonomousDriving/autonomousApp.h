@@ -4,14 +4,14 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
 #include <Support/Context.h>
-#include <Update/UpdateListener.h>
+#include <Loop/LoopListener.h>
 #include <Util/Task.h>
 #include <UI/Image.h>
 #include "../../Components/Motors.h"
 #include "../../Components/AutoAction.h"
 #include "../../Components/CameraFeed.h"
 
-class AutonomousApp : public Context, public UpdateListener {
+class AutonomousApp : public Context, public LoopListener {
 public:
 	AutonomousApp(Display& display);
 
@@ -19,7 +19,7 @@ public:
 	void start() override;
 	void stop() override;
 
-    void update(uint micros) override;
+    void loop(uint micros) override;
 
 private:
 	static const char* DirectionStrings[];
