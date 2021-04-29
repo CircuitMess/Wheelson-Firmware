@@ -11,12 +11,12 @@
 struct Setting {
 	enum Type { NUMERIC, OPTION, BOOLEAN } type;
 	std::string ps;
-	const uint16_t* icon = nullptr;
+	enum Icon { TIME, COLOR, FREQ, VOLUME } iconType;
 	void* params = nullptr;
 	size_t offset;
 
-	Setting(Type type, const std::string& ps, const uint16_t* icon, void* params, size_t offset = 0) :
-			type(type), ps(ps), icon(icon), params(params), offset(offset){ }
+	Setting(Type type, const std::string& ps, Icon iconType, void* params, size_t offset = 0) :
+			type(type), ps(ps), iconType(iconType), params(params), offset(offset){ }
 };
 
 struct SettingNumeric {
