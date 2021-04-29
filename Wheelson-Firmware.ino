@@ -20,7 +20,9 @@
 //#include <NeoPixelAnimator.h>
 //#include <NeoPixelBrightnessBus.h>
 
-Display display(160, 128, -1, 3);
+#define blPin 25
+
+Display display(160, 128, -1, -1);
 InputI2C* input = nullptr;
 I2cExpander i2c;
 Context* menu = nullptr;
@@ -43,6 +45,8 @@ void setup(){
 	Serial.print("PSRAM found: ");
 	Serial.println(psramFound());
 
+	pinMode(blPin, OUTPUT);
+	digitalWrite(blPin, LOW);
 	display.begin();
 
 	Settings::init(new SettingsStruct, sizeof(SettingsStruct));
