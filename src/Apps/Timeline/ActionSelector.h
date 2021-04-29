@@ -30,6 +30,11 @@ private:
 	GridLayout actionGrid;
 	BitmapElement selectedBorder;
 
+	fs::File iconFile[8];
+	Color* buffer[8] = {nullptr};
+	fs::File borderFile;
+	Color* borderBuffer = nullptr;
+
 	uint selectedAction = 0;
 	void selectAction();
 

@@ -2,22 +2,24 @@
 #include <Input/Input.h>
 #include "../../defs.hpp"
 #include "Timeline.h"
-#include "Bitmaps/actions.hpp"
+#include "../../mem.h"
+
+//#include "Bitmaps/actions.hpp"
 
 const AutoAction::Type types[] = {
 		AutoAction::Type::FORWARD, AutoAction::Type::BACKWARD, AutoAction::Type::LEFT, AutoAction::Type::RIGHT,
 		AutoAction::Type::LIGHT_ON, AutoAction::Type::LIGHT_OFF, AutoAction::Type::TONE, AutoAction::Type::TUNE
 };
 
-const uint16_t* SelectorActionSprites[] = {
-		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+const char* const SelectorActionSprites[] = {
+		"/arrow_up.raw", "/arrow_down.raw", "/arrow_left.raw", "/arrow_right.raw", "/light_on.raw", "/light_off.raw", "/tone.raw", "/tune.raw"
 };
 
 ActionSelector* ActionSelector::instance = nullptr;
 
 ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*timeline, 74, 74),
 													 layers(&screen), fleha(&layers, 74, 74), actionGrid(&layers, 3),
-													 selectedBorder(&layers, border, 18, 18){
+													 selectedBorder(&layers, borderBuffer, 18, 18){
 
 	instance = this;
 	buildUI();
@@ -25,15 +27,16 @@ ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*
 
 void ActionSelector::draw(){
 	getScreen().draw();
-	getScreen().commit();
 }
 
 void ActionSelector::selectAction(){
 	Element* selected = actionGrid.getChild(selectedAction);
-	selectedBorder.setPos(selected->getX(), selected->getY());
+	//selectedBorder.setPos(selected->getX(), selected->getY());
 }
 
 void ActionSelector::start(){
+	draw();
+	screen.commit();
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
 		if(instance == nullptr) return;
 		instance->pop(new int(-1));
@@ -73,17 +76,42 @@ void ActionSelector::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
 	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
+	for(int i=0;i<8;i++){
+		free(buffer[i]);
+		buffer[i] = {nullptr};
+		iconFile->close();
+	}
 }
 
 void ActionSelector::unpack(){
 	Context::unpack();
 	selectedAction = 0;
 	selectAction();
+	for(int i=0;i<8;i++){
+		buffer[i] = static_cast<Color*>(w_malloc(18 * 18 * 2));
+		if(buffer[i] == nullptr){
+			Serial.printf("ActionEditor picture %s unpack error\n", SelectorActionSprites[types[i]]);
+			return;
+		}
+		iconFile[i] = SPIFFS.open(SelectorActionSprites[types[i]]);
+		iconFile[i].seek(0);
+		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer), 18 * 18 * 2);
+		iconFile[i].close();
+	}
+	borderBuffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	if(borderBuffer == nullptr){
+		Serial.println("ActionSelector picture /border.raw unpack error");
+		return;
+	}
+	borderFile = SPIFFS.open("/border.raw");
+	borderFile.seek(0);
+	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 18 * 18 * 2);
+	borderFile.close();
 }
 
 void ActionSelector::fillMenu(){
 	for(const auto& type : types){
-		actionGrid.addChild(new BitmapElement(&actionGrid, SelectorActionSprites[type], 18, 18));
+		actionGrid.addChild(new BitmapElement(&actionGrid, buffer[type], 18, 18));
 	}
 }
 
@@ -96,7 +124,7 @@ void ActionSelector::buildUI(){
 
 	layers.addChild(&fleha);
 	layers.addChild(&actionGrid);
-	layers.addChild(&selectedBorder);
+	//layers.addChild(&selectedBorder);
 	layers.reflow();
 
 	actionGrid.setWHType(PARENT, PARENT);
