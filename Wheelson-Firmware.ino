@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
 #include <Support/Context.h>
-#include <Update/UpdateManager.h>
+#include <Loop/LoopManager.h>
 #include <Input/InputGPIO.h>
 #include <Input/InputI2C.h>
 #include "src/MainMenu.h"
@@ -57,12 +57,12 @@ void setup(){
 	menu->start();
 
 	Task::setPinned(true);
-	UpdateManager::addListener(input);
-	UpdateManager::startTask();
+	LoopManager::addListener(input);
+	LoopManager::startTask();
 
 	vTaskDelete(NULL);
 }
 
 void loop(){
-	// UpdateManager::update();
+	//LoopManager::loop();
 }
