@@ -1,8 +1,19 @@
 #include "ActionItem.h"
-#include "../Apps/Timeline/Bitmaps/border.hpp"
+#include "../mem.h"
+//#include "../Apps/Timeline/Bitmaps/border.hpp"
 
 ActionItem::ActionItem(ElementContainer* parent, const uint16_t* icon, const std::string& text)
 		: LinearLayout(parent, HORIZONTAL), icon(this, icon, 18, 18), text(this, 0, 18){
+
+	borderBuffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	if(borderBuffer == nullptr){
+		Serial.println("ActionItem picture /border.raw unpack error");
+		return;
+	}
+	borderFile = SPIFFS.open("/border.raw");
+	borderFile.seek(0);
+	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 18 * 18 * 2);
+	borderFile.close();
 
 	setWHType(PARENT, FIXED);
 	setHeight(this->icon.getHeight());
@@ -34,6 +45,6 @@ void ActionItem::draw(){
 	LinearLayout::draw();
 
 	if(selected){
-		getSprite()->drawIcon(border, getTotalX(), getTotalY(), 18, 18, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 18, 18, 1, TFT_TRANSPARENT);
 	}
 }

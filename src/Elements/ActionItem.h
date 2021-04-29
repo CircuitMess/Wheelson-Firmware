@@ -22,6 +22,8 @@ private:
 	BitmapElement icon;
 	TextElement text;
 
+	fs::File borderFile;
+	Color* borderBuffer = nullptr;
 	bool selected = false;
 
 };
