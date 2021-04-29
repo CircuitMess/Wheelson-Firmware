@@ -7,7 +7,7 @@
 #include <Elements/ListMenu.h>
 #include "Timeline.h"
 
-class TimelineApp : public Context, public UpdateListener {
+class TimelineApp : public Context, public LoopListener {
 public:
 	TimelineApp(Display& display);
 
@@ -17,7 +17,7 @@ public:
 
 	void unpack() override;
 
-	void update(uint micros) override;
+	void loop(uint micros) override;
 
 	float filling = -1;
 	ListMenu menu;

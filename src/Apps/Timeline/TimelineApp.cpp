@@ -1,5 +1,5 @@
 #include <Support/ContextTransition.h>
-#include <Update/UpdateManager.h>
+#include <Loop/LoopManager.h>
 #include <sstream>
 #include "TimelineApp.h"
 #include "../../defs.hpp"
@@ -52,7 +52,7 @@ void TimelineApp::play(uint index){
 bool playing = false;
 bool editing = false;
 
-void TimelineApp::update(uint micros){
+void TimelineApp::loop(uint micros){
 	if(filling != -1){
 		filling = min(filling + (float) micros * 255 / 1000000, 255.0f);
 		// menu.setSelectedFill(filling);
@@ -62,7 +62,7 @@ void TimelineApp::update(uint micros){
 
 	if(filling >= 255){
 		instance->filling = -1;
-		UpdateManager::removeListener(instance);
+		LoopManager::removeListener(instance);
 		// instance->menu.setSelectedFill(0);
 
 		if(editing) return;
@@ -81,10 +81,11 @@ void TimelineApp::update(uint micros){
 
 void TimelineApp::draw(){
 	screen.draw();
-	screen.commit();
 }
 
 void TimelineApp::start(){
+	draw();
+	screen.commit();
 	playing = editing = false;
 
 	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
@@ -100,7 +101,7 @@ void TimelineApp::start(){
 		if(instance == nullptr) return;
 
 		instance->filling = -1;
-		UpdateManager::removeListener(instance);
+		LoopManager::removeListener(instance);
 		// instance->menu.setSelectedFill(0);
 
 		if(!playing){
@@ -130,7 +131,7 @@ void TimelineApp::start(){
 
 		instance->filling = 0;
 		// instance->menu.setSelectedFill(0);
-		UpdateManager::addListener(instance);
+		LoopManager::addListener(instance);
 	});
 
 	Input::getInstance()->setBtnPressCallback(BTN_UP, [](){
@@ -151,6 +152,7 @@ void TimelineApp::start(){
 void TimelineApp::unpack(){
 	Context::unpack();
 	fillMenu();
+
 }
 
 void TimelineApp::stop(){
@@ -160,7 +162,7 @@ void TimelineApp::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_UP);
 	Input::getInstance()->removeBtnPressCallback(BTN_DOWN);
-	UpdateManager::removeListener(this);
+	LoopManager::removeListener(this);
 }
 
 void TimelineApp::fillMenu(){
