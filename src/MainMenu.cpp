@@ -1,26 +1,42 @@
 #include "defs.hpp"
 #include "MainMenu.h"
 #include "Apps/Timeline/TimelineApp.h"
-#include "Bitmaps/apps/apps.hpp"
 #include <Input/Input.h>
+#include <SPIFFS.h>
+#include "mem.h"
+
+const char* const MainMenu::MainMenu::icons[] = {"/app_action.raw", "/app_autonomous.raw", "/app_kuglica.raw", "/app_qr.raw", "/app_settings.raw"};
 
 MainMenu* MainMenu::instance = nullptr;
 
 MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 3){
-
+	for(int i = 0; i < 5; i++){
+		buffer[i] = static_cast<Color*>(w_malloc(40 * 40 * 2));
+		if(buffer[i]== nullptr){
+			Serial.printf("MainMenu picture %s unpack error\n", icons[i]);
+			return;
+		}
+		iconFile[i] = SPIFFS.open(icons[i]);
+		iconFile[i].seek(0);
+		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer[i]), 40 * 40 * 2);
+		iconFile[i].close();
+	}
 	instance = this;
 
-	menuItems.push_back({ "Simple programming mode", new TimelineApp(display), new BitmapElement(&appMenu, app_action, 40, 40) });
-	menuItems.push_back({ "Autonomous driving mode", new AutonomousApp(display), new BitmapElement(&appMenu, app_autonomous, 40, 40) });
-	menuItems.push_back({ "Object tracking", nullptr, new BitmapElement(&appMenu, app_tracking, 40, 40) });
-	menuItems.push_back({ "QR tracker", nullptr, new BitmapElement(&appMenu, app_qr, 40, 40) });
-	menuItems.push_back({ "Settings", nullptr, new BitmapElement(&appMenu, app_settings, 40, 40) });
+	menuItems.push_back({"Simple programming mode", new TimelineApp(display), new BitmapElement(&appMenu, buffer[0] , 40, 40)});
+	menuItems.push_back({"Autonomous driving mode", new AutonomousApp(display), new BitmapElement(&appMenu,buffer[1] , 40, 40)});
+	menuItems.push_back({"Object tracking", nullptr, new BitmapElement(&appMenu,buffer[2] , 40, 40)});
+	menuItems.push_back({"QR tracker", nullptr, new BitmapElement(&appMenu,buffer[3] , 40, 40)});
+	menuItems.push_back({"Settings", nullptr, new BitmapElement(&appMenu,buffer[4] , 40, 40)});
 
 	buildUI();
 	pack();
+
 }
 
 void MainMenu::start(){
+	draw();
+	screen.commit();
 	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
 		if(instance == nullptr) return;
 
@@ -45,8 +61,9 @@ void MainMenu::start(){
 		instance->screen.commit();
 	});
 
-	draw();
+
 }
+
 
 void MainMenu::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
@@ -64,7 +81,7 @@ void MainMenu::unpack(){
 
 void MainMenu::draw(){
 	screen.draw();
-	screen.commit();
+
 }
 
 void MainMenu::fillMenu(){

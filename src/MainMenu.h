@@ -29,6 +29,10 @@ private:
 
 	void fillMenu();
 	void buildUI();
+	fs::File iconFile[5];
+	Color *buffer[5]={nullptr};
+
+	static const char* const icons[5];
 
 };
 
