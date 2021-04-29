@@ -2,11 +2,6 @@
 #include "../../defs.hpp"
 #include "Timeline.h"
 #include <Input/Input.h>
-
-#include "Bitmaps/time.hpp"
-#include "Bitmaps/color.hpp"
-#include "Bitmaps/freq.hpp"
-#include "Bitmaps/volume.hpp"
 #include "../../Elements/ActionEditItem.h"
 
 
@@ -72,10 +67,11 @@ void ActionEditor::initAction(AutoAction::Type type, AutoAction* action){
 
 void ActionEditor::draw(){
 	screen.draw();
-	screen.commit();
 }
 
 void ActionEditor::start(){
+	draw();
+	screen.commit();
 	auto ret = [](){
 		if(instance == nullptr) return;
 		instance->pop();
@@ -121,7 +117,6 @@ void ActionEditor::start(){
 		instance->draw();
 	});
 
-	draw();
 }
 
 void ActionEditor::stop(){
