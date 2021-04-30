@@ -16,6 +16,8 @@ class MainMenu : public Context {
 public:
 	MainMenu(Display& display);
 
+	virtual ~MainMenu();
+
 	void start() override;
 	void stop() override;
 	void unpack() override;
@@ -29,6 +31,10 @@ private:
 
 	void fillMenu();
 	void buildUI();
+	fs::File iconFile[5];
+	Color *buffer[5]={nullptr};
+
+	static const char* const icons[5];
 
 };
 

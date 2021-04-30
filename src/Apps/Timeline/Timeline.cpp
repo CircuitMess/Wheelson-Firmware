@@ -1,24 +1,22 @@
 #include "Timeline.h"
 #include "../../defs.hpp"
-#include "Bitmaps/actions.hpp"
-#include "Bitmaps/add.hpp"
 #include "../../Elements/ActionItem.h"
 #include "../../Components/ActionProcessor.h"
-
+#include "../../mem.h"
 #include <Input/Input.h>
 #include <Support/ContextTransition.h>
 #include <Util/Debug.h>
-#include <Update/UpdateManager.h>
+#include <Loop/LoopManager.h>
 #include <sstream>
 #include <iomanip>
 #include <Input/Input.h>
 
+
 Mutex* screenMutex = nullptr;
 
-const uint16_t* ActionSprites[] = {
-		arrow_up, arrow_down, arrow_left, arrow_right, light_on, light_off, tone, tune
+ const char* const Timeline::ActionsSprites[] = {
+		"/arrow_up.raw", "/arrow_down.raw", "/arrow_left.raw", "/arrow_right.raw", "/light_on.raw", "/light_off.raw", "/tone.raw", "/tune.raw"
 };
-
 
 Timeline* Timeline::instance = nullptr;
 
@@ -26,6 +24,28 @@ Timeline::Timeline(Display& display) : Context(display),
 									   layers(&screen), fleha(&layers, display.getWidth(), display.getHeight()),
 									   scroll(&layers), timelineList(&scroll, VERTICAL),
 									   selector(this), aEditor(this){
+
+	for(int i = 0; i < 8; i++){
+		buffer[i] = static_cast<Color*>(w_malloc(18 * 18 * 2));
+		if(buffer[i]== nullptr){
+			Serial.printf("Timeline picture %s unpack error\n", ActionsSprites[i]);
+			return;
+		}
+		iconFile[i] = SPIFFS.open(ActionsSprites[i]);
+		iconFile[i].seek(0);
+		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer[i]), 18 * 18 * 2);
+		iconFile[i].close();
+	}
+
+	bufferAdd = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	if(bufferAdd == nullptr){
+		Serial.println("Timeline picture /add.raw unpack error");
+		return;
+	}
+	addFile = SPIFFS.open("/add.raw");
+	addFile.seek(0);
+	addFile.read(reinterpret_cast<uint8_t*>(bufferAdd), 18 * 18 * 2);
+	addFile.close();
 
 	instance = this;
 
@@ -89,13 +109,13 @@ void Timeline::addAction(AutoAction::Type type){
 	}
 
 	actions->push_back(action);
-	timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
+	timelineList.addChild(new ActionItem(&timelineList, buffer[action.type], ActionText[action.type]));
 }
 
 void Timeline::draw(){
 	screen.draw();
 	screenMutex->lock();
-	screen.commit();
+
 	screenMutex->unlock();
 }
 
@@ -103,6 +123,7 @@ int timeleft = 0;
 
 void Timeline::start(){
 	draw();
+	screen.commit();
 
 	if(modus == PLAY){
 		ActionProcessor::getInstance()->setActionListener([](){
@@ -141,7 +162,7 @@ void Timeline::start(){
 		});
 
 		timeleft = 0;
-		UpdateManager::addListener(this);
+		LoopManager::addListener(this);
 		return;
 	}
 
@@ -200,7 +221,15 @@ void Timeline::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_UP);
 	Input::getInstance()->removeBtnPressCallback(BTN_DOWN);
-	UpdateManager::removeListener(this);
+	LoopManager::removeListener(this);
+	for(int i=0;i<8;i++){
+		free(buffer[i]);
+		buffer[i]= nullptr;
+		iconFile[i].close();
+	}
+	free(bufferAdd);
+	bufferAdd= nullptr;
+	addFile.close();
 }
 
 void Timeline::fillMenu(){
@@ -212,11 +241,11 @@ void Timeline::fillMenu(){
 	if(actions == nullptr) return;
 
 	for(const auto& action : *actions){
-		timelineList.addChild(new ActionItem(&timelineList, ActionSprites[action.type], ActionText[action.type]));
+		timelineList.addChild(new ActionItem(&timelineList, buffer[action.type], ActionText[action.type]));
 	}
 
 	if(modus == EDIT){
-		ActionItem* item = new ActionItem(&timelineList, add, "New action");
+		ActionItem* item = new ActionItem(&timelineList, bufferAdd, "New action");
 		timelineList.addChild(item);
 	}
 
@@ -247,7 +276,7 @@ void Timeline::buildUI(){
 	screen.addChild(&layers);
 }
 
-void Timeline::update(uint micros){
+void Timeline::loop(uint micros){
 	if(timeleft <= 0) return;
 
 	timeleft -= micros;

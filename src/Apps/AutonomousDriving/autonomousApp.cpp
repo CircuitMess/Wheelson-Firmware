@@ -1,12 +1,12 @@
-#include <Update/UpdateManager.h>
+#include <Loop/LoopManager.h>
 #include "autonomousSettings.h"
 #include "autonomousApp.h"
 #include "../../defs.hpp"
 #include <Input/Input.h>
 
-#include <NeoPixelBus.h>
-#include <NeoPixelAnimator.h>
-#include <NeoPixelBrightnessBus.h>
+//#include <NeoPixelBus.h>
+//#include <NeoPixelAnimator.h>
+//#include <NeoPixelBrightnessBus.h>
 
 AutonomousApp* AutonomousApp::instance = nullptr;
 
@@ -185,13 +185,14 @@ void AutonomousApp::draw()
 		canvas->printf("S: %.0f fps  /  C: %.0f fps\n", 1.0f / frameTime, 1.0f / camTime);
 	}
 
-    screen.commit();
 }
 
 bool processPress = false;
 
 void AutonomousApp::start()
 {
+	draw();
+	screen.commit();
 	Settings::retrieve();
 	Serial.printf("Settings retrieved, contrast: %.2f\n", settings()->contrastSetting);
 
@@ -245,7 +246,7 @@ void AutonomousApp::start()
 	});
 
 	driving = false;
-	UpdateManager::addListener(this);
+	LoopManager::addListener(this);
 	processTask.start(10);
 }
 
@@ -255,7 +256,7 @@ void AutonomousApp::stop(){
 	Input::getInstance()->removeBtnReleaseCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 
-	UpdateManager::removeListener(this);
+	LoopManager::removeListener(this);
 	processTask.stop();
 
 	Settings::store();
@@ -286,7 +287,7 @@ void AutonomousApp::updateFeedTask(Task* task){
 	instance->motors->stopAll();
 }
 
-void AutonomousApp::update(uint){
+void AutonomousApp::loop(uint micros){
 	if(contrastShown != -1){
 		if(millis() - contrastShown > contrastDuration){
 			contrastShown = -1;
