@@ -25,6 +25,11 @@ ActionItem::ActionItem(ElementContainer* parent, const uint16_t* icon, const std
 	reflow();
 }
 
+ActionItem::~ActionItem(){
+	free(borderBuffer);
+	borderBuffer = nullptr;
+}
+
 void ActionItem::reflow(){
 	LinearLayout::reflow();
 	text.setWidth(getAvailableWidth() - icon.getWidth() - 5);
@@ -48,3 +53,5 @@ void ActionItem::draw(){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 18, 18, 1, TFT_TRANSPARENT);
 	}
 }
+
+

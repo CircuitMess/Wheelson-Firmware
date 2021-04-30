@@ -76,7 +76,7 @@ void ActionSelector::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_B);
 	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
 	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
-	for(int i=0;i<8;i++){
+	for(int i = 0; i < 8; i++){
 		free(buffer[i]);
 		buffer[i] = {nullptr};
 		iconFile->close();
@@ -87,7 +87,7 @@ void ActionSelector::unpack(){
 	Context::unpack();
 	selectedAction = 0;
 	selectAction();
-	for(int i=0;i<8;i++){
+	for(int i = 0; i < 8; i++){
 		buffer[i] = static_cast<Color*>(w_malloc(18 * 18 * 2));
 		if(buffer[i] == nullptr){
 			Serial.printf("ActionEditor picture %s unpack error\n", SelectorActionSprites[types[i]]);
@@ -107,6 +107,16 @@ void ActionSelector::unpack(){
 	borderFile.seek(0);
 	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 18 * 18 * 2);
 	borderFile.close();
+}
+
+void ActionSelector::pack(){
+	Context::pack();
+	for(int i = 0; i < 8; i++){
+		free(buffer[i]);
+		buffer[i] = nullptr;
+	}
+	free(borderBuffer);
+	borderBuffer= nullptr;
 }
 
 void ActionSelector::fillMenu(){
@@ -139,3 +149,4 @@ void ActionSelector::buildUI(){
 
 	screen.addChild(&layers);
 }
+

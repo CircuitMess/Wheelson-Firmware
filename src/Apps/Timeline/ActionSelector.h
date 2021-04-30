@@ -18,6 +18,8 @@ public:
 	void start();
 	void stop();
 
+	void pack() override;
+
 	void unpack() override;
 
 private:

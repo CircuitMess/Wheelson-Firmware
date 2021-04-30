@@ -37,6 +37,8 @@ class ActionEditItem : public LinearLayout {
 public:
 	ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr);
 
+	virtual ~ActionEditItem();
+
 	void reflow() override;
 	void reposChildren() override;
 

@@ -8,7 +8,7 @@ const char* const ActionEditItem::SettingsSprites[] = {
 };
 
 ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr) : setting(setting), value((int*) valptr),
-                              LinearLayout(parent, HORIZONTAL), text(this, 0, 18){
+																								 LinearLayout(parent, HORIZONTAL), text(this, 0, 18){
 
 	buffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
 	if(buffer == nullptr){
@@ -50,6 +50,11 @@ ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting,
 	addChild(reinterpret_cast<Element*>(&this->buffer));
 	addChild(&this->text);
 	reflow();
+}
+
+ActionEditItem::~ActionEditItem(){
+	free(buffer);
+	buffer = nullptr;
 }
 
 void ActionEditItem::trig(){
@@ -143,3 +148,4 @@ void ActionEditItem::draw(){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 18, 18, 1, TFT_TRANSPARENT);
 	}
 }
+

@@ -16,6 +16,8 @@ class MainMenu : public Context {
 public:
 	MainMenu(Display& display);
 
+	virtual ~MainMenu();
+
 	void start() override;
 	void stop() override;
 	void unpack() override;

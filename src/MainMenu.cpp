@@ -33,7 +33,12 @@ MainMenu::MainMenu(Display& display) : Context(display), appMenu(&screen, 3){
 	pack();
 
 }
-
+MainMenu::~MainMenu(){
+for(int i=0;i<5;i++){
+	free(buffer[i]);
+	buffer[i]= nullptr;
+}
+}
 void MainMenu::start(){
 	draw();
 	screen.commit();
@@ -69,6 +74,7 @@ void MainMenu::stop(){
 	Input::getInstance()->removeBtnPressCallback(BTN_A);
 	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
 	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
+
 }
 
 void MainMenu::unpack(){
@@ -100,3 +106,5 @@ void MainMenu::buildUI(){
 	screen.addChild(&appMenu);
 	screen.repos();
 }
+
+

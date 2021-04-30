@@ -11,6 +11,8 @@ class ActionItem : public LinearLayout {
 public:
 	ActionItem(ElementContainer* parent, const uint16_t* icon, const std::string& text);
 
+	virtual ~ActionItem();
+
 	void reflow() override;
 	void reposChildren() override;
 
