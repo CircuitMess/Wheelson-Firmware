@@ -1,22 +1,10 @@
-#ifndef AUTOCAR_DEFS_H
-#define AUTOCAR_DEFS_H
-
-#define I2C_EXPANDER_ADDRESS 0x74
-#define BTN_UP 2
-#define BTN_DOWN 3
-#define BTN_LEFT 0
-#define BTN_RIGHT 1
-#define BTN_A 4
-#define BTN_B 5
-
-
-#define BTN_C 39
-#define BTN_D 36
+#ifndef WHEELSON_FIRMWARE_WHEELSON_H
+#define WHEELSON_FIRMWARE_WHEELSON_H
 
 //camera pins
-#define PWDN_GPIO_NUM     32
+#define PWDN_GPIO_NUM     -1
 #define RESET_GPIO_NUM    -1
-#define XCLK_GPIO_NUM      0
+#define XCLK_GPIO_NUM      4
 #define SIOD_GPIO_NUM     26
 #define SIOC_GPIO_NUM     27
 #define Y9_GPIO_NUM       35
@@ -31,4 +19,5 @@
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-#endif //AUTOCAR_DEFS_H
+
+#endif //WHEELSON_FIRMWARE_WHEELSON_H
