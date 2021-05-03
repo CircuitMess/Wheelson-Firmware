@@ -4,8 +4,7 @@
 #include <Loop/LoopManager.h>
 #include <Input/InputGPIO.h>
 #include <Input/InputI2C.h>
-#include "src/MainMenu.h"
-#include "src/defs.hpp"
+#include "src/Apps/MainMenu/MainMenu.h"
 #include <Sync/Mutex.h>
 #include "src/Components/Motors.h"
 #include "src/Apps/AutonomousDriving/autonomousSettings.h"
@@ -52,7 +51,7 @@ void setup(){
 	Settings::init(new SettingsStruct, sizeof(SettingsStruct));
 	//JayD.begin();
 	ActionProcessor* processor = new ActionProcessor();
-	i2c.begin(I2C_EXPANDER_ADDRESS, 14, 15);
+//	i2c.begin(I2C_EXPANDER_ADDRESS, 14, 15);
 	i2c.pinMode(14, OUTPUT);
 	i2c.pinWrite(14, 0);
 	motors.begin(11, 10, 12, 13);
