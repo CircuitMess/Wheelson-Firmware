@@ -3,14 +3,11 @@
 
 #include <Arduino.h>
 #include <Support/Context.h>
+#include <UI/Layout.h>
 #include <Elements/GridMenu.h>
-#include "Apps/AutonomousDriving/autonomousApp.h"
+#include "../AutonomousDriving/autonomousApp.h"
+#include "MainMenuApp.h"
 
-struct LauncherItem {
-	std::string title;
-	Context* context;
-	Element* image;
-};
 
 class MainMenu : public Context {
 public:
@@ -19,22 +16,26 @@ public:
 	virtual ~MainMenu();
 
 	void start() override;
+
 	void stop() override;
+
 	void unpack() override;
+
 	void draw() override;
 
 private:
 	static MainMenu* instance;
 
-	GridMenu appMenu;
-	std::vector<LauncherItem> menuItems;
+	Layout layout;
+	std::vector<MainMenuApp*> apps;
 
-	void fillMenu();
+	int8_t appNum = 1;
+	Color* borderBuffer = nullptr;
+	Color* backgroundBuffer = nullptr;
+
 	void buildUI();
-	fs::File iconFile[5];
-	Color *buffer[5]={nullptr};
 
-	static const char* const icons[5];
+	static const char* const textIcons[5];
 
 };
 
