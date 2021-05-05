@@ -38,13 +38,17 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/incl
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/driver)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/driver/driver)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/spi_flash)
-include_directories(~/.arduino15/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/esp32-camera/)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/esp32-camera/)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/esp_http_server/)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/tools/sdk/include/nghttp/)
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/CircuitOS/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/TFT_eSPI)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/TFT_eSPI/Extensions)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/U8g2_for_TFT_eSPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.0/libraries/JPEGDecoder/src)
+
+include_directories(${ArduinoLibs}/Wheelon-Library/src)
 
 
 # Source directories

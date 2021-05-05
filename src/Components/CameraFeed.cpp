@@ -2,11 +2,9 @@
 
 #include <esp_camera.h>
 #include <JPEGDecoder.h>
-#include <TFT_eSPI.h>
-#include "../defs.hpp"
-#include "../Apps/AutonomousDriving/autonomousSettings.h"
+#include "../Wheelson.h"
 
-CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) malloc(width * height * sizeof(uint16_t))){
+CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) ps_malloc(width * height * sizeof(uint16_t))){
 
 	camera_config_t config;
 	config.ledc_channel = LEDC_CHANNEL_0;
@@ -25,14 +23,14 @@ CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) malloc(widt
 	config.pin_href = HREF_GPIO_NUM;
 	config.pin_sscb_sda = SIOD_GPIO_NUM;
 	config.pin_sscb_scl = SIOC_GPIO_NUM;
-	config.pin_pwdn = -1;
+	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
 	config.xclk_freq_hz = 20000000;
 	config.pixel_format = PIXFORMAT_JPEG;
 
-	config.frame_size = FRAMESIZE_QQVGA;
-	config.jpeg_quality = 7;
-	config.fb_count = 1;
+	config.frame_size = FRAMESIZE_QVGA;
+	config.jpeg_quality = 1;
+	config.fb_count = 3;
 
 	// Init Camera
 	esp_err_t err = esp_camera_init(&config);
@@ -45,29 +43,23 @@ CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) malloc(widt
 	sensor->set_hmirror(sensor, 1);
 	sensor->set_vflip(sensor, 1);
 	sensor->set_quality(sensor, 10);
-	sensor->set_framesize(sensor, FRAMESIZE_QQVGA);
+	sensor->set_framesize(sensor, FRAMESIZE_QVGA);
 	sensor->set_special_effect(sensor, 0);
 }
 
 void CameraFeed::loadFrame(){
-	camera_fb_t* fb = esp_camera_fb_get();
-	if(!fb){
+	frame = esp_camera_fb_get();
+	if(!frame){
 		Serial.println("Camera capture failed");
 		return;
 	}
 
-	JpegDec.decodeArray(fb->buf, fb->len);
-	esp_camera_fb_return(fb);
-
+	JpegDec.decodeArray(frame->buf, frame->len);
 	jpegToArray(buffer);
+}
 
-	if(!processFeed) return;
-
-	for(int i = 0; i < 128 * 160; i++){
-		uint16_t color = buffer[i];
-		double luminance = 0.2126 * ((color & 0xF800) >> 8) + 0.7152 * ((color & 0x07E0) >> 3) + 0.0722 * ((color & 0x1F) << 3);
-		buffer[i] = (luminance > settings()->contrastSetting) * TFT_WHITE;
-	}
+void CameraFeed::releaseFrame(){
+	esp_camera_fb_return(frame);
 }
 
 void CameraFeed::jpegToArray(uint16_t* buffer){
@@ -137,10 +129,10 @@ void CameraFeed::jpegToArray(uint16_t* buffer){
 	}
 }
 
-void CameraFeed::toggleProcessFeed(){
-	processFeed = !processFeed;
+uint16_t* CameraFeed::getRaw() const{
+	return buffer;
 }
 
-uint16_t* CameraFeed::getBuffer() const{
-	return buffer;
+camera_fb_t* CameraFeed::getFrame(){
+	return frame;
 }
