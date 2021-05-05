@@ -61,7 +61,7 @@ void MainMenu::draw(){
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor(55, 120);
+	u8f.setCursor((160 - u8f.getUTF8Width(AppTitles[appNum])) / 2, 120);
 	u8f.print(AppTitles[appNum]);
 	screen.draw();
 
