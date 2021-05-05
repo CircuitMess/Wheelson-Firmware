@@ -40,6 +40,8 @@ void MainMenu::unpack(){
 		return;
 	}
 
+	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/MainMenu/mainmenu_bg.raw.hs"),13,12);
+
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
 
