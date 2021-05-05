@@ -4,16 +4,6 @@ const char* const MainMenuItem::AppIcons[] = {"/MainMenu/app_autonomous.raw", "/
 
 MainMenuItem::MainMenuItem(ElementContainer* parent, MenuApp app) : CustomElement(parent, 40, 40), app(app){
 
-	borderBuffer = static_cast<Color*>(ps_malloc(40 * 40 * 2));
-	if(borderBuffer == nullptr){
-		Serial.printf("MainMenu border picture unpack error\n");
-		return;
-	}
-
-	fs::File borderFile = SPIFFS.open("/MainMenu/mainmenu_border.raw");
-	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 40 * 40 * 2);
-	borderFile.close();
-
 	appIconBuffer = static_cast<Color*>(ps_malloc(40 * 40 * 2));
 	if(appIconBuffer == nullptr){
 		Serial.printf("MainMenuApp picture %s unpack error\n", AppIcons[app]);
@@ -28,20 +18,31 @@ MainMenuItem::MainMenuItem(ElementContainer* parent, MenuApp app) : CustomElemen
 
 MainMenuItem::~MainMenuItem(){
 	free(appIconBuffer);
-	free(borderBuffer);
+
 }
 
 void MainMenuItem::draw(){
 	getSprite()->drawIcon(appIconBuffer, getTotalX(), getTotalY(), 40, 40, 1, TFT_TRANSPARENT);
-	if(selected){
+	if(selected && borderBuffer != nullptr){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 40, 40, 1, TFT_TRANSPARENT);
 	}
 }
 
 void MainMenuItem::setSelected(bool selected){
 	MainMenuItem::selected = selected;
+	if(selected){
+		borderBuffer = static_cast<Color*>(ps_malloc(40 * 40 * 2));
+		if(borderBuffer == nullptr){
+			Serial.printf("MainMenu border picture unpack error\n");
+			return;
+		}
 
-
+		fs::File borderFile = SPIFFS.open("/MainMenu/mainmenu_border.raw");
+		borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 40 * 40 * 2);
+		borderFile.close();
+	}else{
+		free(borderBuffer);
+	}
 }
 
 bool MainMenuItem::isSelected() const{
