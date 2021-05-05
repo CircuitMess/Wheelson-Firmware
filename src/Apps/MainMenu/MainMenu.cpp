@@ -12,7 +12,9 @@ MainMenu::MainMenu(Display& display) : Context(display), layout(&screen){
 	instance = this;
 	buildUI();
 
-	pack();
+	apps[appNum]->setSelected(true);
+
+	MainMenu::pack();
 
 }
 
