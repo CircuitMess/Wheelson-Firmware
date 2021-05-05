@@ -58,7 +58,7 @@ void MainMenu::draw(){
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
 	u8f.setCursor(55, 120);
-	u8f.print(textIcons[appNum]);
+	u8f.print(AppTitles[appNum]);
 	screen.draw();
 
 }
