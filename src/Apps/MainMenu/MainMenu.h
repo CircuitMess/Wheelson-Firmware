@@ -5,7 +5,6 @@
 #include <Support/Context.h>
 #include <UI/Layout.h>
 #include <Elements/GridMenu.h>
-#include "../AutonomousDriving/autonomousApp.h"
 #include "MainMenuItem.h"
 
 
