@@ -37,7 +37,7 @@ private:
 
 	void buildUI();
 
-	static const char* const textIcons[5];
+	static const char* const AppTitles[5];
 
 };
 

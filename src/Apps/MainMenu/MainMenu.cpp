@@ -5,7 +5,7 @@
 #include <U8g2_for_TFT_eSPI.h>
 #include <FS/CompressedFile.h>
 
-const char* const MainMenu::textIcons[] = {"Autonomous", "Action", "Ball", "QR", "Settings"};
+const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
 
 MainMenu* MainMenu::instance = nullptr;
 
