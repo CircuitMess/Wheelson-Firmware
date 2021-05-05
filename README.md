@@ -5,7 +5,7 @@
 
 src/Apps contains different *apps* selectable in the main menu. To add a new entry to the menu, add it in the MainMenu constructor.
 
-Buttons and other board-specific defines should be in src/defs.hpp
+Buttons and other board-specific defines should be in src/Wheelson.h
 
 # Using GNU Make
 To make effective use of the makefile, edit the ACLI and PORT variables accordingly. ACLI should point to the arduino-cli executable, and PORT is the board COM port. 

@@ -1,8 +1,7 @@
 #include "ActionSelector.h"
 #include <Input/Input.h>
-#include "../../defs.hpp"
+#include "../../Wheelson.h"
 #include "Timeline.h"
-#include "../../mem.h"
 
 //#include "Bitmaps/actions.hpp"
 
