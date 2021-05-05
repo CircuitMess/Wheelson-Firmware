@@ -4,7 +4,7 @@
 #include <UI/CustomElement.h>
 
 enum MenuApp {
-	AUTONOMUS, ACTION, KUGLICA, QR, SETTINGS
+	AUTONOMOUS, SIMPLE, BALL, OBJECT, SETTINGS
 };
 
 class MainMenuItem : public CustomElement {
@@ -16,15 +16,18 @@ public:
 
 	void draw();
 
-	void isSelected(bool selected);
+	void setSelected(bool selected);
+
+	bool isSelected() const;
 
 private:
 
 	MenuApp app;
 	bool selected = false;
-	Color* bgBuffer = nullptr;
+	Color* appIconBuffer = nullptr;
+	Color* borderBuffer = nullptr;
 
-	static const char* const appIcons[5];
+	static const char* const AppIcons[5];
 };
 
 

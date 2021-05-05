@@ -1,31 +1,49 @@
 #include "MainMenuItem.h"
-#include "../../mem.h"
 
-const char* const MainMenuItem::appIcons[] = {"/mainMenu/app_autonomous.raw", "/mainMenu/app_action.raw", "/mainMenu/app_ball.raw", "/mainMenu/app_qr.raw", "/mainMenu/app_settings.raw"};
+const char* const MainMenuItem::AppIcons[] = {"/MainMenu/app_autonomous.raw", "/MainMenu/app_simple.raw", "/MainMenu/app_ball.raw", "/MainMenu/app_object.raw", "/MainMenu/app_settings.raw"};
 
 MainMenuItem::MainMenuItem(ElementContainer* parent, MenuApp app) : CustomElement(parent, 40, 40), app(app){
 
-	bgBuffer = static_cast<Color*>(w_malloc(40 * 40 * 2));
-	if(bgBuffer == nullptr){
-		Serial.printf("MainMenuApp picture %s unpack error\n", appIcons[app]);
+	borderBuffer = static_cast<Color*>(ps_malloc(40 * 40 * 2));
+	if(borderBuffer == nullptr){
+		Serial.printf("MainMenu border picture unpack error\n");
 		return;
 	}
 
-	fs::File bgFile = SPIFFS.open(appIcons[app]);
-	bgFile.read(reinterpret_cast<uint8_t*>(bgBuffer), 40 * 40 * 2);
+	fs::File borderFile = SPIFFS.open("/MainMenu/mainmenu_border.raw");
+	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 40 * 40 * 2);
+	borderFile.close();
+
+	appIconBuffer = static_cast<Color*>(ps_malloc(40 * 40 * 2));
+	if(appIconBuffer == nullptr){
+		Serial.printf("MainMenuApp picture %s unpack error\n", AppIcons[app]);
+		return;
+	}
+
+	fs::File bgFile = SPIFFS.open(AppIcons[app]);
+	bgFile.read(reinterpret_cast<uint8_t*>(appIconBuffer), 40 * 40 * 2);
 	bgFile.close();
 
 }
 
 MainMenuItem::~MainMenuItem(){
-	free(bgBuffer);
+	free(appIconBuffer);
+	free(borderBuffer);
 }
 
 void MainMenuItem::draw(){
-	getSprite()->drawIcon(bgBuffer, getTotalX(), getTotalY(), 40, 40, 1, TFT_BLACK);
+	getSprite()->drawIcon(appIconBuffer, getTotalX(), getTotalY(), 40, 40, 1, TFT_TRANSPARENT);
+	if(selected){
+		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 40, 40, 1, TFT_TRANSPARENT);
+	}
 }
 
-void MainMenuItem::isSelected(bool selected){
+void MainMenuItem::setSelected(bool selected){
 	MainMenuItem::selected = selected;
 
+
+}
+
+bool MainMenuItem::isSelected() const{
+	return selected;
 }
