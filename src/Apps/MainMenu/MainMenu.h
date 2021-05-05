@@ -6,7 +6,7 @@
 #include <UI/Layout.h>
 #include <Elements/GridMenu.h>
 #include "../AutonomousDriving/autonomousApp.h"
-#include "MainMenuApp.h"
+#include "MainMenuItem.h"
 
 
 class MainMenu : public Context {
@@ -27,7 +27,7 @@ private:
 	static MainMenu* instance;
 
 	Layout layout;
-	std::vector<MainMenuApp*> apps;
+	std::vector<MainMenuItem*> apps;
 
 	int8_t appNum = 1;
 	Color* borderBuffer = nullptr;

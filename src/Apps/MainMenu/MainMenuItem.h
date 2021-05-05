@@ -1,5 +1,5 @@
-#ifndef WHEELSON_FIRMWARE_MAINMENUAPP_H
-#define WHEELSON_FIRMWARE_MAINMENUAPP_H
+#ifndef WHEELSON_FIRMWARE_MAINMENUITEM_H
+#define WHEELSON_FIRMWARE_MAINMENUITEM_H
 
 #include <UI/CustomElement.h>
 
@@ -7,12 +7,12 @@ enum MenuApp {
 	AUTONOMUS, ACTION, KUGLICA, QR, SETTINGS
 };
 
-class MainMenuApp : public CustomElement {
+class MainMenuItem : public CustomElement {
 public:
 
-	MainMenuApp(ElementContainer* parent, MenuApp app);
+	MainMenuItem(ElementContainer* parent, MenuApp app);
 
-	virtual ~MainMenuApp();
+	virtual ~MainMenuItem();
 
 	void draw();
 
@@ -28,4 +28,4 @@ private:
 };
 
 
-#endif //WHEELSON_FIRMWARE_MAINMENUAPP_H
+#endif //WHEELSON_FIRMWARE_MAINMENUITEM_H

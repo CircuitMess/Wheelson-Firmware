@@ -86,7 +86,7 @@ void MainMenu::buildUI(){
 	layout.setGutter(5);
 
 	for(int i = 0; i < 5; i++){
-		MainMenuApp* app = new MainMenuApp(&screen, static_cast<MenuApp>(i));
+		MainMenuItem* app = new MainMenuItem(&screen, static_cast<MenuApp>(i));
 		apps.push_back(app);
 		layout.addChild(app);
 	}
