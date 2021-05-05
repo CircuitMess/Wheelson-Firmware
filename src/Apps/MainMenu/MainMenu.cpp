@@ -52,9 +52,8 @@ void MainMenu::pack(){
 
 void MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-	Sprite* canvas = screen.getSprite();
 
-	FontWriter u8f = canvas->startU8g2Fonts();
+	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
