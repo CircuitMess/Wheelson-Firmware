@@ -1,6 +1,4 @@
 #include "MainMenu.h"
-#include "../Timeline/TimelineApp.h"
-#include <Input/Input.h>
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 
