@@ -1,9 +1,8 @@
 #include "MainMenu.h"
 #include "../Timeline/TimelineApp.h"
 #include <Input/Input.h>
-#include "../../mem.h"
-#include <U8g2_for_TFT_eSPI.h>
 #include <FS/CompressedFile.h>
+#include <U8g2_for_TFT_eSPI.h>
 
 const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
 
@@ -35,9 +34,7 @@ void MainMenu::stop(){
 void MainMenu::unpack(){
 	Context::unpack();
 
-	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/mainMenu/mainmenu_bg.raw.hs"),13,12);
-
-	backgroundBuffer = static_cast<Color*>(w_malloc(160 * 128 * 2));
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
 		return;
