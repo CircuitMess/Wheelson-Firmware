@@ -32,7 +32,6 @@ private:
 	std::vector<MainMenuItem*> apps;
 
 	int8_t appNum = 1;
-	Color* borderBuffer = nullptr;
 	Color* backgroundBuffer = nullptr;
 
 	void buildUI();

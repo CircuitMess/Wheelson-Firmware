@@ -34,15 +34,6 @@ void MainMenu::stop(){
 
 void MainMenu::unpack(){
 	Context::unpack();
-	borderBuffer = static_cast<Color*>(w_malloc(40 * 40 * 2));
-	if(borderBuffer == nullptr){
-		Serial.printf("MainMenu border picture unpack error\n");
-		return;
-	}
-
-	fs::File borderFile = SPIFFS.open("/mainMenu/mainmenu_border.raw");
-	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 40 * 40 * 2);
-	borderFile.close();
 
 	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/mainMenu/mainmenu_bg.raw.hs"),13,12);
 
@@ -73,17 +64,7 @@ void MainMenu::draw(){
 	u8f.setCursor(55, 120);
 	u8f.print(textIcons[appNum]);
 	screen.draw();
-	if(appNum == 0){
-		screen.getSprite()->drawIcon(borderBuffer,10, 15, 40, 40);
-	}else if(appNum == 1){
-		screen.getSprite()->drawIcon(borderBuffer,60, 15, 40, 40);
-	}else if(appNum == 2){
-		screen.getSprite()->drawIcon(borderBuffer,110, 15, 40, 40);
-	}else if(appNum == 3){
-		screen.getSprite()->drawIcon(borderBuffer,40, 65, 40, 40);
-	}else if(appNum == 4){
-		screen.getSprite()->drawIcon(borderBuffer,90, 65, 40, 40);
-	}
+
 }
 
 void MainMenu::buildUI(){
