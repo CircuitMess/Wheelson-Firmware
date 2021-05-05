@@ -5,7 +5,7 @@
 ActionItem::ActionItem(ElementContainer* parent, const uint16_t* icon, const std::string& text)
 		: LinearLayout(parent, HORIZONTAL), icon(this, icon, 18, 18), text(this, 0, 18){
 
-	borderBuffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	borderBuffer = static_cast<Color*>(malloc(18 * 18 * 2));
 	if(borderBuffer == nullptr){
 		Serial.println("ActionItem picture /border.raw unpack error");
 		return;

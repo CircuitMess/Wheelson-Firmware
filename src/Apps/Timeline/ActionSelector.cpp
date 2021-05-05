@@ -88,7 +88,7 @@ void ActionSelector::unpack(){
 	selectedAction = 0;
 	selectAction();
 	for(int i = 0; i < 8; i++){
-		buffer[i] = static_cast<Color*>(w_malloc(18 * 18 * 2));
+		buffer[i] = static_cast<Color*>(malloc(18 * 18 * 2));
 		if(buffer[i] == nullptr){
 			Serial.printf("ActionEditor picture %s unpack error\n", SelectorActionSprites[types[i]]);
 			return;
@@ -98,7 +98,7 @@ void ActionSelector::unpack(){
 		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer), 18 * 18 * 2);
 		iconFile[i].close();
 	}
-	borderBuffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	borderBuffer = static_cast<Color*>(malloc(18 * 18 * 2));
 	if(borderBuffer == nullptr){
 		Serial.println("ActionSelector picture /border.raw unpack error");
 		return;

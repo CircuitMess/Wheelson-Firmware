@@ -10,7 +10,7 @@ const char* const ActionEditItem::SettingsSprites[] = {
 ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr) : setting(setting), value((int*) valptr),
 																								 LinearLayout(parent, HORIZONTAL), text(this, 0, 18){
 
-	buffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	buffer = static_cast<Color*>(malloc(18 * 18 * 2));
 	if(buffer == nullptr){
 		Serial.printf("ActionEditor picture %s unpack error\n", SettingsSprites[setting->iconType]);
 		return;
@@ -20,7 +20,7 @@ ActionEditItem::ActionEditItem(ElementContainer* parent, const Setting* setting,
 	iconFile.read(reinterpret_cast<uint8_t*>(buffer), 18 * 18 * 2);
 	iconFile.close();
 
-	borderBuffer = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	borderBuffer = static_cast<Color*>(malloc(18 * 18 * 2));
 	if(borderBuffer == nullptr){
 		Serial.println("ActionEditor picture /border.raw unpack error");
 		return;

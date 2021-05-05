@@ -26,7 +26,7 @@ Timeline::Timeline(Display& display) : Context(display),
 									   selector(this), aEditor(this){
 
 	for(int i = 0; i < 8; i++){
-		buffer[i] = static_cast<Color*>(w_malloc(18 * 18 * 2));
+		buffer[i] = static_cast<Color*>(malloc(18 * 18 * 2));
 		if(buffer[i]== nullptr){
 			Serial.printf("Timeline picture %s unpack error\n", ActionsSprites[i]);
 			return;
@@ -37,7 +37,7 @@ Timeline::Timeline(Display& display) : Context(display),
 		iconFile[i].close();
 	}
 
-	bufferAdd = static_cast<Color*>(w_malloc(18 * 18 * 2));
+	bufferAdd = static_cast<Color*>(malloc(18 * 18 * 2));
 	if(bufferAdd == nullptr){
 		Serial.println("Timeline picture /add.raw unpack error");
 		return;
