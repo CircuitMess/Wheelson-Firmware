@@ -11,12 +11,12 @@
 struct Setting {
 	enum Type { NUMERIC, OPTION, BOOLEAN } type;
 	std::string ps;
-	const uint16_t* icon = nullptr;
+	enum Icon { TIME, COLOR, FREQ, VOLUME } iconType;
 	void* params = nullptr;
 	size_t offset;
 
-	Setting(Type type, const std::string& ps, const uint16_t* icon, void* params, size_t offset = 0) :
-			type(type), ps(ps), icon(icon), params(params), offset(offset){ }
+	Setting(Type type, const std::string& ps, Icon iconType, void* params, size_t offset = 0) :
+			type(type), ps(ps), iconType(iconType), params(params), offset(offset){ }
 };
 
 struct SettingNumeric {
@@ -37,6 +37,8 @@ class ActionEditItem : public LinearLayout {
 public:
 	ActionEditItem(ElementContainer* parent, const Setting* setting, void* valptr);
 
+	virtual ~ActionEditItem();
+
 	void reflow() override;
 	void reposChildren() override;
 
@@ -47,12 +49,18 @@ public:
 	void draw() override;
 
 private:
-	BitmapElement icon;
+	//BitmapElement icon;
 	TextElement text;
 
 	const Setting* setting;
 	bool selected = false;
 	int* value = nullptr;
+
+	fs::File iconFile;
+	fs::File borderFile;
+	Color* buffer = nullptr;
+	Color* borderBuffer = nullptr;
+	static const char* const SettingsSprites[4];
 
 	void setText();
 };

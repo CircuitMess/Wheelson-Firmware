@@ -58,6 +58,7 @@ file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
 # Defines
 add_definitions(-DDEBUG)
 add_definitions(-DESP32)
+add_definitions(-DCIRCUITOS_FREERTOS)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)

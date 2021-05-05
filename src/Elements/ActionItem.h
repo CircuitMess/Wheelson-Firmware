@@ -11,6 +11,8 @@ class ActionItem : public LinearLayout {
 public:
 	ActionItem(ElementContainer* parent, const uint16_t* icon, const std::string& text);
 
+	virtual ~ActionItem();
+
 	void reflow() override;
 	void reposChildren() override;
 
@@ -22,6 +24,8 @@ private:
 	BitmapElement icon;
 	TextElement text;
 
+	fs::File borderFile;
+	Color* borderBuffer = nullptr;
 	bool selected = false;
 
 };
