@@ -1,4 +1,5 @@
 #include "IntroScreen.h"
+#include "Apps/MainMenu/MainMenu.h"
 #include <FS.h>
 #include <Loop/LoopManager.h>
 #include <FS/CompressedFile.h>
@@ -21,7 +22,6 @@ IntroScreen::IntroScreen::IntroScreen(Display& display) : Context(display){
 	gif->setXY(0, 0);
 
 	IntroScreen::pack();
-
 }
 
 IntroScreen::IntroScreen::~IntroScreen(){
@@ -34,15 +34,15 @@ void IntroScreen::IntroScreen::draw(){
 		Serial.println("Intro gif error");
 		return;
 	}
+
 	gif->nextFrame();
 	gif->push();
-
 }
 
 void IntroScreen::IntroScreen::start(){
 	if(!gif) return;
 
-	/*gif->setLoopDoneCallback([]{
+	gif->setLoopDoneCallback([]{
 		if(instance == nullptr) return;
 
 		Display& display = *instance->getScreen().getDisplay();
@@ -53,8 +53,7 @@ void IntroScreen::IntroScreen::start(){
 		MainMenu* main = new MainMenu(display);
 		main->unpack();
 		main->start();
-
-	});*/
+	});
 
 	LoopManager::addListener(this);
 
