@@ -57,6 +57,11 @@ void MainMenu::unpack(){
 
 }
 
+void MainMenu::pack(){
+	Context::pack();
+	free(backgroundBuffer);
+}
+
 void MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	Sprite* canvas = screen.getSprite();

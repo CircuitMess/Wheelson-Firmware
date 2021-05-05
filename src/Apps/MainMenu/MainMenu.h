@@ -21,6 +21,8 @@ public:
 
 	void unpack() override;
 
+	void pack() override;
+
 	void draw() override;
 
 private:
