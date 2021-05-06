@@ -94,7 +94,7 @@ void ActionSelector::unpack(){
 		}
 		iconFile[i] = SPIFFS.open(SelectorActionSprites[types[i]]);
 		iconFile[i].seek(0);
-		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer), 18 * 18 * 2);
+		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer[i]), 18 * 18 * 2);
 		iconFile[i].close();
 	}
 	borderBuffer = static_cast<Color*>(malloc(18 * 18 * 2));
