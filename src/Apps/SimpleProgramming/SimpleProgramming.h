@@ -23,6 +23,8 @@ public:
 
 	void loop(uint micros) override;
 
+	void pack() override;
+
 	void unpack() override;
 
 private:
