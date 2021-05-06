@@ -19,7 +19,7 @@ SimpleProgramming::SimpleProgramming(Display& display) : Context(display), scrol
 
 SimpleProgramming::~SimpleProgramming(){
 	instance = nullptr;
-	free(backgroundBuffer);
+
 }
 
 void SimpleProgramming::start(){
@@ -44,6 +44,11 @@ void SimpleProgramming::draw(){
 	u8f.println("SIMPLE PROGRAMMING");
 
 	screen.draw();
+}
+
+void SimpleProgramming::pack(){
+	Context::pack();
+	free(backgroundBuffer);
 }
 
 void SimpleProgramming::unpack(){
