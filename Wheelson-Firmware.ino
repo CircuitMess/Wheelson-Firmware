@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
+#include <Wheelson.h>
+#include <Nuvoton/Nuvoton.h>
+#include <Nuvoton/WheelsonInput.h>
 #include <Loop/LoopManager.h>
-#include <esp32-hal-psram.h>
 #include <Display/Display.h>
 #include <SPIFFS.h>
+#include <esp32-hal-psram.h>
 #include "src/IntroScreen.h"
 
 
@@ -22,11 +25,22 @@ void setup(){
 		Serial.println("SPIFFS error");
 	}
 
+	if(!Nuvo.begin()){
+		Serial.println("Nuvoton error");
+		for(;;);
+	}
+
+	Input* input = new WheelsonInput();
+	input->preregisterButtons({ 0, 1, 2, 3, 4, 5 });
+	LoopManager::addListener(input);
+
 	display.begin();
 
 	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
 	intro->unpack();
 	intro->start();
+
+	LED.setBacklight(false);
 }
 
 void loop(){

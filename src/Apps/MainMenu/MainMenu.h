@@ -5,10 +5,11 @@
 #include <Support/Context.h>
 #include <UI/Layout.h>
 #include <Elements/GridMenu.h>
+#include <Input/InputListener.h>
 #include "MainMenuItem.h"
 
 
-class MainMenu : public Context {
+class MainMenu : public Context, private InputListener {
 public:
 	MainMenu(Display& display);
 
@@ -30,10 +31,12 @@ private:
 	Layout layout;
 	std::vector<MainMenuItem*> apps;
 
-	int8_t appNum = 1;
+	int8_t appNum = 0;
+	void selectApp(int8_t num);
 	Color* backgroundBuffer = nullptr;
 
 	void buildUI();
+	void buttonPressed(uint i) override;
 
 	static const char* const AppTitles[5];
 

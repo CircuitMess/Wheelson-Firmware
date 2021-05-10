@@ -1,6 +1,8 @@
 #include "MainMenu.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
+#include <Wheelson.h>
+#include <Input/Input.h>
 
 const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
 
@@ -21,14 +23,14 @@ MainMenu::~MainMenu(){
 }
 
 void MainMenu::start(){
+	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
-
 }
 
 
 void MainMenu::stop(){
-
+	Input::getInstance()->removeListener(this);
 }
 
 void MainMenu::unpack(){
@@ -82,8 +84,51 @@ void MainMenu::buildUI(){
 	layout.reflow();
 	screen.addChild(&layout);
 	screen.repos();
+}
 
+void MainMenu::selectApp(int8_t num){
+	apps[appNum]->setSelected(false);
+	appNum = num;
+	apps[appNum]->setSelected(true);
+}
 
+void MainMenu::buttonPressed(uint id){
+	switch(id){
+		case BTN_LEFT:
+			if(appNum == 0){
+				selectApp(4);
+			}else{
+				selectApp(appNum - 1);
+			}
+
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_RIGHT:
+			selectApp((appNum + 1) % 5);
+
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_UP:
+		case BTN_DOWN:
+			if(appNum == 2){
+				selectApp(4);
+			}else if(appNum > 2){
+				selectApp(appNum - 3);
+			}else{
+				selectApp((appNum + 3) % 5);
+			}
+
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_MID:
+			break;
+	}
 }
 
 
