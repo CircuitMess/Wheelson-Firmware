@@ -33,9 +33,7 @@ void MainMenu::stop(){
 	Input::getInstance()->removeListener(this);
 }
 
-void MainMenu::unpack(){
-	Context::unpack();
-
+void MainMenu::init(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
@@ -49,8 +47,7 @@ void MainMenu::unpack(){
 
 }
 
-void MainMenu::pack(){
-	Context::pack();
+void MainMenu::deinit(){
 	free(backgroundBuffer);
 }
 
