@@ -19,11 +19,11 @@ public:
 
 	void stop() override;
 
-	void unpack() override;
-
-	void pack() override;
-
 	void draw() override;
+
+protected:
+	void init() override;
+	void deinit() override;
 
 private:
 	static MainMenu* instance;
