@@ -7,12 +7,13 @@
 #include <Loop/LoopListener.h>
 #include <UI/ScrollLayout.h>
 #include <UI/GridLayout.h>
+#include <Input/InputListener.h>
 #include "SimpleAction.h"
 
-class SimpleEdit : public Context, public LoopListener{
+class SimpleEdit : public Context, public LoopListener, private InputListener {
 public:
 
-	SimpleEdit(Display &display);
+	SimpleEdit(Display& display);
 
 	virtual ~SimpleEdit();
 
@@ -28,17 +29,23 @@ public:
 
 	void loop(uint micros) override;
 
+	void returned(void* data) override;
+
 private:
 
-	static SimpleEdit *instance;
+	static SimpleEdit* instance;
 
 	ScrollLayout* scrollLayout;
 	GridLayout* list;
-	std::vector<SimpleAction*> actions;
+	Vector<SimpleAction*> actions;
 
 	Color* backgroundBuffer = nullptr;
 	Color* addBuffer = nullptr;
 	uint8_t actionNum = 0;
+
+	void buttonPressed(uint id) override;
+
+	void selectAction(uint8_t num);
 
 	void buildUI();
 
