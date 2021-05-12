@@ -5,7 +5,7 @@ namespace Simple {
 
 struct Action {
 	enum Type {
-		FORWARD, BACKWARD, LEFT, RIGHT, LED_ON, LED_OFF, PAUSE
+		FORWARD, BACKWARD, LEFT, RIGHT, LED_ON, LED_OFF, PAUSE, COUNT
 	} type;
 	float time;
 	int8_t speed;
