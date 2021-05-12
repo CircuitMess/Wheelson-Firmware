@@ -1,16 +1,16 @@
 #include "ActionElement.h"
 
-const char* const Simple::ActionElement::AcionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw", "/Simple/add.raw"};
+const char* const Simple::ActionElement::ActionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw", "/Simple/pause.raw" , "/Simple/add.raw"};
 
 Simple::ActionElement::ActionElement(ElementContainer* parent, Action::Type action, String text) : CustomElement(parent, 18, 18),action(action){
 
 	iconActionBuffer = static_cast<Color*>(ps_malloc(18 * 18 * 2));
 	if(iconActionBuffer == nullptr){
-		Serial.printf("ActionElement picture %s unpack error\n", AcionIcons[action]);
+		Serial.printf("ActionElement picture %s unpack error\n", ActionIcons[action]);
 		return;
 	}
 
-	fs::File actionFile = SPIFFS.open(AcionIcons[action]);
+	fs::File actionFile = SPIFFS.open(ActionIcons[action]);
 	actionFile.read(reinterpret_cast<uint8_t*>(iconActionBuffer), 18 * 18 * 2);
 	actionFile.close();
 

@@ -21,7 +21,7 @@ namespace Simple {
 		Color* iconActionBuffer = nullptr;
 		Color* borderBuffer = nullptr;
 		String text;
-		static const char* const AcionIcons[7];
+		static const char* const ActionIcons[8];
 	};
 }
 #endif //WHEELSON_FIRMWARE_ACTIONELEMENT_H
