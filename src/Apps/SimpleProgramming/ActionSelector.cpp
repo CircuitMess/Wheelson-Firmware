@@ -1,54 +1,54 @@
 #include "ActionSelector.h"
 #include <Input/Input.h>
-#include "Timeline.h"
+#include "../Timeline/Timeline.h"
 #include <Wheelson.h>
 
-ActionSelector* ActionSelector::instance = nullptr;
+Simple::ActionSelector* Simple::ActionSelector::instance = nullptr;
 
-ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 80), gridLayout(new GridLayout(&screen, 3)){
+Simple::ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 80), gridLayout(new GridLayout(&screen, 3)){
 
 	for(int i = 0; i < 6; i++){
-		actions.push_back(new SimpleAction(gridLayout, static_cast<Action>(i)));
+		actions.push_back(new ActionElement(gridLayout, static_cast<Action::Type>(i)));
 	}
 	actions[0]->setIsSelected(true);
 	buildUI();
 
 }
 
-ActionSelector::~ActionSelector(){
+Simple::ActionSelector::~ActionSelector(){
 
 }
 
-void ActionSelector::draw(){
-	screen.getSprite()->clear(TFT_GREEN);
-	screen.getSprite()->fillRoundRect(0, 0, screen.getWidth() - 1, screen.getHeight() - 1, 5, TFT_DARKGREY);
-	screen.getSprite()->drawRoundRect(0, 0, screen.getWidth() - 1, screen.getHeight() - 1, 5, TFT_WHITE);
+void Simple::ActionSelector::draw(){
+	screen.getSprite()->clear(TFT_TRANSPARENT);
+	screen.getSprite()->fillRoundRect(0, 0, 100, 80, 5, TFT_DARKGREY);
+	screen.getSprite()->drawRoundRect(0, 0, 100, 80, 5, TFT_WHITE);
+	Serial.printf("Width: %d\n",screen.getWidth());
+	Serial.printf("Height: %d\n",screen.getHeight());
 	screen.draw();
 }
 
-void ActionSelector::start(){
+void Simple::ActionSelector::start(){
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
 
 }
 
-void ActionSelector::stop(){
+void Simple::ActionSelector::stop(){
 	Input::getInstance()->removeListener(this);
 }
 
-void ActionSelector::pack(){
-	Context::pack();
+void Simple::ActionSelector::init(){
 
 }
 
-void ActionSelector::unpack(){
-	Context::unpack();
+void Simple::ActionSelector::deinit(){
 	selectedAction = 0;
 
 }
 
-void ActionSelector::buildUI(){
+void Simple::ActionSelector::buildUI(){
 	gridLayout->setWHType(CHILDREN, CHILDREN);
 	gridLayout->setGutter(8);
 	for(int i = 0; i < actions.size(); i++){
@@ -61,13 +61,13 @@ void ActionSelector::buildUI(){
 	gridLayout->setY(screen.getTotalY() + 15);
 }
 
-void ActionSelector::selectApp(int8_t num){
+void Simple::ActionSelector::selectApp(int8_t num){
 	actions[selectedAction]->setIsSelected(false);
 	selectedAction = num;
 	actions[selectedAction]->setIsSelected(true);
 }
 
-void ActionSelector::buttonPressed(uint id){
+void Simple::ActionSelector::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
 			if(selectedAction == 0){
