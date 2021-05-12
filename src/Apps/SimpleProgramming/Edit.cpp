@@ -1,52 +1,50 @@
 #include <FS/CompressedFile.h>
-#include "SimpleEdit.h"
-#include "SimpleAction.h"
-#include "../Timeline/ActionSelector.h"
+#include "Edit.h"
+#include "Elements/ActionElement.h"
+#include "ActionSelector.h"
 #include <Wheelson.h>
 #include <Input/Input.h>
 
-SimpleEdit* SimpleEdit::instance = nullptr;
+Simple::Edit* Simple::Edit::instance = nullptr;
 
-SimpleEdit::SimpleEdit(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new GridLayout(scrollLayout, 5)){
+Simple::Edit::Edit(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new GridLayout(scrollLayout, 5)){
 	instance = this;
-	actions.push_back(new SimpleAction(list, static_cast<Action>(6)));
+	actions.push_back(new ActionElement(list, static_cast<Action::Type>(Action::Type::COUNT)));
 	actions[0]->setIsSelected(true);
 
 	buildUI();
-	SimpleEdit::pack();
+	Edit::pack();
 
 }
 
-SimpleEdit::~SimpleEdit(){
+Simple::Edit::~Edit(){
 	instance = nullptr;
 }
 
-void SimpleEdit::start(){
+void Simple::Edit::start(){
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
 
 }
 
-void SimpleEdit::stop(){
+void Simple::Edit::stop(){
 	Input::getInstance()->removeListener(this);
 }
 
-void SimpleEdit::draw(){
+void Simple::Edit::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
 }
 
-void SimpleEdit::pack(){
-	Context::pack();
+void Simple::Edit::init(){
 	free(backgroundBuffer);
 }
 
-void SimpleEdit::unpack(){
-	Context::unpack();
+void Simple::Edit::deinit(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
-		Serial.println("SimpleEdit background picture unpack error");
+		Serial.println("Edit background picture unpack error");
 		return;
 	}
 	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/Simple/simple_edit_bg.raw.hs"), 12, 8);
@@ -55,7 +53,7 @@ void SimpleEdit::unpack(){
 
 }
 
-void SimpleEdit::buildUI(){
+void Simple::Edit::buildUI(){
 	scrollLayout->setWHType(FIXED, PARENT);
 	scrollLayout->setWidth(130);
 	scrollLayout->addChild(list);
@@ -76,17 +74,17 @@ void SimpleEdit::buildUI(){
 
 }
 
-void SimpleEdit::loop(uint micros){
+void Simple::Edit::loop(uint micros){
 
 }
 
-void SimpleEdit::selectAction(uint8_t num){
+void Simple::Edit::selectAction(uint8_t num){
 	actions[actionNum]->setIsSelected(false);
 	actionNum = num;
 	actions[actionNum]->setIsSelected(true);
 }
 
-void SimpleEdit::buttonPressed(uint id){
+void Simple::Edit::buttonPressed(uint id){
 	uint8_t totalNumActions = actions.size();
 	switch(id){
 		case BTN_LEFT:
@@ -150,14 +148,14 @@ void SimpleEdit::buttonPressed(uint id){
 	}
 }
 
-void SimpleEdit::returned(void* data){
+void Simple::Edit::returned(void* data){
 	Context::returned(data);
 	uint8_t* podatakPtr = static_cast<uint8_t*>(data);
 
 	uint8_t podatak = *podatakPtr;
 	delete podatakPtr;
 
-	actions.push_back(new SimpleAction(list, static_cast<Action>(podatak)));
+	actions.push_back(new ActionElement(list, static_cast<Action::Type>(podatak)));
 	Serial.println(podatak);
 	list->addChild(actions.back());
 	list->getChildren().swap(list->getChildren().size() - 1, list->getChildren().size() - 2);

@@ -1,9 +1,9 @@
 #include <FS/CompressedFile.h>
-#include "SimplePlayback.hpp"
+#include "Playback.h"
 
-SimplePlayback* SimplePlayback::instance = nullptr;
+Simple::Playback* Simple::Playback::instance = nullptr;
 
-SimplePlayback::SimplePlayback(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)){
+Simple::Playback::Playback(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)){
 	instance = this;
 	buildUI();
 
@@ -11,32 +11,30 @@ SimplePlayback::SimplePlayback(Display& display) : Context(display), scrollLayou
 
 }
 
-SimplePlayback::~SimplePlayback(){
+Simple::Playback::~Playback(){
 	instance = nullptr;
 }
 
-void SimplePlayback::start(){
+void Simple::Playback::start(){
 	draw();
 	screen.commit();
 }
 
-void SimplePlayback::draw(){
+void Simple::Playback::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
 
 }
 
-void SimplePlayback::stop(){
+void Simple::Playback::stop(){
 
 }
 
-void SimplePlayback::pack(){
-	Context::pack();
+void Simple::Playback::deinit(){
 	free(backgroundBuffer);
 }
 
-void SimplePlayback::unpack(){
-	Context::unpack();
+void Simple::Playback::init(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("Playback background picture unpack error\n");
@@ -49,7 +47,7 @@ void SimplePlayback::unpack(){
 
 }
 
-void SimplePlayback::buildUI(){
+void Simple::Playback::buildUI(){
 	scrollLayout->setWHType(FIXED, PARENT);
 	scrollLayout->setWidth(120);
 	//scrollLayout->setBorder(2,TFT_RED);
@@ -57,7 +55,7 @@ void SimplePlayback::buildUI(){
 	layout->setGutter(5);
 
 	for(int i = 0; i < 6; i++){
-		PlaybackItem* items = new PlaybackItem(layout, static_cast<PlaybackItems>(i), "Textttttt");
+		ActionElement* items = new ActionElement(layout, static_cast<Action::Type>(i), "Textttttt");
 		item.push_back(items);
 		layout->addChild(items);
 	}
@@ -68,7 +66,7 @@ void SimplePlayback::buildUI(){
 	layout->setX(screen.getTotalX() + 30);
 }
 
-void SimplePlayback::loop(uint micros){
+void Simple::Playback::loop(uint micros){
 
 }
 

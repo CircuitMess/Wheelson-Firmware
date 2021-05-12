@@ -1,10 +1,10 @@
-#include "SimpleProgramming.h"
+#include "App.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 
-SimpleProgramming* SimpleProgramming::instance = nullptr;
+Simple::App* Simple::App::instance = nullptr;
 
-SimpleProgramming::SimpleProgramming(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)){
+Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)){
 
 	instance = this;
 
@@ -13,26 +13,26 @@ SimpleProgramming::SimpleProgramming(Display& display) : Context(display), scrol
 	}
 
 	buildUI();
-	SimpleProgramming::pack();
+	App::pack();
 
 }
 
-SimpleProgramming::~SimpleProgramming(){
+Simple::App::~App(){
 	instance = nullptr;
 
 }
 
-void SimpleProgramming::start(){
+void Simple::App::start(){
 	draw();
 	screen.commit();
 
 }
 
-void SimpleProgramming::stop(){
+void Simple::App::stop(){
 
 }
 
-void SimpleProgramming::draw(){
+void Simple::App::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.getSprite()->drawIcon(addBuffer, 66, 108, 15, 15, 1,TFT_TRANSPARENT);
 
@@ -46,17 +46,14 @@ void SimpleProgramming::draw(){
 	screen.draw();
 }
 
-void SimpleProgramming::pack(){
-	Context::pack();
+void Simple::App::deinit(){
 	free(backgroundBuffer);
 }
 
-void SimpleProgramming::unpack(){
-	Context::unpack();
-
+void Simple::App::init(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
-		Serial.printf("SimpleProgramming background picture unpack error\n");
+		Serial.printf("App background picture unpack error\n");
 		return;
 	}
 	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/mainmenu_bg.raw.hs"), 13, 12);
@@ -66,7 +63,7 @@ void SimpleProgramming::unpack(){
 
 	addBuffer = static_cast<Color*>(ps_malloc(15 * 15 * 2));
 	if(addBuffer == nullptr){
-		Serial.printf("SimpleProgramming add_button picture unpack error\n");
+		Serial.printf("App add_button picture unpack error\n");
 		return;
 	}
 	fs::File addFile = SPIFFS.open("/add_button.raw");
@@ -76,7 +73,7 @@ void SimpleProgramming::unpack(){
 	screen.draw();
 }
 
-void SimpleProgramming::buildUI(){
+void Simple::App::buildUI(){
 	scrollLayout->setWHType(PARENT, FIXED);
 	scrollLayout->setHeight(80);
 	scrollLayout->addChild(list);
@@ -100,6 +97,6 @@ void SimpleProgramming::buildUI(){
 	scrollLayout->setY(screen.getTotalY()+25);
 }
 
-void SimpleProgramming::loop(uint micros){
+void Simple::App::loop(uint micros){
 
 }
