@@ -2,15 +2,15 @@
 #include <SPIFFS.h>
 #include <U8g2_for_TFT_eSPI.h>
 
-ProgramList::ProgramList::ProgramList(ElementContainer* parent, String name) : CustomElement(parent, 150, 20), name(name){
+Simple::ProgramList::ProgramList::ProgramList(ElementContainer* parent, String name) : CustomElement(parent, 150, 20), name(name){
 
 }
 
-ProgramList::ProgramList::~ProgramList(){
+Simple::ProgramList::ProgramList::~ProgramList(){
 
 }
 
-void ProgramList::ProgramList::draw(){
+void Simple::ProgramList::ProgramList::draw(){
 	getSprite()->fillRoundRect(getTotalX(), getTotalY(), getWidth(), getHeight(), 5, C_RGB(0, 132, 255));
 	getSprite()->drawRoundRect(getTotalX(), getTotalY(), getWidth(), getHeight(), 5, TFT_WHITE);
 
@@ -23,7 +23,7 @@ void ProgramList::ProgramList::draw(){
 
 }
 
-void ProgramList::ProgramList::setIsSelected(bool isSelected){
+void Simple::ProgramList::ProgramList::setIsSelected(bool isSelected){
 	ProgramList::selected = isSelected;
 
 }

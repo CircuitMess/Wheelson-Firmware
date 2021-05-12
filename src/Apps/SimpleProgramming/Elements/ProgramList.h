@@ -3,7 +3,7 @@
 
 #include <UI/CustomElement.h>
 
-
+namespace Simple {
 	class ProgramList : public CustomElement {
 	public:
 		ProgramList(ElementContainer* parent, String name);
@@ -19,7 +19,7 @@
 		bool selected = false;
 		String name;
 	};
-
+}
 
 
 #endif //WHEELSON_FIRMWARE_PROGRAMLIST_H

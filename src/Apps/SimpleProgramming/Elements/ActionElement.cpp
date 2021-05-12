@@ -1,12 +1,12 @@
-#include "SimpleAction.h"
+#include "ActionElement.h"
 
-const char* const SimpleAction::AcionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw", "/Simple/add.raw"};
+const char* const Simple::ActionElement::AcionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw", "/Simple/add.raw"};
 
-SimpleAction::SimpleAction(ElementContainer* parent, Action action) : CustomElement(parent, 18, 18), action(action){
+Simple::ActionElement::ActionElement(ElementContainer* parent, Action::Type action, String text) : CustomElement(parent, 18, 18),action(action){
 
 	iconActionBuffer = static_cast<Color*>(ps_malloc(18 * 18 * 2));
 	if(iconActionBuffer == nullptr){
-		Serial.printf("SimpleAction picture %s unpack error\n", AcionIcons[action]);
+		Serial.printf("ActionElement picture %s unpack error\n", AcionIcons[action]);
 		return;
 	}
 
@@ -16,19 +16,19 @@ SimpleAction::SimpleAction(ElementContainer* parent, Action action) : CustomElem
 
 }
 
-SimpleAction::~SimpleAction(){
+Simple::ActionElement::~ActionElement(){
 	free(iconActionBuffer);
 }
 
-void SimpleAction::draw(){
+void Simple::ActionElement::draw(){
 	getSprite()->drawIcon(iconActionBuffer, getTotalX(), getTotalY(), 18, 18, 1, TFT_TRANSPARENT);
 	if(selected && borderBuffer != nullptr){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), 18, 18, 1, TFT_BLACK);
 	}
 }
 
-void SimpleAction::setIsSelected(bool selected){
-	SimpleAction::selected = selected;
+void Simple::ActionElement::setIsSelected(bool selected){
+	ActionElement::selected = selected;
 	if(selected){
 		borderBuffer = static_cast<Color*>(ps_malloc(18 * 18 * 2));
 		if(borderBuffer == nullptr){
