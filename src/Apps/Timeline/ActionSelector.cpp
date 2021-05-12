@@ -5,8 +5,6 @@
 
 ActionSelector* ActionSelector::instance = nullptr;
 
-const char* const ActionSelector::ModalActions[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw"};
-
 ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 80), gridLayout(new GridLayout(&screen, 3)){
 
 	for(int i = 0; i < 6; i++){
@@ -41,27 +39,12 @@ void ActionSelector::stop(){
 
 void ActionSelector::pack(){
 	Context::pack();
-	for(int i = 0; i < 6; i++){
-		free(actionBuffer[i]);
-	}
-	free(borderBuffer);
 
 }
 
 void ActionSelector::unpack(){
 	Context::unpack();
 	selectedAction = 0;
-	for(int i = 0; i < 6; i++){
-		actionBuffer[i] = static_cast<Color*>(ps_malloc(18 * 18 * 2));
-		if(actionBuffer[i] == nullptr){
-			Serial.printf("Action Selector picture %s unpack error\n", ModalActions[i]);
-			return;
-		}
-		fs::File actionFile[i];
-		actionFile[i] = SPIFFS.open(ModalActions[i]);
-		actionFile[i].read(reinterpret_cast<uint8_t*>(actionBuffer[i]), 18 * 18 * 2);
-		actionFile[i].close();
-	}
 
 }
 

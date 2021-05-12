@@ -37,8 +37,6 @@ private:
 	 GridLayout* gridLayout;
 	std::vector<SimpleAction*> actions;
 
-	Color* actionBuffer[6] = {nullptr};
-	Color* borderBuffer = nullptr;
 	uint selectedAction = 0;
 	SimpleEdit* parent = nullptr;
 
@@ -48,7 +46,6 @@ private:
 
 	void buttonPressed(uint id) override;
 
-	static const char* const ModalActions[6];
 
 };
 
