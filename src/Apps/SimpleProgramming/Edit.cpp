@@ -82,10 +82,12 @@ void Simple::Edit::selectAction(uint8_t num){
 	actions[actionNum]->setIsSelected(false);
 	actionNum = num;
 	actions[actionNum]->setIsSelected(true);
+
 }
 
 void Simple::Edit::buttonPressed(uint id){
 	uint8_t totalNumActions = actions.size();
+	int16_t num;
 	switch(id){
 		case BTN_LEFT:
 			if(actionNum == 0){
@@ -93,7 +95,6 @@ void Simple::Edit::buttonPressed(uint id){
 			}else{
 				selectAction(actionNum - 1);
 			}
-			Serial.println(actionNum);
 
 			scrollLayout->scrollIntoView(actionNum, 5);
 			draw();
@@ -106,7 +107,6 @@ void Simple::Edit::buttonPressed(uint id){
 			}else{
 				selectAction(actionNum + 1);
 			}
-			Serial.println(actionNum);
 
 			scrollLayout->scrollIntoView(actionNum, 5);
 			draw();
@@ -114,25 +114,31 @@ void Simple::Edit::buttonPressed(uint id){
 			break;
 
 		case BTN_UP:
-			if(actionNum < 5){
-				selectAction(totalNumActions - 1);
-			}else{
-				selectAction(actionNum - 5);
-			}
-			Serial.println(actionNum);
+			Serial.printf("Pocetak:%d\n", totalNumActions);
+			Serial.printf("Index prije: %d\n", actionNum);
 
+			if(actionNum < 5){
+				num = totalNumActions - (totalNumActions % 5) + actionNum;
+				if(actionNum >= totalNumActions % 5){
+					num -= 5;
+				}
+			}else{
+				num = actionNum - 5;
+			}
+			Serial.printf("Index poslije: %d\n", num);
+			selectAction(num);
 			scrollLayout->scrollIntoView(actionNum, 5);
 			draw();
 			screen.commit();
 			break;
 
 		case BTN_DOWN:
-			if(totalNumActions - actionNum <= 5){
-				selectAction(0);
+
+			if(actionNum >= totalNumActions - 5){
+				selectAction(actionNum % 5);
 			}else{
 				selectAction(actionNum + 5);
 			}
-			Serial.println(actionNum);
 
 			scrollLayout->scrollIntoView(actionNum, 5);
 			draw();
