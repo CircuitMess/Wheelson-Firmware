@@ -4,7 +4,7 @@
 #include <UI/CustomElement.h>
 
 enum Action {
-	ADD, ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, LIGHT_OFF, LIGHT_ON
+	ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, LIGHT_OFF, LIGHT_ON, ADD
 };
 
 class SimpleAction : public CustomElement {
@@ -21,6 +21,7 @@ private:
 	Action action;
 	bool selected = false;
 	Color* iconActionBuffer = nullptr;
+	Color* borderBuffer = nullptr;
 
 	static const char* const AcionIcons[7];
 };
