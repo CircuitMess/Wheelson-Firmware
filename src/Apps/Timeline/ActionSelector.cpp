@@ -1,151 +1,142 @@
 #include "ActionSelector.h"
 #include <Input/Input.h>
-#include "../../Wheelson.h"
 #include "Timeline.h"
-
-//#include "Bitmaps/actions.hpp"
-
-const AutoAction::Type types[] = {
-		AutoAction::Type::FORWARD, AutoAction::Type::BACKWARD, AutoAction::Type::LEFT, AutoAction::Type::RIGHT,
-		AutoAction::Type::LIGHT_ON, AutoAction::Type::LIGHT_OFF, AutoAction::Type::TONE, AutoAction::Type::TUNE
-};
-
-const char* const SelectorActionSprites[] = {
-		"/arrow_up.raw", "/arrow_down.raw", "/arrow_left.raw", "/arrow_right.raw", "/light_on.raw", "/light_off.raw", "/tone.raw", "/tune.raw"
-};
+#include <Wheelson.h>
 
 ActionSelector* ActionSelector::instance = nullptr;
 
-ActionSelector::ActionSelector(Timeline* timeline) : timeline(timeline), Modal(*timeline, 74, 74),
-													 layers(&screen), fleha(&layers, 74, 74), actionGrid(&layers, 3),
-													 selectedBorder(&layers, borderBuffer, 18, 18){
+const char* const ActionSelector::ModalActions[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw"};
 
-	instance = this;
+ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 80), gridLayout(new GridLayout(&screen, 3)){
+
+	for(int i = 0; i < 6; i++){
+		actions.push_back(new SimpleAction(gridLayout, static_cast<Action>(i)));
+	}
+	actions[0]->setIsSelected(true);
 	buildUI();
+
+}
+
+ActionSelector::~ActionSelector(){
+
 }
 
 void ActionSelector::draw(){
-	getScreen().draw();
-}
-
-void ActionSelector::selectAction(){
-	Element* selected = actionGrid.getChild(selectedAction);
-	//selectedBorder.setPos(selected->getX(), selected->getY());
+	screen.getSprite()->clear(TFT_GREEN);
+	screen.getSprite()->fillRoundRect(0, 0, screen.getWidth() - 1, screen.getHeight() - 1, 5, TFT_DARKGREY);
+	screen.getSprite()->drawRoundRect(0, 0, screen.getWidth() - 1, screen.getHeight() - 1, 5, TFT_WHITE);
+	screen.draw();
 }
 
 void ActionSelector::start(){
+	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
-	Input::getInstance()->setBtnPressCallback(BTN_B, [](){
-		if(instance == nullptr) return;
-		instance->pop(new int(-1));
-	});
 
-	Input::getInstance()->setBtnPressCallback(BTN_A, [](){
-		if(instance == nullptr) return;
-		instance->pop(new int(instance->selectedAction));
-	});
-
-	Input::getInstance()->setBtnPressCallback(BTN_LEFT, [](){
-		if(instance == nullptr) return;
-
-		if(instance->selectedAction == 0){
-			instance->selectedAction = sizeof(types) / sizeof(AutoAction::type) - 1;
-		}else{
-			instance->selectedAction--;
-		}
-
-		instance->selectAction();
-		instance->draw();
-	});
-
-	Input::getInstance()->setBtnPressCallback(BTN_RIGHT, [](){
-		if(instance == nullptr) return;
-
-		instance->selectedAction = (instance->selectedAction + 1) % (sizeof(types) / sizeof(AutoAction::type));
-		instance->selectAction();
-		instance->draw();
-	});
-
-	draw();
 }
 
 void ActionSelector::stop(){
-	Input::getInstance()->removeBtnPressCallback(BTN_A);
-	Input::getInstance()->removeBtnPressCallback(BTN_B);
-	Input::getInstance()->removeBtnPressCallback(BTN_LEFT);
-	Input::getInstance()->removeBtnPressCallback(BTN_RIGHT);
-	for(int i = 0; i < 8; i++){
-		free(buffer[i]);
-		buffer[i] = {nullptr};
-		iconFile->close();
+	Input::getInstance()->removeListener(this);
+}
+
+void ActionSelector::pack(){
+	Context::pack();
+	for(int i = 0; i < 6; i++){
+		free(actionBuffer[i]);
 	}
+	free(borderBuffer);
+
 }
 
 void ActionSelector::unpack(){
 	Context::unpack();
 	selectedAction = 0;
-	selectAction();
-	for(int i = 0; i < 8; i++){
-		buffer[i] = static_cast<Color*>(malloc(18 * 18 * 2));
-		if(buffer[i] == nullptr){
-			Serial.printf("ActionEditor picture %s unpack error\n", SelectorActionSprites[types[i]]);
+	for(int i = 0; i < 6; i++){
+		actionBuffer[i] = static_cast<Color*>(ps_malloc(18 * 18 * 2));
+		if(actionBuffer[i] == nullptr){
+			Serial.printf("Action Selector picture %s unpack error\n", ModalActions[i]);
 			return;
 		}
-		iconFile[i] = SPIFFS.open(SelectorActionSprites[types[i]]);
-		iconFile[i].seek(0);
-		iconFile[i].read(reinterpret_cast<uint8_t*>(buffer[i]), 18 * 18 * 2);
-		iconFile[i].close();
+		fs::File actionFile[i];
+		actionFile[i] = SPIFFS.open(ModalActions[i]);
+		actionFile[i].read(reinterpret_cast<uint8_t*>(actionBuffer[i]), 18 * 18 * 2);
+		actionFile[i].close();
 	}
-	borderBuffer = static_cast<Color*>(malloc(18 * 18 * 2));
-	if(borderBuffer == nullptr){
-		Serial.println("ActionSelector picture /border.raw unpack error");
-		return;
-	}
-	borderFile = SPIFFS.open("/border.raw");
-	borderFile.seek(0);
-	borderFile.read(reinterpret_cast<uint8_t*>(borderBuffer), 18 * 18 * 2);
-	borderFile.close();
-}
 
-void ActionSelector::pack(){
-	Context::pack();
-	for(int i = 0; i < 8; i++){
-		free(buffer[i]);
-		buffer[i] = nullptr;
-	}
-	free(borderBuffer);
-	borderBuffer= nullptr;
-}
-
-void ActionSelector::fillMenu(){
-	for(const auto& type : types){
-		actionGrid.addChild(new BitmapElement(&actionGrid, buffer[type], 18, 18));
-	}
 }
 
 void ActionSelector::buildUI(){
-	fillMenu();
-
-	layers.setWHType(FIXED, FIXED);
-	layers.setWidth(74);
-	layers.setHeight(74);
-
-	layers.addChild(&fleha);
-	layers.addChild(&actionGrid);
-	//layers.addChild(&selectedBorder);
-	layers.reflow();
-
-	actionGrid.setWHType(PARENT, PARENT);
-	actionGrid.setPadding(5);
-	actionGrid.setGutter(5);
-	actionGrid.reflow();
-	actionGrid.repos();
-
-	fleha.border = true;
-	fleha.bgColor = TFT_DARKGREY;
-	fleha.borderTopColor = fleha.borderBotColor = TFT_LIGHTGREY;
-
-	screen.addChild(&layers);
+	gridLayout->setWHType(CHILDREN, CHILDREN);
+	gridLayout->setGutter(8);
+	for(int i = 0; i < actions.size(); i++){
+		gridLayout->addChild(actions[i]);
+	}
+	gridLayout->reflow();
+	screen.addChild(gridLayout);
+	screen.repos();
+	gridLayout->setX(screen.getTotalX() + 15);
+	gridLayout->setY(screen.getTotalY() + 15);
 }
+
+void ActionSelector::selectApp(int8_t num){
+	actions[selectedAction]->setIsSelected(false);
+	selectedAction = num;
+	actions[selectedAction]->setIsSelected(true);
+}
+
+void ActionSelector::buttonPressed(uint id){
+	switch(id){
+		case BTN_LEFT:
+			if(selectedAction == 0){
+				selectApp(5);
+			}else{
+				selectApp(selectedAction - 1);
+			}
+
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_RIGHT:
+			if(selectedAction == 5){
+				selectApp(0);
+			}else{
+				selectApp(selectedAction + 1);
+			}
+
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_UP:
+			if(selectedAction == 0 || selectedAction < 3){
+				selectApp(5);
+			}else{
+				selectApp(selectedAction - 3);
+			}
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_DOWN:
+			if(selectedAction == 5 || selectedAction > 2){
+				selectApp(0);
+			}else{
+				selectApp(selectedAction + 3);
+			}
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_MID:
+			this->pop(new uint8_t(selectedAction));
+			break;
+		case BTN_BACK:
+			this->pop();
+			break;
+
+	}
+}
+
+
 

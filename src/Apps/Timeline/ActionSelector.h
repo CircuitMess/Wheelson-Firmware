@@ -6,16 +6,25 @@
 #include <Elements/GridMenu.h>
 #include <UI/BitmapElement.h>
 #include <Support/Modal.h>
-#include "../../Elements/Fleha.hpp"
+#include <Input/InputListener.h>
+#include "../SimpleProgramming/SimpleAction.h"
 
-class Timeline;
+class SimpleEdit;
 
-class ActionSelector : public Modal {
+enum ActionItems {
+	FORWARD, BACKWARD, LEFT, RIGHT, LIGHTOFF, LIGHTON
+};
+
+class ActionSelector : public Modal , private InputListener{
 public:
-	ActionSelector(Timeline* timeline);
+	ActionSelector(Context& context);
+
+	virtual ~ActionSelector();
 
 	void draw();
+
 	void start();
+
 	void stop();
 
 	void pack() override;
@@ -25,23 +34,21 @@ public:
 private:
 	static ActionSelector* instance;
 
-	Timeline* timeline = nullptr;
+	 GridLayout* gridLayout;
+	std::vector<SimpleAction*> actions;
 
-	Layout layers;
-	Fleha fleha;
-	GridLayout actionGrid;
-	BitmapElement selectedBorder;
-
-	fs::File iconFile[8];
-	Color* buffer[8] = {nullptr};
-	fs::File borderFile;
+	Color* actionBuffer[6] = {nullptr};
 	Color* borderBuffer = nullptr;
-
 	uint selectedAction = 0;
-	void selectAction();
+	SimpleEdit* parent = nullptr;
 
-	void fillMenu();
+	void selectApp(int8_t num);
+
 	void buildUI();
+
+	void buttonPressed(uint id) override;
+
+	static const char* const ModalActions[6];
 
 };
 
