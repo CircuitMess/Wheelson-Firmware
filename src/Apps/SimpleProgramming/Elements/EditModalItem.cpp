@@ -1,16 +1,16 @@
 #include <U8g2_for_TFT_eSPI.h>
-#include "EditModalItems.hpp"
+#include "EditModalItem.h"
 
 
-Simple::EditModalItems::EditModalItems(ElementContainer* parent, String text, char unit, float value, float step) : CustomElement(parent, 100, 20), text(text), unit(unit), value(value), step(step){
-
-}
-
-Simple::EditModalItems::~EditModalItems(){
+Simple::EditModalItem::EditModalItem(ElementContainer* parent, String text, char unit, float value, float step) : CustomElement(parent, 100, 20), text(text), unit(unit), value(value), step(step){
 
 }
 
-void Simple::EditModalItems::draw(){
+Simple::EditModalItem::~EditModalItem(){
+
+}
+
+void Simple::EditModalItem::draw(){
 	Element::draw();
 
 	FontWriter u8f = getSprite()->startU8g2Fonts();
@@ -28,15 +28,15 @@ void Simple::EditModalItems::draw(){
 	}
 }
 
-bool Simple::EditModalItems::isSelected() const{
+bool Simple::EditModalItem::isSelected() const{
 	return selected;
 }
 
-float Simple::EditModalItems::getValue() const{
+float Simple::EditModalItem::getValue() const{
 	return value;
 }
 
-void Simple::EditModalItems::up(){
+void Simple::EditModalItem::up(){
 	if(text == "Speed"){
 		value += step;
 		value = min(value, 100.0f);
@@ -48,7 +48,7 @@ void Simple::EditModalItems::up(){
 
 }
 
-void Simple::EditModalItems::down(){
+void Simple::EditModalItem::down(){
 	if(text == "Speed"){
 		value -= step;
 		value = max(value, 5.0f);
@@ -58,8 +58,8 @@ void Simple::EditModalItems::down(){
 	}
 }
 
-void Simple::EditModalItems::setSelected(bool selected){
-	EditModalItems::selected = selected;
+void Simple::EditModalItem::setSelected(bool selected){
+	EditModalItem::selected = selected;
 }
 
 

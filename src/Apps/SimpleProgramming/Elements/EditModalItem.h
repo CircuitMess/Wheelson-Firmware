@@ -1,14 +1,14 @@
-#ifndef WHEELSON_FIRMWARE_EDITMODALITEMS_HPP
-#define WHEELSON_FIRMWARE_EDITMODALITEMS_HPP
+#ifndef WHEELSON_FIRMWARE_EDITMODALITEM_H
+#define WHEELSON_FIRMWARE_EDITMODALITEM_H
 
 #include <UI/CustomElement.h>
 
 namespace Simple {
-	class EditModalItems : public CustomElement {
+	class EditModalItem : public CustomElement {
 	public:
-		EditModalItems(ElementContainer* parent, String text, char unit, float value, float step);
+		EditModalItem(ElementContainer* parent, String text, char unit, float value, float step);
 
-		virtual ~EditModalItems();
+		virtual ~EditModalItem();
 
 		void draw();
 
@@ -31,4 +31,4 @@ namespace Simple {
 	};
 }
 
-#endif //WHEELSON_FIRMWARE_EDITMODALITEMS_HPP
+#endif //WHEELSON_FIRMWARE_EDITMODALITEM_H
