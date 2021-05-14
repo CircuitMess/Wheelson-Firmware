@@ -1,14 +1,16 @@
 #include <FS/CompressedFile.h>
 #include "Playback.h"
+#include <Wheelson.h>
 
 Simple::Playback* Simple::Playback::instance = nullptr;
 
-Simple::Playback::Playback(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)){
+Simple::Playback::Playback(Display& display, Action* action, uint8_t numActions) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)), action(action), numActions(numActions),
+																				   newPlayer(action, numActions){
 	instance = this;
 	buildUI();
 
 	item[itemNum]->setIsSelected(true);
-
+	Playback::pack();
 }
 
 Simple::Playback::~Playback(){
@@ -16,6 +18,11 @@ Simple::Playback::~Playback(){
 }
 
 void Simple::Playback::start(){
+	Input::getInstance()->addListener(this);
+	newPlayer.start();
+	if(newPlayer.isDone()){
+		newPlayer.stop();
+	}
 	draw();
 	screen.commit();
 }
@@ -27,11 +34,7 @@ void Simple::Playback::draw(){
 }
 
 void Simple::Playback::stop(){
-
-}
-
-void Simple::Playback::deinit(){
-	free(backgroundBuffer);
+	Input::getInstance()->removeListener(this);
 }
 
 void Simple::Playback::init(){
@@ -45,6 +48,10 @@ void Simple::Playback::init(){
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
 
+}
+
+void Simple::Playback::deinit(){
+	free(backgroundBuffer);
 }
 
 void Simple::Playback::buildUI(){
@@ -69,4 +76,41 @@ void Simple::Playback::buildUI(){
 void Simple::Playback::loop(uint micros){
 
 }
+
+void Simple::Playback::selectAction(uint8_t num){
+	item[itemNum]->setIsSelected(false);
+	itemNum = num;
+	item[itemNum]->setIsSelected(true);
+}
+
+void Simple::Playback::buttonPressed(uint id){
+	uint8_t numItems = item.size();
+	switch(id){
+		case BTN_UP:
+			if(itemNum == 0){
+				selectAction(numItems - 1);
+			}else{
+				selectAction(itemNum - 1);
+			}
+
+			scrollLayout->scrollIntoView(itemNum, 5);
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_DOWN:
+			if(itemNum == numItems - 1){
+				selectAction(0);
+			}else{
+				selectAction(itemNum + 1);
+			}
+
+			scrollLayout->scrollIntoView(itemNum, 5);
+			draw();
+			screen.commit();
+			break;
+	}
+}
+
+
 

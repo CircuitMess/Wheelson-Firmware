@@ -6,12 +6,15 @@
 #include <Loop/LoopListener.h>
 #include <UI/LinearLayout.h>
 #include <UI/ScrollLayout.h>
+#include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
+#include "ProgPlayer.h"
+#include <Input/Input.h>
 
 namespace Simple {
-	class Playback : public Context, public LoopListener {
+	class Playback : public Context, public LoopListener, private InputListener {
 	public:
-		Playback(Display& display);
+		Playback(Display& display,Action* action,uint8_t numActions);
 
 		virtual ~Playback();
 
@@ -24,11 +27,15 @@ namespace Simple {
 		void loop(uint micros) override;
 
 	protected:
+
 		void init() override;
 
 		void deinit() override;
 
 	private:
+		Action* action;
+		ProgPlayer newPlayer;
+		uint8_t numActions = 0;
 
 		static Playback* instance;
 
@@ -36,11 +43,14 @@ namespace Simple {
 		LinearLayout* layout;
 		std::vector<ActionElement*> item;
 
-		int8_t itemNum = 0;
-
+		uint8_t itemNum = 0;
 		Color* backgroundBuffer = nullptr;
 
 		void buildUI();
+
+		void buttonPressed(uint id) override;
+
+		void selectAction(uint8_t num);
 
 	};
 }
