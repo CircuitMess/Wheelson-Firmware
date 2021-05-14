@@ -5,7 +5,7 @@
 #include <Input/InputListener.h>
 #include <UI/LinearLayout.h>
 #include "Action.hpp"
-#include "Elements/EditModalItems.hpp"
+#include "Elements/EditModalItem.h"
 
 class SimpleEdit;
 
@@ -34,8 +34,8 @@ namespace Simple {
 		Action* action;
 
 		LinearLayout* layout;
-		EditModalItems* speed;
-		EditModalItems* time;
+		EditModalItem* speed;
+		EditModalItem* time;
 
 		void buildUI();
 

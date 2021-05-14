@@ -3,8 +3,8 @@
 #include <Wheelson.h>
 
 
-Simple::EditModal::EditModal(Context& context, Action* action) : Modal(context, 100, 100), layout(new LinearLayout(&screen, VERTICAL)), speed(new EditModalItems(layout, "Speed", '%', action->speed, 5)),
-																 time(new EditModalItems(layout, "Time", 's', action->time, 0.5)), action(action){
+Simple::EditModal::EditModal(Context& context, Action* action) : Modal(context, 100, 100), layout(new LinearLayout(&screen, VERTICAL)), speed(new EditModalItem(layout, "Speed", '%', action->speed, 5)),
+																 time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action){
 
 	buildUI();
 	speed->setSelected(true);
@@ -46,9 +46,9 @@ void Simple::EditModal::deinit(){
 void Simple::EditModal::buildUI(){
 	layout->setWHType(CHILDREN, CHILDREN);
 	layout->setGutter(8);
-	//if(!action->PAUSE){
+	if(action->type != Action::PAUSE){
 		layout->addChild(speed);
-	//}
+	}
 	layout->addChild(time);
 	layout->reflow();
 	screen.addChild(layout);
