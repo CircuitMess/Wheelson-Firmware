@@ -1,6 +1,8 @@
 #ifndef WHEELSON_FIRMWARE_ACTION_HPP
 #define WHEELSON_FIRMWARE_ACTION_HPP
 
+#include <Arduino.h>
+
 namespace Simple {
 
 struct Action {
