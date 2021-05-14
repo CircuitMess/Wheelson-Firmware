@@ -9,12 +9,13 @@
 #include <UI/GridLayout.h>
 #include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
+#include "Storage.h"
 
 namespace Simple {
 	class Edit : public Context, public LoopListener, private InputListener {
 	public:
 
-		Edit(Display& display);
+		Edit(Display& display,ProgStorage *storage,int16_t programIndex);
 
 		virtual ~Edit();
 
@@ -39,10 +40,11 @@ namespace Simple {
 
 		ScrollLayout* scrollLayout;
 		GridLayout* list;
-		Vector<ActionElement*> actions;
+		std::vector<Action> actions;
+		ProgStorage* storage;
+		int16_t programIndex;
 
 		Color* backgroundBuffer = nullptr;
-		Color* addBuffer = nullptr;
 		uint8_t actionNum = 0;
 
 		void buttonPressed(uint id) override;

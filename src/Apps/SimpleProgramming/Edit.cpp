@@ -2,15 +2,23 @@
 #include "Edit.h"
 #include "Elements/ActionElement.h"
 #include "ActionSelector.h"
+#include "EditModal.hpp"
 #include <Wheelson.h>
 #include <Input/Input.h>
 
 Simple::Edit* Simple::Edit::instance = nullptr;
 
-Simple::Edit::Edit(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new GridLayout(scrollLayout, 5)){
-	instance = this;
-	actions.push_back(new ActionElement(list, static_cast<Action::Type>(Action::Type::COUNT)));
-	actions[0]->setIsSelected(true);
+Simple::Edit::Edit(Display& display, ProgStorage* storage, int16_t programIndex) : Context(display),
+																				   scrollLayout(new ScrollLayout(&screen)),
+																				   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
+
+	storage = new ProgStorage();
+	Serial.println(storage->getNumProgs());
+	const ProgStruct* program = storage->getProg(programIndex);
+	actions = std::vector<Action>(program->actions, &program->actions[program->numActions]);
+	ActionElement* add = new ActionElement(list, static_cast<Action::Type>(Action::Type::COUNT));
+	add->setIsSelected(true);
+	list->addChild(add);
 
 	buildUI();
 	Edit::pack();
@@ -18,7 +26,7 @@ Simple::Edit::Edit(Display& display) : Context(display), scrollLayout(new Scroll
 }
 
 Simple::Edit::~Edit(){
-	instance = nullptr;
+	storage->updateProg(programIndex, actions.data(), actions.size());
 }
 
 void Simple::Edit::start(){
@@ -38,10 +46,6 @@ void Simple::Edit::draw(){
 }
 
 void Simple::Edit::init(){
-	free(backgroundBuffer);
-}
-
-void Simple::Edit::deinit(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.println("Edit background picture unpack error");
@@ -50,6 +54,11 @@ void Simple::Edit::deinit(){
 	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/Simple/simple_edit_bg.raw.hs"), 12, 8);
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
+
+}
+
+void Simple::Edit::deinit(){
+	free(backgroundBuffer);
 
 }
 
@@ -63,7 +72,6 @@ void Simple::Edit::buildUI(){
 	list->setY(100);
 	list->setPadding(5);
 	list->setGutter(8);
-	list->addChild(actions[0]);
 
 	scrollLayout->reflow();
 	list->reflow();
@@ -79,14 +87,14 @@ void Simple::Edit::loop(uint micros){
 }
 
 void Simple::Edit::selectAction(uint8_t num){
-	actions[actionNum]->setIsSelected(false);
+	reinterpret_cast<ActionElement*>(list->getChildren()[actionNum])->setIsSelected(false);
 	actionNum = num;
-	actions[actionNum]->setIsSelected(true);
+	reinterpret_cast<ActionElement*>(list->getChildren()[actionNum])->setIsSelected(true);
 
 }
 
 void Simple::Edit::buttonPressed(uint id){
-	uint8_t totalNumActions = actions.size();
+	uint8_t totalNumActions = list->getChildren().size();
 	int16_t num;
 	switch(id){
 		case BTN_LEFT:
@@ -149,6 +157,9 @@ void Simple::Edit::buttonPressed(uint id){
 			if(totalNumActions == 1 || actionNum == totalNumActions - 1){
 				ActionSelector* popUpModul = new ActionSelector(*this);
 				popUpModul->push(this);
+			}else{
+					EditModal* editModal = new EditModal(*this, &actions[actionNum]);
+					editModal->push(this);
 			}
 			break;
 	}
@@ -156,20 +167,37 @@ void Simple::Edit::buttonPressed(uint id){
 
 void Simple::Edit::returned(void* data){
 	Context::returned(data);
-	uint8_t* podatakPtr = static_cast<uint8_t*>(data);
+	Action::Type* podatakPtr = static_cast<Action::Type*>(data);
 
-	uint8_t podatak = *podatakPtr;
+	Action::Type type = *podatakPtr;
 	delete podatakPtr;
 
-	actions.push_back(new ActionElement(list, static_cast<Action::Type>(podatak)));
-	Serial.println(podatak);
-	list->addChild(actions.back());
+	actions.push_back({ type });
+	switch(type){
+		case Action::FORWARD:
+		case Action::BACKWARD:
+		case Action::LEFT:
+		case Action::RIGHT:
+		case Action::PAUSE:
+			actions.back().time = 1;
+			actions.back().speed = 100;
+			break;
+		case Action::LED_OFF:
+		case Action::LED_ON:
+			actions.back().time = 0;
+			break;
+	}
+
+	ActionElement* newAction = new ActionElement(list, type);
+
+	list->addChild(newAction);
 	list->getChildren().swap(list->getChildren().size() - 1, list->getChildren().size() - 2);
-	actions.swap(actions.size() - 1, actions.size() - 2);
-	actionNum = actions.size() - 1;
+	actionNum = list->getChildren().size() - 1;
 	list->reflow();
 	screen.repos();
 	scrollLayout->scrollIntoView(list->getChildren().size() - 1, 5);
 	scrollLayout->setX(screen.getTotalX() + 15);
 }
+
+
 
