@@ -6,10 +6,13 @@
 #include <UI/LinearLayout.h>
 #include <UI/ScrollLayout.h>
 #include <Loop/LoopListener.h>
-#include "Elements/ProgramList.h"
+#include <Input/InputListener.h>
+#include "Elements/ProgramElement.h"
+#include "Elements/AddIcon.hpp"
+#include "Storage.h"
 
 namespace Simple {
-	class App : public Context, public LoopListener {
+	class App : public Context, public LoopListener, public InputListener {
 	public:
 
 		App(Display& display);
@@ -27,21 +30,26 @@ namespace Simple {
 	protected:
 
 		void init() override;
+
 		void deinit() override;
 
 	private:
 
 		static App* instance;
+		ProgStorage* storage= nullptr;
 
 		ScrollLayout* scrollLayout;
 		LinearLayout* list;
-		std::vector<ProgramList*> programs;
-
+		std::vector<ProgramElement*> programs;
+		AddIcon* addIcon;
 		Color* backgroundBuffer = nullptr;
-		Color* addBuffer = nullptr;
+		uint8_t programNum = 0;
 
 		void buildUI();
 
+		void buttonPressed(uint id) override;
+
+		void selectAction(uint8_t num);
 	};
 }
 #endif //WHEELSON_FIRMWARE_APP_H

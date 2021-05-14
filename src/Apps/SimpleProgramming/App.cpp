@@ -1,18 +1,22 @@
 #include "App.h"
+#include "Edit.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
+#include <Wheelson.h>
+#include <Input/Input.h>
 
 Simple::App* Simple::App::instance = nullptr;
 
-Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)){
+Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
 	instance = this;
 
 	for(int i = 0; i < 3; i++){
-		programs.push_back(new ProgramList(list, "Program"));
+		programs.push_back(new ProgramElement(list, "Program"));
 	}
 
 	buildUI();
+	programs[programNum]->setIsSelected(true);
 	App::pack();
 
 }
@@ -23,18 +27,20 @@ Simple::App::~App(){
 }
 
 void Simple::App::start(){
+	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
 
 }
 
 void Simple::App::stop(){
-
+	Input::getInstance()->removeListener(this);
 }
 
 void Simple::App::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
-	screen.getSprite()->drawIcon(addBuffer, 66, 108, 15, 15, 1,TFT_TRANSPARENT);
+	screen.draw();
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);
@@ -43,7 +49,7 @@ void Simple::App::draw(){
 	u8f.setCursor((160 - u8f.getUTF8Width("SIMPLE PROGRAMMING")) / 2, screen.getTotalY() + 17);
 	u8f.println("SIMPLE PROGRAMMING");
 
-	screen.draw();
+
 }
 
 void Simple::App::deinit(){
@@ -56,20 +62,11 @@ void Simple::App::init(){
 		Serial.printf("App background picture unpack error\n");
 		return;
 	}
-	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/mainmenu_bg.raw.hs"), 13, 12);
+	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/Simple/app_bg.raw.hs"), 13, 12);
 
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
 
-	addBuffer = static_cast<Color*>(ps_malloc(15 * 15 * 2));
-	if(addBuffer == nullptr){
-		Serial.printf("App add_button picture unpack error\n");
-		return;
-	}
-	fs::File addFile = SPIFFS.open("/add_button.raw");
-
-	addFile.read(reinterpret_cast<uint8_t*>(addBuffer), 15*15 * 2);
-	addFile.close();
 	screen.draw();
 }
 
@@ -87,6 +84,7 @@ void Simple::App::buildUI(){
 	for(int i = 0; i < programs.size(); i++){
 		list->addChild((programs[i]));
 	}
+	list->addChild(addIcon);
 
 	scrollLayout->reflow();
 	list->reflow();
@@ -94,9 +92,66 @@ void Simple::App::buildUI(){
 	screen.addChild(scrollLayout);
 	screen.repos();
 
-	scrollLayout->setY(screen.getTotalY()+25);
+	scrollLayout->setY(screen.getTotalY() + 25);
+	addIcon->setX(70);
 }
 
 void Simple::App::loop(uint micros){
 
 }
+
+void Simple::App::selectAction(uint8_t num){
+	if(programNum == list->getChildren().size() - 1){
+		addIcon->setSelected(false);
+	}else{
+		programs[programNum]->setIsSelected(false);
+	}
+	if(num == list->getChildren().size() - 1){
+		programNum = num;
+		addIcon->setSelected(true);
+	}else{
+		programNum = num;
+		programs[programNum]->setIsSelected(true);
+	}
+}
+
+void Simple::App::buttonPressed(uint id){
+	switch(id){
+		case BTN_UP:
+			if(programNum == 0){
+				selectAction(list->getChildren().size() - 1);
+			}else{
+				selectAction(programNum - 1);
+			}
+
+			scrollLayout->scrollIntoView(programNum, 5);
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_DOWN:
+			if(programNum == list->getChildren().size() - 1){
+				selectAction(0);
+			}else{
+				selectAction(programNum + 1);
+			}
+
+			scrollLayout->scrollIntoView(programNum, 5);
+			draw();
+			screen.commit();
+			break;
+		case BTN_MID:
+			if(programNum == list->getChildren().size() - 1){
+				Display& display = *instance->getScreen().getDisplay();
+				Simple::Edit* edit = new Simple::Edit(display,storage,0);
+				edit->unpack();
+				edit->start();
+			}else{
+
+			}
+			break;
+
+	}
+}
+
+
