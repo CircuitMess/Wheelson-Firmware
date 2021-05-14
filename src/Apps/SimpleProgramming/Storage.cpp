@@ -1,49 +1,58 @@
 #include "Storage.h"
+#include <SPIFFS.h>
+const char* const Simple::Storage::filePath ="/SimpleProgs.bin";
 
-Simple::ProgStorage::ProgStorage(){
+Simple::Storage::Storage(){
 	readProgs();
 }
 
-Simple::ProgStorage::~ProgStorage(){
+Simple::Storage::~Storage(){
 	for( ProgStruct* prog: programs){
 		free((void*)prog->actions);
 		delete prog;
 	}
 }
 
-uint8_t Simple::ProgStorage::getNumProgs(){
+uint8_t Simple::Storage::getNumProgs(){
 	return numProgs;
 }
 
-const Simple::ProgStruct *Simple::ProgStorage::getProg(uint8_t index){
+const Simple::ProgStruct *Simple::Storage::getProg(uint8_t index){
 	if(index >= numProgs) return nullptr;
 	return programs[index];
 }
 
-void Simple::ProgStorage::addProg(const Simple::Action *actions, uint8_t numActions){
-	programs.push_back(new ProgStruct{actions, numActions});
+void Simple::Storage::addProg(const Simple::Action *actions, uint8_t numActions){
+	if(numProgs == 0xFF) return;
+
+	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
+	memcpy(newActions, actions, numActions*sizeof(Action));
+	programs.push_back(new ProgStruct{newActions, numActions});
 	writeProgs();
 }
 
-void Simple::ProgStorage::removeProg(uint8_t index){
+void Simple::Storage::removeProg(uint8_t index){
 	if(index >= numProgs) return;
+
 	free((void*)programs[index]->actions);
 	delete programs[index];
 	programs.erase(programs.begin() + index);
 	writeProgs();
 }
 
-void Simple::ProgStorage::updateProg(uint8_t index, const Simple::Action *actions, uint8_t numActions){
+void Simple::Storage::updateProg(uint8_t index, const Simple::Action *actions, uint8_t numActions){
 	if(index >= numProgs) return;
 
 	free((void*)programs[index]->actions);
-	programs[index]->actions = actions;
+	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
+	memcpy(newActions, actions, numActions*sizeof(Action));
+	programs[index]->actions = newActions;
 	programs[index]->numActions = numActions;
 	writeProgs();
 }
 
-void Simple::ProgStorage::readProgs(){
-	progsFile = SPIFFS.open("/SimpleProgs.bin", "r");
+void Simple::Storage::readProgs(){
+	File progsFile = SPIFFS.open(filePath, "r");
 	if(!progsFile){
 		Serial.printf("Error opening SimpleProgs.bin\n");
 		return;
@@ -59,8 +68,8 @@ void Simple::ProgStorage::readProgs(){
 	progsFile.close();
 }
 
-void Simple::ProgStorage::writeProgs(){
-	progsFile = SPIFFS.open("/SimpleProgs.bin", "w");
+void Simple::Storage::writeProgs(){
+	File progsFile = SPIFFS.open(filePath, "w");
 	if(!progsFile){
 		Serial.printf("Error opening SimpleProgs.bin\n");
 		return;

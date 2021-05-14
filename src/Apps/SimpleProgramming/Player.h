@@ -1,14 +1,14 @@
-#ifndef WHEELSON_FIRMWARE_PROGPLAYER_H
-#define WHEELSON_FIRMWARE_PROGPLAYER_H
+#ifndef WHEELSON_FIRMWARE_PLAYER_H
+#define WHEELSON_FIRMWARE_PLAYER_H
 
 #include "Action.hpp"
 #include <Loop/LoopListener.h>
 
 namespace Simple {
 
-class ProgPlayer : LoopListener {
+class Player : LoopListener {
 public:
-	ProgPlayer(Action* actions, uint8_t numActions);
+	Player(Action* actions, uint8_t numActions);
 	uint8_t getCurrent();
 	bool isDone();
 	void start();
@@ -27,4 +27,4 @@ private:
 };
 
 }
-#endif //WHEELSON_FIRMWARE_PROGPLAYER_H
+#endif //WHEELSON_FIRMWARE_PLAYER_H
