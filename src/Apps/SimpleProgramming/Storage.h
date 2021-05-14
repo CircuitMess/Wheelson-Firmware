@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "Action.hpp"
-#include <SPIFFS.h>
 
 namespace Simple {
 
@@ -11,10 +10,10 @@ struct ProgStruct{
 	const Action* actions;
 	uint8_t numActions;
 };
-class ProgStorage {
+class Storage {
 public:
-	ProgStorage();
-	~ProgStorage();
+	Storage();
+	~Storage();
 	uint8_t getNumProgs();
 	const ProgStruct* getProg(uint8_t index);
 	void addProg(const Action* actions, uint8_t numActions);
@@ -22,12 +21,12 @@ public:
 	void updateProg(uint8_t index, const Action* actions, uint8_t numActions);
 
 private:
-	File progsFile;
 	void readProgs();
 	void writeProgs();
 
 	std::vector<ProgStruct*> programs;
 	uint8_t numProgs = 0;
+	static const char* const filePath;
 };
 
 }
