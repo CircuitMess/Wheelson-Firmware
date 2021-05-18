@@ -2,15 +2,17 @@
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <FS/CompressedFile.h>
+#include <Settings.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 																   shutDownSlider(new DescreteSlider(screenLayout, "Shutdown time", {0, 1, 5, 15, 30})),
 																   speedSlider(new SliderElement(screenLayout, "Speed modifier")), inputTest(new TextElement(screenLayout, "Input Test")),
 																   save(new TextElement(screenLayout, "Save")){
 
-
 	buildUI();
 	shutDownSlider->setIsSelected(true);
+	shutDownSlider->setIndex(Settings.get().shutdownTime);
+	speedSlider->setSliderValue(Settings.get().speed);
 
 	SettingsScreen::pack();
 }
@@ -89,22 +91,24 @@ void SettingsScreen::SettingsScreen::selectApp(int8_t num){
 void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
-			Serial.println("KlikLijevo");
 			if(shutDownSlider->isSliderSelected()){
 				shutDownSlider->selectPrev();
+				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(-1);
+				Settings.get().speed = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
 			break;
 
 		case BTN_RIGHT:
-			Serial.println("KlikDesno");
 			if(shutDownSlider->isSliderSelected()){
 				shutDownSlider->selectNext();
+				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(1);
+				Settings.get().speed = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
