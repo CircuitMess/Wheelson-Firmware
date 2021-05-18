@@ -50,4 +50,14 @@ bool SettingsScreen::DescreteSlider::isSliderSelected() const{
 	return sliderIsSelected;
 }
 
+void SettingsScreen::DescreteSlider::setIndex(int index){
+	DescreteSlider::index = index;
+
+}
+
+int SettingsScreen::DescreteSlider::getIndex() const{
+	return index;
+
+}
+
 

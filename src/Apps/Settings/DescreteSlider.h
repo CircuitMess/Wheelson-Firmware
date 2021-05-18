@@ -16,6 +16,10 @@ namespace SettingsScreen {
 
 		bool isSliderSelected() const;
 
+		void setIndex(int index);
+
+		int getIndex() const;
+
 	private:
 		bool sliderIsSelected = false;
 

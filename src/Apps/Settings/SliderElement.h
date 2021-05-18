@@ -7,7 +7,7 @@
 namespace SettingsScreen {
 	class SliderElement : public SettingsElement {
 	public:
-		SliderElement(ElementContainer *partent, String name);
+		SliderElement(ElementContainer* partent, String name);
 
 		void toggle() override;
 
@@ -23,8 +23,7 @@ namespace SettingsScreen {
 
 		bool sliderIsSelected = false;
 
-		uint8_t sliderValue=0;
-
+		uint8_t sliderValue = 255;
 
 
 	protected:
