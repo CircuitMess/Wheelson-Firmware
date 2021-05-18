@@ -17,7 +17,7 @@ void SettingsScreen::SliderElement::setSliderValue(uint8_t sliderValue){
 }
 
 uint8_t SettingsScreen::SliderElement::getSliderValue() const{
-	return 0;
+	return sliderValue;
 }
 
 void SettingsScreen::SliderElement::drawControl(){
