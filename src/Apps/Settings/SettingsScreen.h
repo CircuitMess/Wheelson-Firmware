@@ -4,7 +4,7 @@
 #include <Support/Context.h>
 #include <UI/LinearLayout.h>
 #include "SliderElement.h"
-#include "DescreteSlider.h"
+#include "DiscreteSlider.h"
 #include <Input/InputListener.h>
 #include "TextElement.h"
 
@@ -32,7 +32,7 @@ namespace SettingsScreen {
 		static SettingsScreen *instance;
 
 		LinearLayout* screenLayout;
-		DescreteSlider* shutDownSlider;
+		DiscreteSlider* shutDownSlider;
 		SliderElement* speedSlider;
 		TextElement* inputTest;
 		TextElement* save;

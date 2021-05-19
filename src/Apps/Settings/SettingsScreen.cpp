@@ -5,7 +5,7 @@
 #include <Settings.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
-																   shutDownSlider(new DescreteSlider(screenLayout, "Shutdown time", {0, 1, 5, 15, 30})),
+																   shutDownSlider(new DiscreteSlider(screenLayout, "Shutdown time", {0, 1, 5, 15, 30})),
 																   speedSlider(new SliderElement(screenLayout, "Speed modifier")), inputTest(new TextElement(screenLayout, "Input Test")),
 																   save(new TextElement(screenLayout, "Save")){
 
