@@ -1,22 +1,22 @@
-#include "DescreteSlider.h"
+#include "DiscreteSlider.h"
 
 
-SettingsScreen::DescreteSlider::DescreteSlider(ElementContainer* parent, String name, std::vector<uint8_t> shutDownTime) : SettingsElement(parent, name), shutDownTime(shutDownTime){
+SettingsScreen::DiscreteSlider::DiscreteSlider(ElementContainer* parent, String name, std::vector<uint8_t> shutDownTime) : SettingsElement(parent, name), shutDownTime(shutDownTime){
 
 }
 
-void SettingsScreen::DescreteSlider::toggle(){
+void SettingsScreen::DiscreteSlider::toggle(){
 	sliderIsSelected = !sliderIsSelected;
 }
 
-void SettingsScreen::DescreteSlider::selectNext(){
+void SettingsScreen::DiscreteSlider::selectNext(){
 	Serial.println("SelectNext");
 	if(shutDownTime.empty()) return;
 	index += 1;
 	index = min(index, (int) shutDownTime.size() - 1);
 }
 
-void SettingsScreen::DescreteSlider::selectPrev(){
+void SettingsScreen::DiscreteSlider::selectPrev(){
 	Serial.println("SelectPrev");
 	if(shutDownTime.empty()) return;
 	index -= 1;
@@ -24,7 +24,7 @@ void SettingsScreen::DescreteSlider::selectPrev(){
 
 }
 
-void SettingsScreen::DescreteSlider::drawControl(){
+void SettingsScreen::DiscreteSlider::drawControl(){
 	long movingCursor;
 
 	movingCursor = map(index, 0, shutDownTime.size()-1, 0, 51);
@@ -46,16 +46,16 @@ void SettingsScreen::DescreteSlider::drawControl(){
 
 }
 
-bool SettingsScreen::DescreteSlider::isSliderSelected() const{
+bool SettingsScreen::DiscreteSlider::isSliderSelected() const{
 	return sliderIsSelected;
 }
 
-void SettingsScreen::DescreteSlider::setIndex(int index){
-	DescreteSlider::index = index;
+void SettingsScreen::DiscreteSlider::setIndex(int index){
+	DiscreteSlider::index = index;
 
 }
 
-int SettingsScreen::DescreteSlider::getIndex() const{
+int SettingsScreen::DiscreteSlider::getIndex() const{
 	return index;
 
 }

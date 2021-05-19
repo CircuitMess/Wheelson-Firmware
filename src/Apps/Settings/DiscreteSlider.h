@@ -1,12 +1,12 @@
-#ifndef WHEELSON_FIRMWARE_DESCRETESLIDER_H
-#define WHEELSON_FIRMWARE_DESCRETESLIDER_H
+#ifndef WHEELSON_FIRMWARE_DISCRETESLIDER_H
+#define WHEELSON_FIRMWARE_DISCRETESLIDER_H
 
 #include "SettingsElement.h"
 
 namespace SettingsScreen {
-	class DescreteSlider : public SettingsElement {
+	class DiscreteSlider : public SettingsElement {
 	public:
-		DescreteSlider(ElementContainer* parent, String name, std::vector<uint8_t> shutDownTime);
+		DiscreteSlider(ElementContainer* parent, String name, std::vector<uint8_t> shutDownTime);
 
 		void toggle() override;
 
@@ -32,4 +32,4 @@ namespace SettingsScreen {
 }
 
 
-#endif //WHEELSON_FIRMWARE_DESCRETESLIDER_H
+#endif //WHEELSON_FIRMWARE_DISCRETESLIDER_H
