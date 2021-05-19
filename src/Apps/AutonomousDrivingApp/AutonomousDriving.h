@@ -6,11 +6,12 @@
 #include <UI/Layout.h>
 #include <Elements/GridMenu.h>
 #include <Input/InputListener.h>
+#include <Loop/LoopListener.h>
 #include "DrivingElement.h"
 
-	class AutonomousDriving : public Context {
+class AutonomousDriving : public Context, public LoopListener {
 public:
-		AutonomousDriving(Display& display);
+	AutonomousDriving(Display& display);
 
 	virtual ~AutonomousDriving();
 
@@ -20,8 +21,11 @@ public:
 
 	void draw() override;
 
+	void loop(uint micros) override;
+
 protected:
 	void init() override;
+
 	void deinit() override;
 
 private:
@@ -30,6 +34,7 @@ private:
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
 	Color* backgroundBuffer = nullptr;
+	Color* cameraBuffer = nullptr;
 
 	void buildUI();
 
