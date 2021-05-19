@@ -8,7 +8,7 @@ enum DrivingIcon{
 };
 class DrivingElement : public CustomElement{
 public:
-	DrivingElement(ElementContainer* parent,DrivingIcon icon,String );
+	DrivingElement(ElementContainer* parent,DrivingIcon icon,String motorspeed);
 
 	virtual ~DrivingElement();
 
@@ -17,6 +17,7 @@ public:
 private:
 
 	DrivingIcon icon;
+	String speed;
 	Color* iconBuffer = nullptr;
 
 	static const char* const Icons[1];

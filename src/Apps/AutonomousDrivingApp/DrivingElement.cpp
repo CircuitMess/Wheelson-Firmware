@@ -2,7 +2,7 @@
 
 const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.raw"};
 
-DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon) : CustomElement(parent, 17, 13), icon(icon){
+DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String speed) : CustomElement(parent, 17, 13), icon(icon), speed(speed){
 
 	iconBuffer = static_cast<Color*>(ps_malloc(17 * 13 * 2));
 	if(iconBuffer == nullptr){
@@ -19,5 +19,6 @@ DrivingElement::~DrivingElement(){
 }
 
 void DrivingElement::draw(){
-	getSprite()->drawIcon(iconBuffer,getTotalX(),getTotalY(),17,13,1,TFT_TRANSPARENT);
+	getSprite()->drawIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, TFT_TRANSPARENT);
+
 }
