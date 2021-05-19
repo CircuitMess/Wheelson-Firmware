@@ -12,7 +12,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(displ
 	buildUI();
 	shutDownSlider->setIsSelected(true);
 	shutDownSlider->setIndex(Settings.get().shutdownTime);
-	speedSlider->setSliderValue(Settings.get().speed);
+	speedSlider->setSliderValue(Settings.get().speedMultiplier);
 
 	SettingsScreen::pack();
 }
@@ -96,7 +96,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(-1);
-				Settings.get().speed = speedSlider->getSliderValue();
+				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
@@ -108,7 +108,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(1);
-				Settings.get().speed = speedSlider->getSliderValue();
+				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
