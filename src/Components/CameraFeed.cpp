@@ -4,7 +4,7 @@
 #include <JPEGDecoder.h>
 #include "../Wheelson.h"
 
-CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) ps_malloc(width * height * sizeof(uint16_t))){
+CameraFeed::CameraFeed() : buffer((uint16_t*) ps_malloc(160 * 120 * sizeof(uint16_t))){
 
 	camera_config_t config;
 	config.ledc_channel = LEDC_CHANNEL_0;
@@ -28,9 +28,9 @@ CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) ps_malloc(w
 	config.xclk_freq_hz = 20000000;
 	config.pixel_format = PIXFORMAT_JPEG;
 
-	config.frame_size = FRAMESIZE_QVGA;
+	config.frame_size = FRAMESIZE_QQVGA;
 	config.jpeg_quality = 1;
-	config.fb_count = 3;
+	config.fb_count = 1;
 
 	// Init Camera
 	esp_err_t err = esp_camera_init(&config);
@@ -43,8 +43,12 @@ CameraFeed::CameraFeed(uint width, uint height) : buffer((uint16_t*) ps_malloc(w
 	sensor->set_hmirror(sensor, 1);
 	sensor->set_vflip(sensor, 1);
 	sensor->set_quality(sensor, 10);
-	sensor->set_framesize(sensor, FRAMESIZE_QVGA);
+	sensor->set_framesize(sensor, FRAMESIZE_QQVGA);
 	sensor->set_special_effect(sensor, 0);
+}
+
+CameraFeed::~CameraFeed(){
+	free(buffer);
 }
 
 void CameraFeed::loadFrame(){
