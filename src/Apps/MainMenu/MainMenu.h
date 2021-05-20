@@ -6,10 +6,11 @@
 #include <UI/Layout.h>
 #include <Elements/GridMenu.h>
 #include <Input/InputListener.h>
+#include <Loop/LoopListener.h>
 #include "MainMenuItem.h"
 
 
-class MainMenu : public Context, private InputListener {
+class MainMenu : public Context, private InputListener, public LoopListener{
 public:
 	MainMenu(Display& display);
 
@@ -20,6 +21,8 @@ public:
 	void stop() override;
 
 	void draw() override;
+
+	void loop(uint micros) override;
 
 protected:
 	void init() override;
@@ -32,6 +35,7 @@ private:
 	std::vector<MainMenuItem*> apps;
 
 	int8_t appNum = 0;
+	uint8_t saveLastDrawn = 0;
 	void selectApp(int8_t num);
 	Color* backgroundBuffer = nullptr;
 

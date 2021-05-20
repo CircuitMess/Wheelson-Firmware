@@ -40,7 +40,7 @@ void MainMenu::init(){
 		return;
 	}
 
-	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/MainMenu/mainmenu_bg.raw.hs"),13,12);
+	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/MainMenu/mainmenu_bg.raw.hs"), 13, 12);
 
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
@@ -73,11 +73,16 @@ void MainMenu::buildUI(){
 		apps.push_back(app);
 		layout.addChild(app);
 	}
-	apps[0]->setX(10);apps[0]->setY(15);
-	apps[1]->setX(60);apps[1]->setY(15);
-	apps[2]->setX(110);apps[2]->setY(15);
-	apps[3]->setX(40);apps[3]->setY(65);
-	apps[4]->setX(90);apps[4]->setY(65);
+	apps[0]->setX(10);
+	apps[0]->setY(15);
+	apps[1]->setX(60);
+	apps[1]->setY(15);
+	apps[2]->setX(110);
+	apps[2]->setY(15);
+	apps[3]->setX(40);
+	apps[3]->setY(65);
+	apps[4]->setX(90);
+	apps[4]->setY(65);
 	layout.reflow();
 	screen.addChild(&layout);
 	screen.repos();
@@ -126,6 +131,17 @@ void MainMenu::buttonPressed(uint id){
 		case BTN_MID:
 			break;
 	}
+}
+
+void MainMenu::loop(uint micros){
+	if(saveLastDrawn!=Battery.getLastDrawnLevel()){
+		saveLastDrawn = Battery.getLastDrawnLevel();
+		Battery.drawIcon(screen.getSprite());
+		screen.commit();
+	}
+
+
+
 }
 
 
