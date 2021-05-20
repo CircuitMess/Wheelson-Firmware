@@ -23,7 +23,7 @@ void DrivingElement::draw(){
 	getSprite()->drawIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, TFT_TRANSPARENT);
 
 	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_unifont_t_latin);
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
 	u8f.setCursor(getTotalX()-5,getTotalY()+23);
