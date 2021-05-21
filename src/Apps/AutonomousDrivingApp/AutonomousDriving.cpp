@@ -50,7 +50,7 @@ void AutonomousDriving::deinit(){
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		engines.push_back(new DrivingElement(screenLayout, MOTOR,"100%"));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR,"100%",false));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();

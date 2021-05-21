@@ -8,7 +8,7 @@ enum DrivingIcon{
 };
 class DrivingElement : public CustomElement{
 public:
-	DrivingElement(ElementContainer* parent,DrivingIcon icon,String iconText);
+	DrivingElement(ElementContainer* parent,DrivingIcon icon,String iconText, bool needPercentage);
 
 	virtual ~DrivingElement();
 
@@ -19,6 +19,8 @@ private:
 	DrivingIcon icon;
 	String iconText;
 	Color* iconBuffer = nullptr;
+	Color* percentageBuffer = nullptr;
+	bool needPercentage = false;
 
 	static const char* const Icons[1];
 };
