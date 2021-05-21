@@ -3,6 +3,8 @@
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
+#include <Loop/LoopManager.h>
+
 
 const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
 
@@ -23,6 +25,7 @@ MainMenu::~MainMenu(){
 }
 
 void MainMenu::start(){
+	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
@@ -30,6 +33,7 @@ void MainMenu::start(){
 
 
 void MainMenu::stop(){
+	LoopManager::removeListener(this);
 	Input::getInstance()->removeListener(this);
 }
 
@@ -137,10 +141,9 @@ void MainMenu::loop(uint micros){
 	if(saveLastDrawn!=Battery.getLastDrawnLevel()){
 		saveLastDrawn = Battery.getLastDrawnLevel();
 		Battery.drawIcon(screen.getSprite());
+		screen.draw();
 		screen.commit();
 	}
-
-
 
 }
 
