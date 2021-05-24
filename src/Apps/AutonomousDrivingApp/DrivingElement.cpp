@@ -40,7 +40,7 @@ void DrivingElement::draw(){
 	u8f.setCursor(getTotalX() - 3, getTotalY() + 23);
 	u8f.print(iconText);
 	if(needPercentage){
-		getSprite()->drawIcon(percentageBuffer, getTotalX()+13, getTotalY() + 17, 6, 6, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(percentageBuffer, getTotalX() + 13, getTotalY() + 17, 6, 6, 1, TFT_TRANSPARENT);
 	}
 
 }

@@ -1,6 +1,6 @@
 #include <FS/CompressedFile.h>
 #include "AutonomousDriving.h"
-//#include "../../Components/CameraFeed.h"
+#include "../../Components/CameraFeed.h"
 
 
 AutonomousDriving::AutonomousDriving(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)){
@@ -22,7 +22,7 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	//screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
+	screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1,TFT_TRANSPARENT);
 	screen.draw();
 }
@@ -56,16 +56,16 @@ void AutonomousDriving::buildUI(){
 	screenLayout->reflow();
 	screen.addChild(screenLayout);
 	screen.repos();
-	engines[0]->setPos(screen.getTotalX() + 2, screen.getTotalY() + 20);
-	engines[1]->setPos(screen.getTotalX() + 2, screen.getTotalY() + 100);
-	engines[2]->setPos(screen.getTotalX() + 141, screen.getTotalY() + 20);
-	engines[3]->setPos(screen.getTotalX() + 141, screen.getTotalY() + 100);
+	engines[0]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 20);
+	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 100);
+	engines[2]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 20);
+	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 100);
 }
 
 void AutonomousDriving::loop(uint micros){
-/*	CameraFeed().loadFrame();
+	CameraFeed().loadFrame();
 	cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
 	draw();
 	CameraFeed().releaseFrame();
-	screen.commit();*/
+	screen.commit();
 }
