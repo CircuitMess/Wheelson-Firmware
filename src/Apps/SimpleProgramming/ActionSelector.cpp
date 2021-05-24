@@ -21,10 +21,6 @@ Simple::ActionSelector::~ActionSelector(){
 
 void Simple::ActionSelector::draw(){
 	screen.getSprite()->clear(TFT_TRANSPARENT);
-	//screen.getSprite()->fillRoundRect(0, 0, 100, 100, 5, TFT_DARKGREY);
-	//screen.getSprite()->drawRoundRect(0, 0, 100, 100, 5, TFT_WHITE);
-	Serial.printf("Width: %d\n", screen.getWidth());
-	Serial.printf("Height: %d\n", screen.getHeight());
 	screen.draw();
 }
 
