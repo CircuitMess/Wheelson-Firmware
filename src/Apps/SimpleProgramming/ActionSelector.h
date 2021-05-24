@@ -8,6 +8,7 @@
 #include <Support/Modal.h>
 #include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
+#include "../../Elements/ModalBackground.hpp"
 
 class SimpleEdit;
 
@@ -27,6 +28,7 @@ namespace Simple {
 	protected:
 
 		void init() override;
+
 		void deinit() override;
 
 	private:
@@ -34,6 +36,8 @@ namespace Simple {
 
 		GridLayout* gridLayout;
 		std::vector<ActionElement*> actions;
+
+		ModalBackground modalBg;
 
 		uint selectedAction = 0;
 		SimpleEdit* parent = nullptr;

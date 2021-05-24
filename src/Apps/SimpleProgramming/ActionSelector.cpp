@@ -1,11 +1,11 @@
 #include "ActionSelector.h"
 #include <Input/Input.h>
-#include "../Timeline/Timeline.h"
 #include <Wheelson.h>
+
 
 Simple::ActionSelector* Simple::ActionSelector::instance = nullptr;
 
-Simple::ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 100), gridLayout(new GridLayout(&screen, 3)){
+Simple::ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 100), gridLayout(new GridLayout(&screen, 3)), modalBg(&screen, 100, 100){
 
 	for(int i = 0; i < 7; i++){
 		actions.push_back(new ActionElement(gridLayout, static_cast<Action::Type>(i)));
@@ -21,8 +21,8 @@ Simple::ActionSelector::~ActionSelector(){
 
 void Simple::ActionSelector::draw(){
 	screen.getSprite()->clear(TFT_TRANSPARENT);
-	screen.getSprite()->fillRoundRect(0, 0, 100, 100, 5, TFT_DARKGREY);
-	screen.getSprite()->drawRoundRect(0, 0, 100, 100, 5, TFT_WHITE);
+	//screen.getSprite()->fillRoundRect(0, 0, 100, 100, 5, TFT_DARKGREY);
+	//screen.getSprite()->drawRoundRect(0, 0, 100, 100, 5, TFT_WHITE);
 	Serial.printf("Width: %d\n", screen.getWidth());
 	Serial.printf("Height: %d\n", screen.getHeight());
 	screen.draw();
@@ -49,6 +49,7 @@ void Simple::ActionSelector::deinit(){
 }
 
 void Simple::ActionSelector::buildUI(){
+	modalBg.draw();
 	gridLayout->setWHType(CHILDREN, CHILDREN);
 	gridLayout->setGutter(8);
 	for(int i = 0; i < actions.size(); i++){
