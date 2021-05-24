@@ -1,11 +1,12 @@
-#ifndef WHEELSON_FIRMWARE_EDITMODAL_HPP
-#define WHEELSON_FIRMWARE_EDITMODAL_HPP
+#ifndef WHEELSON_FIRMWARE_EDITMODAL_H
+#define WHEELSON_FIRMWARE_EDITMODAL_H
 
 #include <Support/Modal.h>
 #include <Input/InputListener.h>
 #include <UI/LinearLayout.h>
 #include "Action.hpp"
 #include "Elements/EditModalItem.h"
+#include "../../Elements/ModalBackground.hpp"
 
 class SimpleEdit;
 
@@ -33,6 +34,7 @@ namespace Simple {
 
 		Action* action;
 
+		ModalBackground modalBg;
 		LinearLayout* layout;
 		EditModalItem* speed;
 		EditModalItem* time;
@@ -45,4 +47,4 @@ namespace Simple {
 	};
 }
 
-#endif //WHEELSON_FIRMWARE_EDITMODAL_HPP
+#endif //WHEELSON_FIRMWARE_EDITMODAL_H

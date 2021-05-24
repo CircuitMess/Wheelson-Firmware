@@ -1,10 +1,10 @@
-#include "EditModal.hpp"
+#include "EditModal.h"
 #include <Input/Input.h>
 #include <Wheelson.h>
 
 
 Simple::EditModal::EditModal(Context& context, Action* action) : Modal(context, 100, 100), layout(new LinearLayout(&screen, VERTICAL)), speed(new EditModalItem(layout, "Speed", '%', action->speed, 5)),
-																 time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action){
+																 time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action), modalBg(&screen,100,100){
 
 	buildUI();
 	speed->setSelected(true);
@@ -16,8 +16,6 @@ Simple::EditModal::~EditModal(){
 
 void Simple::EditModal::draw(){
 	screen.getSprite()->clear(TFT_TRANSPARENT);
-	screen.getSprite()->fillRoundRect(0, 0, 100, 100, 5, TFT_DARKGREY);
-	screen.getSprite()->drawRoundRect(0, 0, 100, 100, 5, TFT_WHITE);
 	screen.draw();
 }
 
@@ -44,6 +42,7 @@ void Simple::EditModal::deinit(){
 }
 
 void Simple::EditModal::buildUI(){
+	modalBg.draw();
 	layout->setWHType(CHILDREN, CHILDREN);
 	layout->setGutter(8);
 	if(action->type != Action::PAUSE){
