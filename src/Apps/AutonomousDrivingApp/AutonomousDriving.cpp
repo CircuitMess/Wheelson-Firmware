@@ -1,6 +1,6 @@
 #include <FS/CompressedFile.h>
 #include "AutonomousDriving.h"
-#include "../../Components/CameraFeed.h"
+//#include "../../Components/CameraFeed.h"
 
 
 AutonomousDriving::AutonomousDriving(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)){
@@ -22,7 +22,7 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
+	//screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1,TFT_TRANSPARENT);
 	screen.draw();
 }
@@ -50,7 +50,7 @@ void AutonomousDriving::deinit(){
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		engines.push_back(new DrivingElement(screenLayout, MOTOR,"100%",false));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR,"100",true));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
@@ -63,9 +63,9 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
-	CameraFeed().loadFrame();
+/*	CameraFeed().loadFrame();
 	cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
 	draw();
 	CameraFeed().releaseFrame();
-	screen.commit();
+	screen.commit();*/
 }

@@ -37,10 +37,10 @@ void DrivingElement::draw(){
 	u8f.setFont(u8g2_font_profont10_tf);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor(getTotalX() - 2, getTotalY() + 23);
+	u8f.setCursor(getTotalX() - 3, getTotalY() + 23);
 	u8f.print(iconText);
 	if(needPercentage){
-		getSprite()->drawIcon(percentageBuffer, getTotalX()+3, getTotalY() + 23, 6, 6, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(percentageBuffer, getTotalX()+13, getTotalY() + 17, 6, 6, 1, TFT_TRANSPARENT);
 	}
 
 }
