@@ -15,7 +15,7 @@ Simple::EditModal::~EditModal(){
 }
 
 void Simple::EditModal::draw(){
-	screen.getSprite()->clear(TFT_TRANSPARENT);
+	modalBg.draw();
 	screen.draw();
 }
 
@@ -42,7 +42,6 @@ void Simple::EditModal::deinit(){
 }
 
 void Simple::EditModal::buildUI(){
-	modalBg.draw();
 	layout->setWHType(CHILDREN, CHILDREN);
 	layout->setGutter(8);
 	if(action->type != Action::PAUSE){
