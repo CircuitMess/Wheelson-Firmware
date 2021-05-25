@@ -149,6 +149,11 @@ void Simple::App::buttonPressed(uint id){
 			draw();
 			screen.commit();
 			break;
+
+		case BTN_BACK:
+			pop();
+			return;
+
 		case BTN_MID:
 			if(programNum == programs.size()){
 				storage.addProg(nullptr, 0);
