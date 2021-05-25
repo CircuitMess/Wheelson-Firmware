@@ -39,7 +39,7 @@ namespace Simple {
 
 		ModalBackground modalBg;
 
-		uint selectedAction = 0;
+		uint8_t selectedAction = 0;
 		SimpleEdit* parent = nullptr;
 
 		void selectApp(int8_t num);

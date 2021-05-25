@@ -117,7 +117,7 @@ void Simple::ActionSelector::buttonPressed(uint id){
 			break;
 
 		case BTN_MID:
-			this->pop(new uint8_t(selectedAction));
+			this->pop(new Action::Type((Action::Type) selectedAction));
 			break;
 		case BTN_BACK:
 			this->pop();
