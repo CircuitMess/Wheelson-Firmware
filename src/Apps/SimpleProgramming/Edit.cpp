@@ -12,13 +12,13 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 																				   scrollLayout(new ScrollLayout(&screen)),
 																				   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
 
-	storage = new Storage();
-	Serial.println(storage->getNumProgs());
 	const ProgStruct* program = storage->getProg(programIndex);
-	actions = std::vector<Action>(program->actions, &program->actions[program->numActions]);
+
+	actions = std::vector<Action>(program->actions, program->actions + program->numActions);
+
 	ActionElement* add = new ActionElement(list, static_cast<Action::Type>(Action::Type::COUNT));
-	add->setIsSelected(true);
 	list->addChild(add);
+	add->setIsSelected(true);
 
 	buildUI();
 	Edit::pack();
@@ -26,7 +26,7 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 }
 
 Simple::Edit::~Edit(){
-	storage->updateProg(programIndex, actions.data(), actions.size());
+
 }
 
 void Simple::Edit::start(){
@@ -38,6 +38,7 @@ void Simple::Edit::start(){
 
 void Simple::Edit::stop(){
 	Input::getInstance()->removeListener(this);
+	storage->updateProg(programIndex, actions.data(), actions.size());
 }
 
 void Simple::Edit::draw(){
