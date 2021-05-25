@@ -150,16 +150,14 @@ void Simple::App::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_MID:
-			if(programNum == list->getChildren().size() - 1){
-				Display& display = *instance->getScreen().getDisplay();
-				Simple::Edit* edit = new Simple::Edit(display,storage,0);
-				edit->unpack();
-				edit->start();
-			}else{
-
+			if(programNum == programs.size()){
+				storage.addProg(nullptr, 0);
 			}
-			break;
 
+			Simple::Edit* edit = new Simple::Edit(*getScreen().getDisplay(), &storage, programNum);
+			edit->push(this);
+
+			break;
 	}
 }
 
