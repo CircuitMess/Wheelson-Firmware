@@ -163,6 +163,10 @@ void Simple::Edit::buttonPressed(uint id){
 					editModal->push(this);
 			}
 			break;
+
+		case BTN_BACK:
+			pop();
+			return;
 	}
 }
 
