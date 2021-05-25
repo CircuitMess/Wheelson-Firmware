@@ -25,7 +25,7 @@ void StreamServer::start(){
 	WiFi.softAP("Wheelson Stream", "");
 	WiFi.softAPConfig(spencerIP, spencerIP, IPAddress(255, 255, 255, 0));
 
-	cam = new CameraFeed(320, 240);
+	cam = new CameraFeed();
 
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.server_port = 80;

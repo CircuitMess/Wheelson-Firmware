@@ -36,7 +36,7 @@ namespace Simple {
 	private:
 
 		static App* instance;
-		ProgStorage* storage= nullptr;
+		Storage* storage= nullptr;
 
 		ScrollLayout* scrollLayout;
 		LinearLayout* list;

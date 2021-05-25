@@ -8,7 +8,7 @@
 #include <UI/ScrollLayout.h>
 #include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
-#include "ProgPlayer.h"
+#include "Player.h"
 #include <Input/Input.h>
 
 namespace Simple {
@@ -34,7 +34,7 @@ namespace Simple {
 
 	private:
 		Action* action;
-		ProgPlayer newPlayer;
+		Player newPlayer;
 		uint8_t numActions = 0;
 
 		static Playback* instance;

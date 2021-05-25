@@ -2,17 +2,17 @@
 #include "Edit.h"
 #include "Elements/ActionElement.h"
 #include "ActionSelector.h"
-#include "EditModal.hpp"
+#include "EditModal.h"
 #include <Wheelson.h>
 #include <Input/Input.h>
 
 Simple::Edit* Simple::Edit::instance = nullptr;
 
-Simple::Edit::Edit(Display& display, ProgStorage* storage, int16_t programIndex) : Context(display),
+Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : Context(display),
 																				   scrollLayout(new ScrollLayout(&screen)),
 																				   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
 
-	storage = new ProgStorage();
+	storage = new Storage();
 	Serial.println(storage->getNumProgs());
 	const ProgStruct* program = storage->getProg(programIndex);
 	actions = std::vector<Action>(program->actions, &program->actions[program->numActions]);

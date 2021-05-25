@@ -15,7 +15,7 @@ namespace Simple {
 	class Edit : public Context, public LoopListener, private InputListener {
 	public:
 
-		Edit(Display& display,ProgStorage *storage,int16_t programIndex);
+		Edit(Display& display, Storage *storage,int16_t programIndex);
 
 		virtual ~Edit();
 
@@ -41,7 +41,7 @@ namespace Simple {
 		ScrollLayout* scrollLayout;
 		GridLayout* list;
 		std::vector<Action> actions;
-		ProgStorage* storage;
+		Storage* storage;
 		int16_t programIndex;
 
 		Color* backgroundBuffer = nullptr;
