@@ -20,7 +20,6 @@ namespace Simple {
 		virtual ~App();
 
 		void start();
-
 		void stop();
 
 		void draw();
@@ -30,13 +29,10 @@ namespace Simple {
 	protected:
 
 		void init() override;
-
 		void deinit() override;
 
 	private:
-
-		static App* instance;
-		Storage* storage= nullptr;
+		Storage storage;
 
 		ScrollLayout* scrollLayout;
 		LinearLayout* list;
@@ -45,6 +41,7 @@ namespace Simple {
 		Color* backgroundBuffer = nullptr;
 		uint8_t programNum = 0;
 
+		void loadProgs();
 		void buildUI();
 
 		void buttonPressed(uint id) override;

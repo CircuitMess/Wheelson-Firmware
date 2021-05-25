@@ -5,24 +5,13 @@
 #include <Wheelson.h>
 #include <Input/Input.h>
 
-Simple::App* Simple::App::instance = nullptr;
-
 Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
-	instance = this;
-
-	for(int i = 0; i < 3; i++){
-		programs.push_back(new ProgramElement(list, "Program"));
-	}
-
 	buildUI();
-	programs[programNum]->setIsSelected(true);
 	App::pack();
-
 }
 
 Simple::App::~App(){
-	instance = nullptr;
 
 }
 
@@ -48,8 +37,6 @@ void Simple::App::draw(){
 	u8f.setFontMode(1);
 	u8f.setCursor((160 - u8f.getUTF8Width("SIMPLE PROGRAMMING")) / 2, screen.getTotalY() + 17);
 	u8f.println("SIMPLE PROGRAMMING");
-
-
 }
 
 void Simple::App::deinit(){
@@ -67,24 +54,46 @@ void Simple::App::init(){
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
 
-	screen.draw();
+	loadProgs();
+}
+
+void Simple::App::loadProgs(){
+	for(auto& prog : programs){
+		delete prog;
+	}
+
+	programs.clear();
+	list->getChildren().clear();
+
+	for(int i = 0; i < storage.getNumProgs(); i++){
+		programs.push_back(new ProgramElement(list, "Program " + String((long) i+1)));
+		list->addChild(programs.back());
+	}
+
+	list->addChild(addIcon);
+
+	list->reflow();
+	list->repos();
+	scrollLayout->scrollIntoView(0, 0);
+	addIcon->setX(70);
+
+	if(programs.empty()){
+		addIcon->setSelected(true);
+	}else{
+		addIcon->setSelected(false);
+		programs.front()->setIsSelected(true);
+	}
 }
 
 void Simple::App::buildUI(){
 	scrollLayout->setWHType(PARENT, FIXED);
 	scrollLayout->setHeight(80);
 	scrollLayout->addChild(list);
-	//scrollLayout->setBorder(2, TFT_RED);
 
 	list->setWHType(PARENT, CHILDREN);
 	list->setY(100);
 	list->setPadding(5);
 	list->setGutter(5);
-
-	for(int i = 0; i < programs.size(); i++){
-		list->addChild((programs[i]));
-	}
-	list->addChild(addIcon);
 
 	scrollLayout->reflow();
 	list->reflow();
@@ -101,18 +110,18 @@ void Simple::App::loop(uint micros){
 }
 
 void Simple::App::selectAction(uint8_t num){
-	if(programNum == list->getChildren().size() - 1){
-		addIcon->setSelected(false);
-	}else{
-		programs[programNum]->setIsSelected(false);
+	for(auto& prog : programs){
+		prog->setIsSelected(false);
 	}
-	if(num == list->getChildren().size() - 1){
-		programNum = num;
+	addIcon->setSelected(false);
+
+	if(num >= programs.size()){
 		addIcon->setSelected(true);
 	}else{
-		programNum = num;
-		programs[programNum]->setIsSelected(true);
+		programs[num]->setIsSelected(true);
 	}
+
+	programNum = num;
 }
 
 void Simple::App::buttonPressed(uint id){
