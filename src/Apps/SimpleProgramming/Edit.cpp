@@ -123,9 +123,6 @@ void Simple::Edit::buttonPressed(uint id){
 			break;
 
 		case BTN_UP:
-			Serial.printf("Pocetak:%d\n", totalNumActions);
-			Serial.printf("Index prije: %d\n", actionNum);
-
 			if(actionNum < 5){
 				num = totalNumActions - (totalNumActions % 5) + actionNum;
 				if(actionNum >= totalNumActions % 5){
@@ -134,7 +131,7 @@ void Simple::Edit::buttonPressed(uint id){
 			}else{
 				num = actionNum - 5;
 			}
-			Serial.printf("Index poslije: %d\n", num);
+
 			selectAction(num);
 			scrollLayout->scrollIntoView(actionNum, 5);
 			draw();
@@ -159,8 +156,8 @@ void Simple::Edit::buttonPressed(uint id){
 				ActionSelector* popUpModul = new ActionSelector(*this);
 				popUpModul->push(this);
 			}else{
-					EditModal* editModal = new EditModal(*this, &actions[actionNum]);
-					editModal->push(this);
+				EditModal* editModal = new EditModal(*this, &actions[actionNum]);
+				editModal->push(this);
 			}
 			break;
 
