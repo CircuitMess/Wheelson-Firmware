@@ -6,12 +6,28 @@
 
 class CameraFeed {
 public:
-	CameraFeed(uint width, uint height);
+	CameraFeed();
 
+	/**
+	 * Load a frame from the camera.
+	 */
 	void loadFrame();
+
+	/**
+	 * Release last frame.
+	 */
 	void releaseFrame();
+
+	/**
+	 * Get a raw RGB565 frame buffer size 160 x 120
+	 */
 	uint16_t* getRaw() const;
+
+	/**
+	 * Get the raw camera frame.
+	 */
 	camera_fb_t* getFrame();
+	virtual ~CameraFeed();
 
 
 private:
