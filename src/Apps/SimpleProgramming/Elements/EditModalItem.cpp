@@ -11,8 +11,6 @@ Simple::EditModalItem::~EditModalItem(){
 }
 
 void Simple::EditModalItem::draw(){
-	Element::draw();
-
 	FontWriter u8f = getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_BLACK);

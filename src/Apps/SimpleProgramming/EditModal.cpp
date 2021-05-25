@@ -28,6 +28,8 @@ void Simple::EditModal::start(){
 
 void Simple::EditModal::stop(){
 	Input::getInstance()->removeListener(this);
+	action->speed = (int8_t) speed->getValue();
+	action->time = time->getValue();
 
 }
 
