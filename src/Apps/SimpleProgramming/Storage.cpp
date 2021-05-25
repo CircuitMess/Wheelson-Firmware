@@ -3,7 +3,11 @@
 const char* const Simple::Storage::filePath ="/SimpleProgs.bin";
 
 Simple::Storage::Storage(){
-	readProgs();
+	if(SPIFFS.exists(filePath)){
+		readProgs();
+	}else{
+		writeProgs();
+	}
 }
 
 Simple::Storage::~Storage(){
@@ -14,16 +18,16 @@ Simple::Storage::~Storage(){
 }
 
 uint8_t Simple::Storage::getNumProgs(){
-	return numProgs;
+	return programs.size();
 }
 
 const Simple::ProgStruct *Simple::Storage::getProg(uint8_t index){
-	if(index >= numProgs) return nullptr;
+	if(index >= programs.size()) return nullptr;
 	return programs[index];
 }
 
 void Simple::Storage::addProg(const Simple::Action *actions, uint8_t numActions){
-	if(numProgs == 0xFF) return;
+	if(programs.size() == 0xFF) return;
 
 	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
 	memcpy(newActions, actions, numActions*sizeof(Action));
@@ -32,7 +36,7 @@ void Simple::Storage::addProg(const Simple::Action *actions, uint8_t numActions)
 }
 
 void Simple::Storage::removeProg(uint8_t index){
-	if(index >= numProgs) return;
+	if(index >= programs.size()) return;
 
 	free((void*)programs[index]->actions);
 	delete programs[index];
@@ -41,7 +45,7 @@ void Simple::Storage::removeProg(uint8_t index){
 }
 
 void Simple::Storage::updateProg(uint8_t index, const Simple::Action *actions, uint8_t numActions){
-	if(index >= numProgs) return;
+	if(index >= programs.size()) return;
 
 	free((void*)programs[index]->actions);
 	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
@@ -57,6 +61,7 @@ void Simple::Storage::readProgs(){
 		Serial.printf("Error opening SimpleProgs.bin\n");
 		return;
 	}
+	uint8_t numProgs;
 	progsFile.read(&numProgs, 1);
 	for(uint8_t i = 0; i < numProgs; i++){
 		ProgStruct* prog = new ProgStruct();
@@ -74,10 +79,11 @@ void Simple::Storage::writeProgs(){
 		Serial.printf("Error opening SimpleProgs.bin\n");
 		return;
 	}
+	uint8_t numProgs = programs.size();
 	progsFile.write(numProgs);
 	for(uint8_t i = 0; i < numProgs; i++){
 		ProgStruct *prog = programs[i];
-		progsFile.write(prog->numActions);
+		progsFile.write(&prog->numActions, 1);
 		progsFile.write((uint8_t*)prog->actions, sizeof(Action)*prog->numActions);
 	}
 	progsFile.close();

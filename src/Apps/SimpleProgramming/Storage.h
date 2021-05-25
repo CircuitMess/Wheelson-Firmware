@@ -2,6 +2,7 @@
 #define WHEELSON_FIRMWARE_STORAGE_H
 
 #include <Arduino.h>
+#include <vector>
 #include "Action.hpp"
 
 namespace Simple {
@@ -25,7 +26,6 @@ private:
 	void writeProgs();
 
 	std::vector<ProgStruct*> programs;
-	uint8_t numProgs = 0;
 	static const char* const filePath;
 };
 
