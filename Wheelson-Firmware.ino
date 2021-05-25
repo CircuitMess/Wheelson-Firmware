@@ -40,7 +40,7 @@ void setup(){
 	intro->unpack();
 	intro->start();
 
-	LED.setBacklight(false);
+	LED.setBacklight(true);
 }
 
 void loop(){
