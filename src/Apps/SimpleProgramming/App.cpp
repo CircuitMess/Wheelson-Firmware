@@ -66,7 +66,7 @@ void Simple::App::loadProgs(){
 	list->getChildren().clear();
 
 	for(int i = 0; i < storage.getNumProgs(); i++){
-		programs.push_back(new ProgramElement(list, "Program " + String((long) i+1)));
+		programs.push_back(new ProgramElement(list, "Program " + String((long) i + 1)));
 		list->addChild(programs.back());
 	}
 
@@ -114,7 +114,6 @@ void Simple::App::selectAction(uint8_t num){
 		prog->setIsSelected(false);
 	}
 	addIcon->setSelected(false);
-
 	if(num >= programs.size()){
 		addIcon->setSelected(true);
 	}else{
@@ -130,9 +129,9 @@ void Simple::App::buttonPressed(uint id){
 			if(programNum == 0){
 				selectAction(list->getChildren().size() - 1);
 			}else{
+				Serial.println(programNum - 1);
 				selectAction(programNum - 1);
 			}
-
 			scrollLayout->scrollIntoView(programNum, 5);
 			draw();
 			screen.commit();
@@ -140,8 +139,10 @@ void Simple::App::buttonPressed(uint id){
 
 		case BTN_DOWN:
 			if(programNum == list->getChildren().size() - 1){
+				Serial.println(0);
 				selectAction(0);
 			}else{
+				Serial.println(programNum + 1);
 				selectAction(programNum + 1);
 			}
 

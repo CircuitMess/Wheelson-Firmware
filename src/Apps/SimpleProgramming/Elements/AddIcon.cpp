@@ -39,5 +39,6 @@ void Simple::AddIcon::setSelected(bool selected){
 		addFile.close();
 	}else{
 		free(borderBuffer);
+		borderBuffer= nullptr;
 	}
 }
