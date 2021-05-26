@@ -156,6 +156,7 @@ void Simple::Edit::buttonPressed(uint id){
 				ActionSelector* popUpModul = new ActionSelector(*this);
 				popUpModul->push(this);
 			}else{
+				if(actions[actionNum].type == Action::LED_OFF || actions[actionNum].type == Action::LED_ON) return;
 				EditModal* editModal = new EditModal(*this, &actions[actionNum]);
 				editModal->push(this);
 			}
