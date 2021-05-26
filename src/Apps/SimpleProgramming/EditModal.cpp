@@ -7,7 +7,6 @@ Simple::EditModal::EditModal(Context& context, Action* action) : Modal(context, 
 																 time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action), modalBg(&screen,100,100){
 
 	buildUI();
-	speed->setSelected(true);
 }
 
 Simple::EditModal::~EditModal(){
@@ -48,6 +47,9 @@ void Simple::EditModal::buildUI(){
 	layout->setGutter(8);
 	if(action->type != Action::PAUSE){
 		layout->addChild(speed);
+		speed->setSelected(true);
+	}else{
+		time->setSelected(true);
 	}
 	layout->addChild(time);
 	layout->reflow();
@@ -81,19 +83,8 @@ void Simple::EditModal::buttonPressed(uint id){
 			break;
 
 		case BTN_UP:
-			if(speed->isSelected()){
-				speed->setSelected(false);
-				time->setSelected(true);
-			}else if(time->isSelected()){
-				time->setSelected(false);
-				speed->setSelected(true);
-			}
-
-			draw();
-			screen.commit();
-			break;
-
 		case BTN_DOWN:
+			if(action->type == Action::PAUSE) return;
 			if(speed->isSelected()){
 				speed->setSelected(false);
 				time->setSelected(true);
@@ -107,8 +98,6 @@ void Simple::EditModal::buttonPressed(uint id){
 			break;
 
 		case BTN_MID:
-			this->pop();
-			break;
 		case BTN_BACK:
 			this->pop();
 			break;
