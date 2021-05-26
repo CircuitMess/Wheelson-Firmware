@@ -35,7 +35,7 @@ private:
 	std::vector<MainMenuItem*> apps;
 
 	int8_t appNum = 0;
-	uint8_t saveLastDrawn = 0;
+	uint8_t lastDrawnBatteryLevel = 0;
 	void selectApp(int8_t num);
 	Color* backgroundBuffer = nullptr;
 
