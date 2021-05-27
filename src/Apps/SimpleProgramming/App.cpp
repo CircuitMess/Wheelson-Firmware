@@ -83,7 +83,9 @@ void Simple::App::loadProgs(){
 		addIcon->setSelected(true);
 	}else{
 		addIcon->setSelected(false);
-		programs.front()->setIsSelected(true);
+		programs[programNum]->setIsSelected(true);
+		scrollLayout->scrollIntoView(programNum, 5);
+
 	}
 }
 
