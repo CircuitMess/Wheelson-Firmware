@@ -20,6 +20,7 @@ namespace Simple {
 		virtual ~App();
 
 		void start();
+
 		void stop();
 
 		void draw();
@@ -29,6 +30,7 @@ namespace Simple {
 	protected:
 
 		void init() override;
+
 		void deinit() override;
 
 	private:
@@ -40,11 +42,17 @@ namespace Simple {
 		AddIcon* addIcon;
 		Color* backgroundBuffer = nullptr;
 		uint8_t programNum = 0;
+		int seconds = 0;
+		uint16_t previousTime = 0;
+		uint16_t currentTime = 0;
 
 		void loadProgs();
+
 		void buildUI();
 
 		void buttonPressed(uint id) override;
+
+		void buttonReleased(uint id) override;
 
 		void selectAction(uint8_t num);
 	};
