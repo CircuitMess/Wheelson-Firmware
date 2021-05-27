@@ -1,9 +1,11 @@
 #include "App.h"
 #include "Edit.h"
+#include "Playback.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
+#include <Loop/LoopManager.h>
 
 Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
@@ -106,6 +108,11 @@ void Simple::App::buildUI(){
 }
 
 void Simple::App::loop(uint micros){
+	currentTime = millis();
+	if(currentTime - previousTime > 1000){
+		previousTime = currentTime;
+		seconds++;
+	}
 
 }
 
@@ -156,15 +163,33 @@ void Simple::App::buttonPressed(uint id){
 			return;
 
 		case BTN_MID:
+			LoopManager::addListener(this);
+
+			break;
+	}
+}
+
+void Simple::App::buttonReleased(uint id){
+	if(BTN_MID){
+		if(seconds == 0)return;
+		LoopManager::removeListener(this);
+		if(seconds < 2){
+			seconds = 0;
+			LoopManager::removeListener(this);
 			if(programNum == programs.size()){
 				storage.addProg(nullptr, 0);
 			}
 
 			Simple::Edit* edit = new Simple::Edit(*getScreen().getDisplay(), &storage, programNum);
 			edit->push(this);
+		}else if(seconds >= 2){
+			if(programNum == programs.size()) return;
+			seconds = 0;
+			LoopManager::removeListener(this);
+			Simple::Playback* playback = new Simple::Playback(*getScreen().getDisplay(), (Action*) Action::FORWARD, 0);
+			playback->push(this);
+		}
 
-			break;
 	}
 }
-
 
