@@ -109,8 +109,8 @@ void Simple::Playback::buttonPressed(uint id){
 			draw();
 			screen.commit();
 			break;
+		case BTN_BACK:
+			this->pop();
+			break;
 	}
 }
-
-
-
