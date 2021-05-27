@@ -5,12 +5,13 @@
 #include "EditModal.h"
 #include <Wheelson.h>
 #include <Input/Input.h>
+#include <Loop/LoopManager.h>
 
 Simple::Edit* Simple::Edit::instance = nullptr;
 
 Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : Context(display),
-																				   scrollLayout(new ScrollLayout(&screen)),
-																				   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
+																			   scrollLayout(new ScrollLayout(&screen)),
+																			   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
 
 	const ProgStruct* program = storage->getProg(programIndex);
 
@@ -84,7 +85,11 @@ void Simple::Edit::buildUI(){
 }
 
 void Simple::Edit::loop(uint micros){
-
+	currentTime = millis();
+	if(currentTime - previousTime > 1000){
+		previousTime = currentTime;
+		seconds++;
+	}
 }
 
 void Simple::Edit::selectAction(uint8_t num){
@@ -163,8 +168,8 @@ void Simple::Edit::buttonPressed(uint id){
 			break;
 
 		case BTN_BACK:
-			pop();
-			return;
+			LoopManager::addListener(this);
+			break;
 	}
 }
 
@@ -175,7 +180,7 @@ void Simple::Edit::returned(void* data){
 	Action::Type type = *podatakPtr;
 	delete podatakPtr;
 
-	actions.push_back({ type });
+	actions.push_back({type});
 	switch(type){
 		case Action::FORWARD:
 		case Action::BACKWARD:
@@ -200,6 +205,31 @@ void Simple::Edit::returned(void* data){
 	screen.repos();
 	scrollLayout->scrollIntoView(list->getChildren().size() - 1, 5);
 	scrollLayout->setX(screen.getTotalX() + 15);
+}
+
+void Simple::Edit::buttonReleased(uint id){
+	switch(id){
+		case BTN_BACK:
+			if(seconds == 0)return;
+			LoopManager::removeListener(this);
+			if(seconds < 2){
+				seconds = 0;
+				pop();
+				return;
+			}else if(seconds >= 2){
+				uint8_t totalNumActions = list->getChildren().size();
+				if(totalNumActions == 1 || actionNum == totalNumActions - 1) return;
+				seconds = 0;
+				actions.erase(actions.begin() + actionNum);
+				list->getChildren().erase(list->getChildren().begin() + actionNum);
+				list->reflow();
+				list->repos();
+				selectAction(actionNum + 1);
+				draw();
+				screen.commit();
+			}
+
+	}
 }
 
 
