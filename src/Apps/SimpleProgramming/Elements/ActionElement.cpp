@@ -40,5 +40,6 @@ void Simple::ActionElement::setIsSelected(bool selected){
 		borderFile.close();
 	}else{
 		free(borderBuffer);
+		borderBuffer = nullptr;
 	}
 }
