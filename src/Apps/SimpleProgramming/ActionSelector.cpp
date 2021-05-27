@@ -21,6 +21,7 @@ Simple::ActionSelector::~ActionSelector(){
 
 void Simple::ActionSelector::draw(){
 	screen.getSprite()->clear(TFT_TRANSPARENT);
+	modalBg.draw();
 	screen.draw();
 }
 
@@ -45,7 +46,6 @@ void Simple::ActionSelector::deinit(){
 }
 
 void Simple::ActionSelector::buildUI(){
-	modalBg.draw();
 	gridLayout->setWHType(CHILDREN, CHILDREN);
 	gridLayout->setGutter(8);
 	for(int i = 0; i < actions.size(); i++){
