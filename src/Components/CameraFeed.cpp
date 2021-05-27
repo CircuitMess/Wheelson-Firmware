@@ -86,6 +86,11 @@ void CameraFeed::jpegToArray(uint16_t* buffer){
 	uint32_t win_w = mcu_w;
 	uint32_t win_h = mcu_h;
 
+	if(win_w == 0 || win_h == 0){
+		printf("decode error\n");
+		return;
+	}
+
 	// save the coordinate of the right and bottom edges to assist image cropping
 	// to the screen size
 	// read each MCU block until there are no more
