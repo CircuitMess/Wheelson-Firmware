@@ -3,15 +3,12 @@
 
 #include "CameraFeed.h"
 
-class CameraProcessor {
+class CameraProcessor : public CameraFeed {
 public:
-	void skeletonize();
-private:
-	CameraFeed cameraFeed;
+	CameraProcessor();
+	uint16_t *skeletonize();
 	void contrast();
 
-	bool thinningIteration(int iter);
-	void thinning();
 };
 
 

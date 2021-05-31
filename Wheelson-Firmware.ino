@@ -8,8 +8,9 @@
 #include <SPIFFS.h>
 #include <esp32-hal-psram.h>
 #include "src/IntroScreen.h"
+#include "src/Components/CameraProcessor.h"
 
-
+CameraProcessor *cam;
 Display display(160, 128, -1, -1);
 
 void setup(){
@@ -36,13 +37,33 @@ void setup(){
 
 	display.begin();
 
-	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
-	intro->unpack();
-	intro->start();
+//	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
+//	intro->unpack();
+//	intro->start();
+	LED.setBacklight(true);
 
-	LED.setBacklight(false);
+	cam = new CameraProcessor();
+
 }
 
 void loop(){
+	Serial.println("loop");
+	cam->loadFrame();
+	display.getBaseSprite()->clear(TFT_WHITE);
+	display.getBaseSprite()->drawIcon(cam->getRaw(), 0, 0, 160, 128);
+	display.commit();
+	delay(1000);
+	cam->contrast();
+	display.getBaseSprite()->clear(TFT_WHITE);
+	display.getBaseSprite()->drawIcon(cam->getRaw(), 0, 0, 160, 128);
+	display.commit();
+	delay(1000);
+
+	display.getBaseSprite()->clear(TFT_WHITE);
+	display.getBaseSprite()->drawIcon(cam->skeletonize(), 0, 0, 160, 128);
+	display.commit();
+	delay(1000);
+	cam->releaseFrame();
+
 	LoopManager::loop();
 }
