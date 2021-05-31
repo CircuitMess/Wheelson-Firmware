@@ -13,7 +13,7 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 																			   scrollLayout(new ScrollLayout(&screen)),
 																			   list(new GridLayout(scrollLayout, 5)), storage(storage), programIndex(programIndex){
 
-	const ProgStruct* program = storage->getProg(programIndex);
+	const Program* program = storage->getProg(programIndex);
 
 	actions = std::vector<Action>(program->actions, program->actions + program->numActions);
 	for(uint8_t i = 0; i < program->numActions; i++){

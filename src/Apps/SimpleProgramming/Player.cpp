@@ -2,7 +2,7 @@
 #include <Loop/LoopManager.h>
 #include <Wheelson.h>
 
-Simple::Player::Player(Simple::Action *actions, uint8_t numActions) : actions(actions), numActions(numActions){
+Simple::Player::Player(const Program* program) : actions(program->actions), numActions(program->numActions){
 
 }
 
@@ -24,6 +24,7 @@ void Simple::Player::start(){
 
 void Simple::Player::stop(){
 	LoopManager::removeListener(this);
+	done = true;
 }
 
 void Simple::Player::processAction(){
@@ -69,9 +70,8 @@ void Simple::Player::processAction(){
 }
 
 void Simple::Player::loop(uint){
-	if(millis() - actionStartTime >= actions[currentAction].time){
+	if(millis() - actionStartTime >= actions[currentAction].time * 1000){
 		if(currentAction == numActions - 1){
-			done = true;
 			stop();
 			return;
 		}

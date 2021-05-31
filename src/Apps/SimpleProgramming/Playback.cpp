@@ -1,28 +1,40 @@
 #include <FS/CompressedFile.h>
 #include "Playback.h"
 #include <Wheelson.h>
+#include <Loop/LoopManager.h>
 
-Simple::Playback* Simple::Playback::instance = nullptr;
-
-Simple::Playback::Playback(Display& display, Action* action, uint8_t numActions) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)), action(action), numActions(numActions),
-																				   newPlayer(action, numActions){
-	instance = this;
+Simple::Playback::Playback(Display& display, const Program* program) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)),
+												program(program), player(program){
 	buildUI();
 
-	item[itemNum]->setIsSelected(true);
 	Playback::pack();
 }
 
 Simple::Playback::~Playback(){
-	instance = nullptr;
+
 }
 
 void Simple::Playback::start(){
-	Input::getInstance()->addListener(this);
-	newPlayer.start();
-	if(newPlayer.isDone()){
-		newPlayer.stop();
+
+
+	if(program->numActions == 0){
+		draw();
+
+		FontWriter& writer = screen.getSprite()->startU8g2Fonts();
+
+		writer.setForegroundColor(TFT_WHITE);
+		writer.setFont(u8g2_font_profont12_tf);
+		writer.setCursor((screen.getWidth() - writer.getUTF8Width("Program empty!")) / 2, 60);
+		writer.print("Program empty!");
+		screen.commit();
+
+		delay(2000);
+		pop();
+		return;
 	}
+
+	LoopManager::addListener(this);
+	player.start();
 	draw();
 	screen.commit();
 }
@@ -34,7 +46,8 @@ void Simple::Playback::draw(){
 }
 
 void Simple::Playback::stop(){
-	Input::getInstance()->removeListener(this);
+	player.stop();
+	LoopManager::removeListener(this);
 }
 
 void Simple::Playback::init(){
@@ -57,55 +70,68 @@ void Simple::Playback::deinit(){
 void Simple::Playback::buildUI(){
 	scrollLayout->setWHType(FIXED, PARENT);
 	scrollLayout->setWidth(120);
-	//scrollLayout->setBorder(2,TFT_RED);
 	layout->setWHType(PARENT, PARENT);
 	layout->setGutter(5);
+	layout->setPadding(10);
 
-	for(int i = 0; i < 6; i++){
-		ActionElement* items = new ActionElement(layout, static_cast<Action::Type>(i), "Textttttt");
-		item.push_back(items);
-		layout->addChild(items);
+	for(int i = 0; i < program->numActions; i++){
+		ActionElement* item = new ActionElement(layout, program->actions[i].type, "Textttttt");
+		items.push_back(item);
+		layout->addChild(item);
+	}
+
+	if(!items.empty()){
+		items.front()->setIsSelected(true);
 	}
 
 	layout->reflow();
 	screen.addChild(layout);
 	screen.repos();
-	layout->setX(screen.getTotalX() + 30);
 }
 
 void Simple::Playback::loop(uint micros){
+	if(player.isDone()){
+		pop();
+		return;
+	}
 
+	if(player.getCurrent() != currentAction){
+		selectAction(player.getCurrent());
+		scrollLayout->scrollIntoView(currentAction);
+		draw();
+		screen.commit();
+	}
 }
 
 void Simple::Playback::selectAction(uint8_t num){
-	item[itemNum]->setIsSelected(false);
-	itemNum = num;
-	item[itemNum]->setIsSelected(true);
+	items[currentAction]->setIsSelected(false);
+	currentAction = num;
+	items[currentAction]->setIsSelected(true);
 }
 
 void Simple::Playback::buttonPressed(uint id){
-	uint8_t numItems = item.size();
+	uint8_t numItems = items.size();
 	switch(id){
 		case BTN_UP:
-			if(itemNum == 0){
+			if(currentAction == 0){
 				selectAction(numItems - 1);
 			}else{
-				selectAction(itemNum - 1);
+				selectAction(currentAction - 1);
 			}
 
-			scrollLayout->scrollIntoView(itemNum, 5);
+			scrollLayout->scrollIntoView(currentAction, 5);
 			draw();
 			screen.commit();
 			break;
 
 		case BTN_DOWN:
-			if(itemNum == numItems - 1){
+			if(currentAction == numItems - 1){
 				selectAction(0);
 			}else{
-				selectAction(itemNum + 1);
+				selectAction(currentAction + 1);
 			}
 
-			scrollLayout->scrollIntoView(itemNum, 5);
+			scrollLayout->scrollIntoView(currentAction, 5);
 			draw();
 			screen.commit();
 			break;

@@ -2,13 +2,14 @@
 #define WHEELSON_FIRMWARE_PLAYER_H
 
 #include "Action.hpp"
+#include "Storage.h"
 #include <Loop/LoopListener.h>
 
 namespace Simple {
 
 class Player : LoopListener {
 public:
-	Player(Action* actions, uint8_t numActions);
+	Player(const Program* program);
 	uint8_t getCurrent();
 	bool isDone();
 	void start();
@@ -17,9 +18,9 @@ public:
 
 private:
 	void processAction();
+	const Action* actions;
+	const uint8_t numActions;
 
-	Action* actions = nullptr;
-	uint8_t numActions = 0;
 	uint8_t currentAction = 0;
 	uint32_t actionStartTime = 0;
 	bool done = false;

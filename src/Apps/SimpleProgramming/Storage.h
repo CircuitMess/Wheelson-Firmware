@@ -7,7 +7,7 @@
 
 namespace Simple {
 
-struct ProgStruct{
+struct Program{
 	const Action* actions;
 	uint8_t numActions;
 };
@@ -16,7 +16,7 @@ public:
 	Storage();
 	~Storage();
 	uint8_t getNumProgs();
-	const ProgStruct* getProg(uint8_t index);
+	const Program* getProg(uint8_t index);
 	void addProg(const Action* actions, uint8_t numActions);
 	void removeProg(uint8_t index);
 	void updateProg(uint8_t index, const Action* actions, uint8_t numActions);
@@ -25,7 +25,7 @@ private:
 	void readProgs();
 	void writeProgs();
 
-	std::vector<ProgStruct*> programs;
+	std::vector<Program*> programs;
 	static const char* const filePath;
 };
 

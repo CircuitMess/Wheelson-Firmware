@@ -9,12 +9,13 @@
 #include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
 #include "Player.h"
+#include "Storage.h"
 #include <Input/Input.h>
 
 namespace Simple {
 	class Playback : public Context, public LoopListener, private InputListener {
 	public:
-		Playback(Display& display,Action* action,uint8_t numActions);
+		Playback(Display& display, const Program* program);
 
 		virtual ~Playback();
 
@@ -33,17 +34,14 @@ namespace Simple {
 		void deinit() override;
 
 	private:
-		Action* action;
-		Player newPlayer;
-		uint8_t numActions = 0;
-
-		static Playback* instance;
+		const Program* program;
+		Player player;
 
 		ScrollLayout* scrollLayout;
 		LinearLayout* layout;
-		std::vector<ActionElement*> item;
+		std::vector<ActionElement*> items;
 
-		uint8_t itemNum = 0;
+		uint8_t currentAction = 0;
 		Color* backgroundBuffer = nullptr;
 
 		void buildUI();

@@ -11,7 +11,7 @@ Simple::Storage::Storage(){
 }
 
 Simple::Storage::~Storage(){
-	for( ProgStruct* prog: programs){
+	for( Program* prog: programs){
 		free((void*)prog->actions);
 		delete prog;
 	}
@@ -21,7 +21,7 @@ uint8_t Simple::Storage::getNumProgs(){
 	return programs.size();
 }
 
-const Simple::ProgStruct *Simple::Storage::getProg(uint8_t index){
+const Simple::Program *Simple::Storage::getProg(uint8_t index){
 	if(index >= programs.size()) return nullptr;
 	return programs[index];
 }
@@ -31,7 +31,7 @@ void Simple::Storage::addProg(const Simple::Action *actions, uint8_t numActions)
 
 	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
 	memcpy(newActions, actions, numActions*sizeof(Action));
-	programs.push_back(new ProgStruct{newActions, numActions});
+	programs.push_back(new Program{ newActions, numActions});
 	writeProgs();
 }
 
@@ -64,7 +64,7 @@ void Simple::Storage::readProgs(){
 	uint8_t numProgs;
 	progsFile.read(&numProgs, 1);
 	for(uint8_t i = 0; i < numProgs; i++){
-		ProgStruct* prog = new ProgStruct();
+		Program* prog = new Program();
 		progsFile.read(&prog->numActions, 1);
 		prog->actions = (Action*)malloc(prog->numActions*sizeof(Action));
 		progsFile.read((uint8_t*)prog->actions, prog->numActions*sizeof(Action));
@@ -82,7 +82,7 @@ void Simple::Storage::writeProgs(){
 	uint8_t numProgs = programs.size();
 	progsFile.write(numProgs);
 	for(uint8_t i = 0; i < numProgs; i++){
-		ProgStruct *prog = programs[i];
+		Program *prog = programs[i];
 		progsFile.write(&prog->numActions, 1);
 		progsFile.write((uint8_t*)prog->actions, sizeof(Action)*prog->numActions);
 	}

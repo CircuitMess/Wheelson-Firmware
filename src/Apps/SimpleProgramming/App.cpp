@@ -133,7 +133,9 @@ void Simple::App::loop(uint micros){
 
 		if(programNum >= programs.size()) return;
 
-		// TODO: playback
+		const Program* prog = storage.getProg(programNum);
+		Context* play = new Playback(*screen.getDisplay(), prog);
+		play->push(this);
 	}
 }
 
