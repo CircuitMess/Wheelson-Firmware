@@ -16,10 +16,13 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 	const ProgStruct* program = storage->getProg(programIndex);
 
 	actions = std::vector<Action>(program->actions, program->actions + program->numActions);
-
+	for(uint8_t i = 0; i < program->numActions; i++){
+		list->addChild(new ActionElement(list, actions[i].type));
+	}
 	ActionElement* add = new ActionElement(list, static_cast<Action::Type>(Action::Type::COUNT));
 	list->addChild(add);
 	add->setIsSelected(true);
+	actionNum = program->numActions;
 
 	buildUI();
 	scrollLayout->scrollIntoView(actionNum,2);
