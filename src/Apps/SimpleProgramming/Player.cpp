@@ -23,12 +23,18 @@ void Simple::Player::start(){
 }
 
 void Simple::Player::stop(){
+	Motors.stopAll();
+	LED.setHeadlight(false);
 	LoopManager::removeListener(this);
 	done = true;
 }
 
 void Simple::Player::processAction(){
 	if(currentAction == numActions) return;
+
+	if(actions[currentAction].type > Action::RIGHT){
+		Motors.stopAll();
+	}
 
 	switch(actions[currentAction].type){
 		case Action::FORWARD:
