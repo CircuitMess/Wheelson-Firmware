@@ -22,6 +22,7 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 	add->setIsSelected(true);
 
 	buildUI();
+	scrollLayout->scrollIntoView(actionNum,2);
 	Edit::pack();
 
 }
@@ -109,8 +110,9 @@ void Simple::Edit::buttonPressed(uint id){
 			}else{
 				selectAction(actionNum - 1);
 			}
-
-			scrollLayout->scrollIntoView(actionNum, 5);
+			if(totalNumActions > 24){
+				scrollLayout->scrollIntoView(actionNum, 2);
+			}
 			draw();
 			screen.commit();
 			break;
@@ -121,8 +123,9 @@ void Simple::Edit::buttonPressed(uint id){
 			}else{
 				selectAction(actionNum + 1);
 			}
-
-			scrollLayout->scrollIntoView(actionNum, 5);
+			if(totalNumActions > 24){
+				scrollLayout->scrollIntoView(actionNum, 2);
+			}
 			draw();
 			screen.commit();
 			break;
@@ -138,7 +141,7 @@ void Simple::Edit::buttonPressed(uint id){
 			}
 
 			selectAction(num);
-			scrollLayout->scrollIntoView(actionNum, 5);
+			scrollLayout->scrollIntoView(actionNum, 2);
 			draw();
 			screen.commit();
 			break;
@@ -151,7 +154,7 @@ void Simple::Edit::buttonPressed(uint id){
 				selectAction(actionNum + 5);
 			}
 
-			scrollLayout->scrollIntoView(actionNum, 5);
+			scrollLayout->scrollIntoView(actionNum, 2);
 			draw();
 			screen.commit();
 			break;
