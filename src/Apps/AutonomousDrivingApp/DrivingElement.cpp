@@ -20,7 +20,7 @@ DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, Strin
 			Serial.println("Percentage icon unpack error\n");
 			return;
 		}
-		fs::File bgFile = SPIFFS.open("/AutoDrive/posto.raw");
+		fs::File bgFile = SPIFFS.open("/AutoDrive/percentage.raw");
 		bgFile.read(reinterpret_cast<uint8_t*>(percentageBuffer), 6 * 6 * 2);
 		bgFile.close();
 	}
@@ -28,6 +28,7 @@ DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, Strin
 
 DrivingElement::~DrivingElement(){
 	free(iconBuffer);
+	iconBuffer = nullptr;
 }
 
 void DrivingElement::draw(){
