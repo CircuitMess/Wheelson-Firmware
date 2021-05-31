@@ -32,13 +32,14 @@ void Simple::App::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
+	screen.getSprite()->drawLine(0, 19, screen.getWidth(), 19, TFT_WHITE);
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("SIMPLE PROGRAMMING")) / 2, screen.getTotalY() + 17);
-	u8f.println("SIMPLE PROGRAMMING");
+	u8f.setCursor((160 - u8f.getUTF8Width("Simple programming")) / 2, screen.getTotalY() + 13);
+	u8f.println("Simple programming");
 }
 
 void Simple::App::deinit(){
