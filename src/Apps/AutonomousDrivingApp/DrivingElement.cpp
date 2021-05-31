@@ -28,7 +28,7 @@ DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, Strin
 
 DrivingElement::~DrivingElement(){
 	free(iconBuffer);
-	iconBuffer = nullptr;
+	free(percentageBuffer);
 }
 
 void DrivingElement::draw(){
