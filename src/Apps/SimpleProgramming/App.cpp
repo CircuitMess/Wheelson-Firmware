@@ -110,12 +110,31 @@ void Simple::App::buildUI(){
 }
 
 void Simple::App::loop(uint micros){
-	currentTime = millis();
-	if(currentTime - previousTime > 1000){
-		previousTime = currentTime;
-		seconds++;
+	if(midPressTime == 0 && backPressTime == 0){
+		LoopManager::removeListener(this);
+		return;
 	}
 
+	if(backPressTime != 0 && millis() - backPressTime >= 1000){
+		backPressTime = 0;
+		LoopManager::removeListener(this);
+
+		if(programNum >= programs.size()) return;
+
+		storage.removeProg(programNum);
+		loadProgs();
+		draw();
+		screen.commit();
+	}
+
+	if(midPressTime != 0 && millis() - midPressTime >= 1000){
+		midPressTime = 0;
+		LoopManager::removeListener(this);
+
+		if(programNum >= programs.size()) return;
+
+		// TODO: playback
+	}
 }
 
 void Simple::App::selectAction(uint8_t num){
@@ -138,7 +157,6 @@ void Simple::App::buttonPressed(uint id){
 			if(programNum == 0){
 				selectAction(list->getChildren().size() - 1);
 			}else{
-				Serial.println(programNum - 1);
 				selectAction(programNum - 1);
 			}
 			scrollLayout->scrollIntoView(programNum, 5);
@@ -148,10 +166,8 @@ void Simple::App::buttonPressed(uint id){
 
 		case BTN_DOWN:
 			if(programNum == list->getChildren().size() - 1){
-				Serial.println(0);
 				selectAction(0);
 			}else{
-				Serial.println(programNum + 1);
 				selectAction(programNum + 1);
 			}
 
@@ -161,37 +177,45 @@ void Simple::App::buttonPressed(uint id){
 			break;
 
 		case BTN_BACK:
-			pop();
-			return;
+			if(midPressTime != 0) break;
+			backPressTime = millis();
+			LoopManager::addListener(this);
+			break;
 
 		case BTN_MID:
+			if(backPressTime != 0) break;
+			midPressTime = millis();
 			LoopManager::addListener(this);
-
 			break;
 	}
 }
 
 void Simple::App::buttonReleased(uint id){
-	if(BTN_MID){
-		if(seconds == 0)return;
+	if(id == BTN_BACK){
+		uint32_t elapsed = millis() - backPressTime;
+
+		backPressTime = 0;
 		LoopManager::removeListener(this);
-		if(seconds < 2){
-			seconds = 0;
-			LoopManager::removeListener(this);
+
+		if(elapsed < 1000){
+			pop();
+			return;
+		}
+	}else if(id == BTN_MID){
+		uint32_t elapsed = millis() - midPressTime;
+
+		midPressTime = 0;
+		LoopManager::removeListener(this);
+
+		if(elapsed < 1000){
 			if(programNum == programs.size()){
 				storage.addProg(nullptr, 0);
 			}
 
-			Simple::Edit* edit = new Simple::Edit(*getScreen().getDisplay(), &storage, programNum);
+			Context* edit = new Edit(*screen.getDisplay(), &storage, programNum);
 			edit->push(this);
-		}else if(seconds >= 2){
-			if(programNum == programs.size()) return;
-			seconds = 0;
-			LoopManager::removeListener(this);
-			Simple::Playback* playback = new Simple::Playback(*getScreen().getDisplay(), (Action*) Action::FORWARD, 0);
-			playback->push(this);
+			return;
 		}
-
 	}
 }
 

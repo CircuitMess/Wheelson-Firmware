@@ -89,10 +89,24 @@ void Simple::Edit::buildUI(){
 }
 
 void Simple::Edit::loop(uint micros){
-	currentTime = millis();
-	if(currentTime - previousTime > 1000){
-		previousTime = currentTime;
-		seconds++;
+	if(delPressStart == 0){
+		LoopManager::removeListener(this);
+		return;
+	}
+
+	if(millis() - delPressStart >= 1000){
+		delPressStart = 0;
+		LoopManager::removeListener(this);
+
+		if(actionNum >= actions.size()) return;
+
+		actions.erase(actions.begin() + actionNum);
+		list->getChildren().erase(list->getChildren().begin() + actionNum);
+		list->reflow();
+		list->repos();
+		selectAction(actionNum + 1);
+		draw();
+		screen.commit();
 	}
 }
 
@@ -174,8 +188,22 @@ void Simple::Edit::buttonPressed(uint id){
 			break;
 
 		case BTN_BACK:
+			delPressStart = millis();
 			LoopManager::addListener(this);
 			break;
+	}
+}
+
+void Simple::Edit::buttonReleased(uint id){
+	if(id != BTN_BACK) return;
+
+	uint32_t elapsed = millis() - delPressStart;
+
+	delPressStart = 0;
+	LoopManager::removeListener(this);
+
+	if(elapsed < 1000){
+		pop();
 	}
 }
 
@@ -211,31 +239,6 @@ void Simple::Edit::returned(void* data){
 	screen.repos();
 	scrollLayout->scrollIntoView(list->getChildren().size() - 1, 5);
 	scrollLayout->setX(screen.getTotalX() + 15);
-}
-
-void Simple::Edit::buttonReleased(uint id){
-	switch(id){
-		case BTN_BACK:
-			if(seconds == 0)return;
-			LoopManager::removeListener(this);
-			if(seconds < 2){
-				seconds = 0;
-				pop();
-				return;
-			}else if(seconds >= 2){
-				uint8_t totalNumActions = list->getChildren().size();
-				if(totalNumActions == 1 || actionNum == totalNumActions - 1) return;
-				seconds = 0;
-				actions.erase(actions.begin() + actionNum);
-				list->getChildren().erase(list->getChildren().begin() + actionNum);
-				list->reflow();
-				list->repos();
-				selectAction(actionNum + 1);
-				draw();
-				screen.commit();
-			}
-
-	}
 }
 
 

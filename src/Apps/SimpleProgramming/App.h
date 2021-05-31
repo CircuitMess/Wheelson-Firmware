@@ -42,9 +42,8 @@ namespace Simple {
 		AddIcon* addIcon;
 		Color* backgroundBuffer = nullptr;
 		uint8_t programNum = 0;
-		int seconds = 0;
-		uint16_t previousTime = 0;
-		uint16_t currentTime = 0;
+		uint32_t backPressTime = 0;
+		uint32_t midPressTime = 0;
 
 		void loadProgs();
 

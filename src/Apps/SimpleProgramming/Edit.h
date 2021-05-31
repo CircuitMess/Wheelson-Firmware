@@ -46,9 +46,7 @@ namespace Simple {
 
 		Color* backgroundBuffer = nullptr;
 		uint8_t actionNum = 0;
-		uint16_t currentTime = 0;
-		uint16_t previousTime = 0;
-		int seconds = 0;
+		uint32_t delPressStart = 0;
 
 		void buttonPressed(uint id) override;
 
