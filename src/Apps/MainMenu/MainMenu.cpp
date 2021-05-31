@@ -1,10 +1,19 @@
 #include "MainMenu.h"
+#include "../SimpleProgramming/App.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
 
 const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
+
+Context* (*MainMenu::AppLaunch[])(Display& display) = {
+		[](Display& display) -> Context* { return new Simple::App(display); },
+		[](Display& display) -> Context* { return nullptr; },
+		[](Display& display) -> Context* { return nullptr; },
+		[](Display& display) -> Context* { return nullptr; },
+		[](Display& display) -> Context* { return nullptr; }
+};
 
 MainMenu* MainMenu::instance = nullptr;
 
@@ -124,6 +133,9 @@ void MainMenu::buttonPressed(uint id){
 			break;
 
 		case BTN_MID:
+			Context* app = AppLaunch[appNum](*screen.getDisplay());
+			if(app == nullptr) break;
+			app->push(this);
 			break;
 	}
 }
