@@ -5,7 +5,7 @@
 #include <Wheelson.h>
 #include <Input/Input.h>
 
-const char* const MainMenu::AppTitles[] = {"Autonomous", "Simple", "Ball", "Object", "Settings"};
+const char* const MainMenu::AppTitles[] = {"Simple programming", "Autonomous", "Ball", "Object", "Settings"};
 
 Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return new Simple::App(display); },

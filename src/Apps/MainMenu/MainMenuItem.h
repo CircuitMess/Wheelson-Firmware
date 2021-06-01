@@ -4,7 +4,7 @@
 #include <UI/CustomElement.h>
 
 enum MenuApp {
-	AUTONOMOUS, SIMPLE, BALL, OBJECT, SETTINGS
+	SIMPLE, AUTONOMOUS, BALL, OBJECT, SETTINGS
 };
 
 class MainMenuItem : public CustomElement {
