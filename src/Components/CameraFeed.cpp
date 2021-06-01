@@ -58,6 +58,9 @@ void CameraFeed::loadFrame(){
 		return;
 	}
 
+}
+
+void CameraFeed::decodeFrame(){
 	JpegDec.decodeArray(frame->buf, frame->len);
 	jpegToArray(buffer);
 }
@@ -145,3 +148,4 @@ uint16_t* CameraFeed::getRaw() const{
 camera_fb_t* CameraFeed::getFrame(){
 	return frame;
 }
+
