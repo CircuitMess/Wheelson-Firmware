@@ -15,22 +15,28 @@ CameraProcessor::CameraProcessor() : CameraFeed(){
 
 }
 
-uint16_t * CameraProcessor::skeletonize(){
+void CameraProcessor::skeletonize(){
 	skeleton_tracer_t* T = new skeleton_tracer_t();
 	T->W = getFrame()->width; // width of image
 	T->H = getFrame()->height; // height of image
 
 	// allocate the input image
 	T->im = getRaw();
-/*	// draw something interesting on the input image here...
-
+	// draw something interesting on the input image here...
+	for(uint i = 0; i < T->H*T->H; i++){
+		getRaw()[i] &= 1;
+	}
 	T->thinning_zs(); // perform raster thinning
+	for(uint i = 0; i < T->H*T->H; i++){
+		getRaw()[i] *= 0xFFFF;
+	}
 
 	// run the algorithm
 	skeleton_tracer_t::polyline_t* p = (skeleton_tracer_t::polyline_t*)T->trace_skeleton(0, 0, T->W, T->H, 0);
 
 	// print out points in every polyline
 	skeleton_tracer_t::polyline_t* it = p; //iterator
+	Serial.println(p == nullptr ? "nullptr" : "ok");
 	while(it){
 		skeleton_tracer_t::point_t* jt = it->head;
 		while(jt){
@@ -43,11 +49,9 @@ uint16_t * CameraProcessor::skeletonize(){
 
 	// clean up
 	T->destroy_polylines(p);
-	T->destroy_rects();*/
+	T->destroy_rects();
 
 	delete T;
-	return T->trace(getRaw(), 160, 128);
-
 
 }
 

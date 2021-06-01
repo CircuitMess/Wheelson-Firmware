@@ -6,7 +6,7 @@
 class CameraProcessor : public CameraFeed {
 public:
 	CameraProcessor();
-	uint16_t *skeletonize();
+	void skeletonize();
 	void contrast();
 
 };
