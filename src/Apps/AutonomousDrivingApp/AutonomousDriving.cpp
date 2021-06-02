@@ -51,9 +51,7 @@ void AutonomousDriving::deinit(){
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		motorPower[i] = driver->getMotorState(i);
-		sprintf(buffer, "%s", motorPower);
-		engines.push_back(new DrivingElement(screenLayout, MOTOR, buffer, true));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", true));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
@@ -67,9 +65,10 @@ void AutonomousDriving::buildUI(){
 
 void AutonomousDriving::loop(uint micros){
 	cameraBuffer = driver->getCameraImage();
+	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		motorPower[i] = driver->getMotorState(i);
-		sprintf(buffer, "%s", motorPower);
+		sprintf(buffer, "%u", driver->getMotorState(i));
+		engines[i]->setIconText(buffer);
 	}
 	draw();
 	screen.commit();

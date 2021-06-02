@@ -37,8 +37,7 @@ private:
 	Color* backgroundBuffer = nullptr;
 	Color* cameraBuffer = nullptr;
 	Driver* driver;
-	uint8_t motorPower[4] = {0};
-	char buffer[4];
+	char text[20];
 
 	void buildUI();
 
