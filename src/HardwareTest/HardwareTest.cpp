@@ -1,4 +1,5 @@
 #include "HardwareTest.h"
+#include "../IntroScreen.h"
 #include <Wheelson.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Loop/LoopManager.h>
@@ -27,7 +28,7 @@ void HardwareTest::draw(){
 	if(!inputIsDone){
 		screenLayout->draw();
 	}
-	if(doneCounter>=6){
+	if(doneCounter >= 6){
 		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
@@ -38,22 +39,25 @@ void HardwareTest::draw(){
 	if(inputIsDone){
 		screen.draw();
 		screen.getSprite()->clear(TFT_BLACK);
-//		screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
+		//	screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
 		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
 		u8f.setCursor((160 - u8f.getUTF8Width("If OK press any button")) / 2, 50);
 		u8f.print("If OK press any button");
-	}
-	else if(cameraIsDone){
+	}else if(cameraIsDone){
 		screen.getSprite()->clear(TFT_BLACK);
 		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor((160 - u8f.getUTF8Width("If all lights works press any key")) / 2, 13);
-		u8f.print("If all lights works press any key");
+		u8f.setCursor((160 - u8f.getUTF8Width("If all lights works good")) / 2, 13);
+		u8f.print("If all lights works ");
+		u8f.setCursor((160 - u8f.getUTF8Width("press any key")) / 2, 23);
+		u8f.print("press any key");
+	}else if(LEDisDone){
+		screen.getSprite()->clear(TFT_BLACK);
 	}
 
 }
@@ -109,22 +113,34 @@ void HardwareTest::init(){
 
 void HardwareTest::deinit(){
 	Context::deinit();
+	free(cameraBuffer);
 }
 
 void HardwareTest::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(leftBtnTest[0]->isBtnPressed()) return;
@@ -136,17 +152,28 @@ void HardwareTest::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_RIGHT:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(rightBtnTest[1]->isBtnPressed()) return;
@@ -158,17 +185,28 @@ void HardwareTest::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_UP:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(midBtnTest[0]->isBtnPressed()) return;
@@ -180,17 +218,28 @@ void HardwareTest::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_DOWN:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(midBtnTest[2]->isBtnPressed()) return;
@@ -202,17 +251,28 @@ void HardwareTest::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_MID:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(midBtnTest[1]->isBtnPressed()) return;
@@ -224,17 +284,28 @@ void HardwareTest::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_BACK:
-			if(doneCounter>=6){
+			if(doneCounter >= 6){
 				inputIsDone = true;
 				doneCounter = 0;
 				draw();
 				screen.commit();
 				break;
 			}else if(inputIsDone){
-				inputIsDone=false;
+				inputIsDone = false;
 				cameraIsDone = true;
 				draw();
 				screen.commit();
+				break;
+			}else if(cameraIsDone){
+				cameraIsDone = false;
+				LEDisDone = true;
+				draw();
+				screen.commit();
+				break;
+			}else if(LEDisDone){
+				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
+				intro->unpack();
+				intro->start();
 				break;
 			}
 			if(rightBtnTest[0]->isBtnPressed()) return;
@@ -250,11 +321,31 @@ void HardwareTest::buttonPressed(uint id){
 
 void HardwareTest::loop(uint micros){
 	if(inputIsDone){
-		Serial.println("Input ide");
-		/*CameraFeed().loadFrame();
+		/*Serial.println("Input ide");
+		CameraFeed().loadFrame();
 		cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
 		draw();
 		CameraFeed().releaseFrame();
 		screen.commit();*/
+	}else if(cameraIsDone){
+		LED.setHeadlight(255);
+		LED.setRGB(RED);
+		delay(500);
+		LED.setRGB(GREEN);
+		delay(500);
+		LED.setRGB(YELLOW);
+		delay(500);
+		LED.setRGB(BLUE);
+		delay(500);
+		LED.setRGB(MAGENTA);
+		delay(500);
+		LED.setRGB(CYAN);
+		delay(500);
+		LED.setRGB(WHITE);
+		delay(500);
+		LED.setRGB(OFF);
+		LED.setHeadlight(0);
+		delay(1000);
+
 	}
 }

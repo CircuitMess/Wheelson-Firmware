@@ -37,6 +37,7 @@ private:
 	uint8_t doneCounter = 0;
 	bool inputIsDone = false;
 	bool cameraIsDone = false;
+	bool LEDisDone = false;
 
 	Color* cameraBuffer = nullptr;
 
