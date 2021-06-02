@@ -35,7 +35,7 @@ private:
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
 	Color* backgroundBuffer = nullptr;
-	Color* cameraBuffer = nullptr;
+	const Color* cameraBuffer = nullptr;
 	Driver* driver;
 	char text[20];
 
