@@ -45,3 +45,7 @@ void DrivingElement::draw(){
 	}
 
 }
+
+void DrivingElement::setIconText(const String& iconText){
+	DrivingElement::iconText = iconText;
+}

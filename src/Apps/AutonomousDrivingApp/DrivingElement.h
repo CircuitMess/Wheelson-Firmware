@@ -14,6 +14,8 @@ public:
 
 	void draw();
 
+	void setIconText(const String& iconText);
+
 private:
 
 	DrivingIcon icon;
