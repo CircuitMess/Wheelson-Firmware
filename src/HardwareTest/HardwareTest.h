@@ -35,7 +35,10 @@ private:
 	std::vector<BtnTestElement*> rightBtnTest;
 
 	uint8_t doneCounter = 0;
-	bool isDone = false;
+	bool inputIsDone = false;
+	bool cameraIsDone = false;
+
+	Color* cameraBuffer = nullptr;
 
 	void buildUI();
 

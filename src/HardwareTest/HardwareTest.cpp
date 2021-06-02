@@ -2,6 +2,7 @@
 #include <Wheelson.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Loop/LoopManager.h>
+//#include "../Components/CameraFeed.h"
 
 HardwareTest::HardwareTest(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)), leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 											   midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)){
@@ -23,6 +24,9 @@ HardwareTest::~HardwareTest(){
 
 void HardwareTest::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
+	if(!inputIsDone){
+		screenLayout->draw();
+	}
 	if(doneCounter>=6){
 		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
@@ -31,7 +35,27 @@ void HardwareTest::draw(){
 		u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button")) / 2, 13);
 		u8f.print("All OK! Press any button");
 	}
-	screenLayout->draw();
+	if(inputIsDone){
+		screen.draw();
+		screen.getSprite()->clear(TFT_BLACK);
+//		screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
+		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
+		u8f.setFont(u8g2_font_HelvetiPixel_tr);
+		u8f.setForegroundColor(TFT_WHITE);
+		u8f.setFontMode(1);
+		u8f.setCursor((160 - u8f.getUTF8Width("If OK press any button")) / 2, 50);
+		u8f.print("If OK press any button");
+	}
+	else if(cameraIsDone){
+		screen.getSprite()->clear(TFT_BLACK);
+		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
+		u8f.setFont(u8g2_font_HelvetiPixel_tr);
+		u8f.setForegroundColor(TFT_WHITE);
+		u8f.setFontMode(1);
+		u8f.setCursor((160 - u8f.getUTF8Width("If all lights works press any key")) / 2, 13);
+		u8f.print("If all lights works press any key");
+	}
+
 }
 
 void HardwareTest::start(){
@@ -91,7 +115,14 @@ void HardwareTest::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -106,7 +137,14 @@ void HardwareTest::buttonPressed(uint id){
 			break;
 		case BTN_RIGHT:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -121,7 +159,14 @@ void HardwareTest::buttonPressed(uint id){
 			break;
 		case BTN_UP:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -136,7 +181,14 @@ void HardwareTest::buttonPressed(uint id){
 			break;
 		case BTN_DOWN:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -151,7 +203,14 @@ void HardwareTest::buttonPressed(uint id){
 			break;
 		case BTN_MID:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -166,7 +225,14 @@ void HardwareTest::buttonPressed(uint id){
 			break;
 		case BTN_BACK:
 			if(doneCounter>=6){
-				isDone = true;
+				inputIsDone = true;
+				doneCounter = 0;
+				draw();
+				screen.commit();
+				break;
+			}else if(inputIsDone){
+				inputIsDone=false;
+				cameraIsDone = true;
 				draw();
 				screen.commit();
 				break;
@@ -183,6 +249,12 @@ void HardwareTest::buttonPressed(uint id){
 }
 
 void HardwareTest::loop(uint micros){
-if(isDone){
-
+	if(inputIsDone){
+		Serial.println("Input ide");
+		/*CameraFeed().loadFrame();
+		cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
+		draw();
+		CameraFeed().releaseFrame();
+		screen.commit();*/
+	}
 }
