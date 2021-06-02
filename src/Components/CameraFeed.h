@@ -27,6 +27,10 @@ public:
 	 * Get the raw camera frame.
 	 */
 	camera_fb_t* getFrame();
+	/**
+	 * Decode loaded frame.
+	 */
+	void decodeFrame();
 	virtual ~CameraFeed();
 
 

@@ -3,9 +3,9 @@
 
 #include <UI/CustomElement.h>
 
-class Fleha : public CustomElement {
+class ModalBackground : public CustomElement{
 public:
-	Fleha(ElementContainer* parent, uint width, uint height) : CustomElement(parent, width, height){
+	ModalBackground(ElementContainer* parent, uint width, uint height) : CustomElement(parent, width, height){
 		getSprite()->setChroma(TFT_TRANSPARENT);
 	}
 

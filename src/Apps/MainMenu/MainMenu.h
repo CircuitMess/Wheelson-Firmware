@@ -39,6 +39,7 @@ private:
 	void buttonPressed(uint i) override;
 
 	static const char* const AppTitles[5];
+	static Context* (*AppLaunch[5])(Display& display);
 
 };
 
