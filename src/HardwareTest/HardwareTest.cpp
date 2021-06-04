@@ -3,10 +3,10 @@
 #include <Wheelson.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Loop/LoopManager.h>
-//#include "../Components/CameraFeed.h"
+#include "../Components/CameraFeed.h"
 
-HardwareTest::HardwareTest(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)), leftLayout(new LinearLayout(screenLayout, VERTICAL)),
-											   midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)){
+HardwareTest::HardwareTest(Display& display,Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, HORIZONTAL)), leftLayout(new LinearLayout(screenLayout, VERTICAL)),
+											   midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)),driver(driver){
 
 	leftBtnTest.push_back(new BtnTestElement(leftLayout));
 	for(int i = 0; i < 3; i++){
@@ -39,7 +39,7 @@ void HardwareTest::draw(){
 	if(inputIsDone){
 		screen.draw();
 		screen.getSprite()->clear(TFT_BLACK);
-		//	screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
+		screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
 		FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
@@ -52,10 +52,10 @@ void HardwareTest::draw(){
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor((160 - u8f.getUTF8Width("If all lights works good")) / 2, 13);
-		u8f.print("If all lights works ");
-		u8f.setCursor((160 - u8f.getUTF8Width("press any key")) / 2, 23);
-		u8f.print("press any key");
+		u8f.setCursor((160 - u8f.getUTF8Width("If all LED's works good")) / 2, 53);
+		u8f.print("If all LED's works good");
+		u8f.setCursor((130 - u8f.getUTF8Width("press any key")) / 2, 63);
+		u8f.print("   press any key");
 	}else if(LEDisDone){
 		screen.getSprite()->clear(TFT_BLACK);
 	}
@@ -138,9 +138,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(leftBtnTest[0]->isBtnPressed()) return;
@@ -171,9 +169,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(rightBtnTest[1]->isBtnPressed()) return;
@@ -204,9 +200,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(midBtnTest[0]->isBtnPressed()) return;
@@ -237,9 +231,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(midBtnTest[2]->isBtnPressed()) return;
@@ -270,9 +262,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(midBtnTest[1]->isBtnPressed()) return;
@@ -303,9 +293,7 @@ void HardwareTest::buttonPressed(uint id){
 				screen.commit();
 				break;
 			}else if(LEDisDone){
-				Context* intro = new IntroScreen::IntroScreen(*screen.getDisplay());
-				intro->unpack();
-				intro->start();
+				this->pop();
 				break;
 			}
 			if(rightBtnTest[0]->isBtnPressed()) return;
@@ -321,12 +309,9 @@ void HardwareTest::buttonPressed(uint id){
 
 void HardwareTest::loop(uint micros){
 	if(inputIsDone){
-		/*Serial.println("Input ide");
-		CameraFeed().loadFrame();
-		cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
+		cameraBuffer = driver->getCameraImage();
 		draw();
-		CameraFeed().releaseFrame();
-		screen.commit();*/
+		screen.commit();
 	}else if(cameraIsDone){
 		LED.setHeadlight(255);
 		LED.setRGB(RED);

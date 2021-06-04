@@ -7,10 +7,11 @@
 #include <Input/Input.h>
 #include <UI/LinearLayout.h>
 #include "BtnTestElement.h"
+#include "../../Components/Driver.h"
 
 class HardwareTest : public Context, public LoopListener, private InputListener {
 public:
-	HardwareTest(Display& display);
+	HardwareTest(Display& display,Driver* driver);
 
 	virtual ~HardwareTest();
 
@@ -35,6 +36,7 @@ private:
 	std::vector<BtnTestElement*> rightBtnTest;
 
 	uint8_t doneCounter = 0;
+	Driver* driver;
 	bool inputIsDone = false;
 	bool cameraIsDone = false;
 	bool LEDisDone = false;
