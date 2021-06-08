@@ -8,7 +8,7 @@
 #include <Support/Modal.h>
 #include <Input/InputListener.h>
 #include "Elements/ActionElement.h"
-#include "../../Elements/ModalBackground.hpp"
+#include <Elements/ModalBackground.hpp>
 
 class SimpleEdit;
 

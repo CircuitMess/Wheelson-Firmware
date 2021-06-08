@@ -6,7 +6,7 @@
 #include <UI/LinearLayout.h>
 #include "Action.hpp"
 #include "Elements/EditModalItem.h"
-#include "../../Elements/ModalBackground.hpp"
+#include <Elements/ModalBackground.hpp>
 
 class SimpleEdit;
 
