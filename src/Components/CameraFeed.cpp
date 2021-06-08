@@ -4,7 +4,7 @@
 #include <JPEGDecoder.h>
 #include "../Wheelson.h"
 
-CameraFeed::CameraFeed() : buffer((uint16_t*) ps_malloc(160 * 120 * sizeof(uint16_t))){
+CameraFeed::CameraFeed() : buffer((uint16_t*) ps_malloc(160 * 120 * sizeof(uint16_t))), bufferRGB(static_cast<uint8_t*>(ps_malloc(160 * 120 * 3))){
 
 	camera_config_t config;
 	config.ledc_channel = LEDC_CHANNEL_0;
@@ -59,6 +59,7 @@ void CameraFeed::loadFrame(){
 	}
 
 	JpegDec.decodeArray(frame->buf, frame->len);
+	memcpy(bufferRGB, JpegDec.pImage, 160 * 120 * 3);
 	jpegToArray(buffer);
 }
 
@@ -144,4 +145,8 @@ uint16_t* CameraFeed::getRaw() const{
 
 camera_fb_t* CameraFeed::getFrame(){
 	return frame;
+}
+
+uint8_t* CameraFeed::getRawRGB() const{
+	return bufferRGB;
 }

@@ -23,6 +23,8 @@ public:
 	 */
 	uint16_t* getRaw() const;
 
+	uint8_t* getRawRGB() const;
+
 	/**
 	 * Get the raw camera frame.
 	 */
@@ -33,6 +35,7 @@ public:
 private:
 	camera_fb_t* frame;
 	uint16_t* buffer;
+	uint8_t* bufferRGB;
 
 	void jpegToArray(uint16_t *buffer);
 };
