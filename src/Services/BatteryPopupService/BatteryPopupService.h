@@ -14,9 +14,10 @@ private:
 	static const uint16_t checkInterval;
 	uint checkMicros = 0;
 
-	ShutdownPopup *shutdownPopup = nullptr;
-	WarningPopup *warningPopup = nullptr;
+	static ShutdownPopup *shutdownPopup;
+	static WarningPopup *warningPopup;
 	bool warningShown = false;
+
 };
 
 extern BatteryPopupService BatteryPopup;
