@@ -40,6 +40,8 @@ void setup(){
 
 	display.begin();
 
+	Context::setDeleteOnPop(true);
+
 	if(!Settings.get().inputTested){
 		UserHWTest* test = new UserHWTest(display);
 		test->setDoneCallback([](UserHWTest* test){

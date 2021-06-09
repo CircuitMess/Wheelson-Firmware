@@ -5,7 +5,9 @@
 
 Simple::ActionSelector* Simple::ActionSelector::instance = nullptr;
 
-Simple::ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 100), gridLayout(new GridLayout(&screen, 3)), modalBg(&screen, 100, 100){
+Simple::ActionSelector::ActionSelector(Context& context) : Modal(context, 100, 100),
+		gridLayout(new GridLayout(&screen, 3)),
+		modalBg(&screen,100,100, C_HEX(0x00beff), C_HEX(0x00ffff), C_HEX(0x0082ff)){
 
 	for(int i = 0; i < 7; i++){
 		actions.push_back(new ActionElement(gridLayout, static_cast<Action::Type>(i)));
