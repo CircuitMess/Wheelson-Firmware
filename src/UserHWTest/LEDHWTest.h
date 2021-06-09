@@ -21,7 +21,7 @@ public:
 
 	void stop() ;
 
-	void buttonReleased(uint id) override;
+	void buttonPressed(uint id) override;
 
 private:
 
