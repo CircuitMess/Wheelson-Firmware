@@ -140,8 +140,8 @@ void MainMenu::buttonPressed(uint id){
 void MainMenu::loop(uint micros){
 	if(lastDrawnBatteryLevel != Battery.getLastDrawnLevel()){
 		lastDrawnBatteryLevel = Battery.getLastDrawnLevel();
-		Battery.drawIcon(screen.getSprite());
 		screen.draw();
+		Battery.drawIcon(screen.getSprite());
 		screen.commit();
 	}
 
