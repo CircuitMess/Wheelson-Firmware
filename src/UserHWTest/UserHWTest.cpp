@@ -34,15 +34,19 @@ void UserHWTest::buttonPressed(uint id){
 void UserHWTest::currentTestDone(){
 	delete hwTestPart;
 	testCounter++;
-	if(testCounter>2){
-		this->pop();
+	if(testCounter > 2){
+		if(doneCallback){
+			doneCallback(this);
+		}else{
+			this->pop();
+		}
 		return;
 	}
 	nextTest();
 }
 
 void UserHWTest::nextTest(){
-	if(testCounter==1){
+	if(testCounter == 1){
 		hwTestPart = new CameraHWTest(this);
 	}
 	if(testCounter == 2){
@@ -51,4 +55,9 @@ void UserHWTest::nextTest(){
 	hwTestPart->draw();
 	screen.commit();
 }
+
+void UserHWTest::setDoneCallback(void (* doneCallback)(UserHWTest*)){
+	UserHWTest::doneCallback = doneCallback;
+}
+
 
