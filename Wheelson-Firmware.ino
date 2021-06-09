@@ -36,6 +36,8 @@ void setup(){
 
 	display.begin();
 
+	Context::setDeleteOnPop(true);
+
 	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
 	intro->unpack();
 	intro->start();
