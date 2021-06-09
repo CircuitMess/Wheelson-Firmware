@@ -3,7 +3,7 @@
 
 const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.raw"};
 
-DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String iconText, bool needPercentage) : CustomElement(parent, 17, 13), icon(icon), iconText(iconText), needPercentage(needPercentage){
+DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String text, bool needPercentage) : CustomElement(parent, 17, 13), icon(icon), text(text), needPercentage(needPercentage){
 
 	iconBuffer = static_cast<Color*>(ps_malloc(17 * 13 * 2));
 	if(iconBuffer == nullptr){
@@ -39,13 +39,13 @@ void DrivingElement::draw(){
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
 	u8f.setCursor(getTotalX() - 3, getTotalY() + 23);
-	u8f.print(iconText);
+	u8f.print(text);
 	if(needPercentage){
 		getSprite()->drawIcon(percentageBuffer, getTotalX() + 13, getTotalY() + 17, 6, 6, 1, TFT_TRANSPARENT);
 	}
 
 }
 
-void DrivingElement::setIconText(const String& iconText){
-	DrivingElement::iconText = iconText;
+void DrivingElement::setText(const String& text){
+	DrivingElement::text = text;
 }
