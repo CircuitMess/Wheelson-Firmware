@@ -1,7 +1,6 @@
 #include <FS/CompressedFile.h>
 #include "AutonomousDriving.h"
 #include "../../Components/CameraFeed.h"
-#include <string>
 
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
@@ -24,7 +23,7 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->drawIcon(cameraBuffer, 0, 4, 160, 120);
+	screen.getSprite()->drawIcon(driver->getCameraImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	screen.draw();
 }
@@ -64,11 +63,10 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
-	cameraBuffer = driver->getCameraImage();
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
 		sprintf(buffer, "%u", driver->getMotorState(i));
-		engines[i]->setIconText(buffer);
+		engines[i]->setText(buffer);
 	}
 	draw();
 	screen.commit();
