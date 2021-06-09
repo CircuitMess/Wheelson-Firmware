@@ -8,6 +8,8 @@
 #include <SPIFFS.h>
 #include <esp32-hal-psram.h>
 #include "src/IntroScreen.h"
+#include "src/UserHWTest/UserHWTest.h"
+#include <Settings.h>
 
 
 Display display(160, 128, -1, -1);
@@ -30,15 +32,30 @@ void setup(){
 		for(;;);
 	}
 
+	Settings.begin();
+
 	Input* input = new WheelsonInput();
-	input->preregisterButtons({ 0, 1, 2, 3, 4, 5 });
+	input->preregisterButtons({0, 1, 2, 3, 4, 5});
 	LoopManager::addListener(input);
 
 	display.begin();
 
-	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
-	intro->unpack();
-	intro->start();
+	if(!Settings.get().inputTested){
+		UserHWTest* test = new UserHWTest(display);
+		test->setDoneCallback([](UserHWTest* test){
+			Settings.get().inputTested = true;
+			Settings.store();
+			Serial.println("Esp restart");
+			ESP.restart();
+		});
+
+		test->unpack();
+		test->start();
+	}else{
+		IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
+		intro->unpack();
+		intro->start();
+	}
 
 	LED.setBacklight(true);
 }
