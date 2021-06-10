@@ -29,7 +29,6 @@ void AutonomousDriving::draw(){
 }
 
 void AutonomousDriving::init(){
-	Context::init();
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
@@ -43,7 +42,6 @@ void AutonomousDriving::init(){
 }
 
 void AutonomousDriving::deinit(){
-	Context::deinit();
 	free(backgroundBuffer);
 }
 
