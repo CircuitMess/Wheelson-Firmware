@@ -27,9 +27,7 @@ namespace IntroScreen {
 
 	private:
 		static IntroScreen *instance;
-
 		AnimatedSprite* gif = nullptr;
-
 
 	};
 }
