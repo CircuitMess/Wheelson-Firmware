@@ -58,6 +58,9 @@ void CameraFeed::loadFrame(){
 		return;
 	}
 
+}
+
+void CameraFeed::decodeFrame(){
 	JpegDec.decodeArray(frame->buf, frame->len);
 	memcpy(bufferRGB, JpegDec.pImage, 160 * 120 * 3);
 	jpegToArray(buffer);
