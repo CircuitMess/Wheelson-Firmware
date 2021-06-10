@@ -3,7 +3,7 @@
 #include "../../Components/CameraFeed.h"
 
 
-AutonomousDriving::AutonomousDriving(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)){
+AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
 	buildUI();
 	AutonomousDriving::pack();
 }
@@ -13,22 +13,22 @@ AutonomousDriving::~AutonomousDriving(){
 }
 
 void AutonomousDriving::start(){
+	driver->start();
 	draw();
 	screen.commit();
 }
 
 void AutonomousDriving::stop(){
-
+	driver->stop();
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->drawIcon(cameraBuffer,0,4,160,120);
-	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1,TFT_TRANSPARENT);
+	screen.getSprite()->drawIcon(driver->getCameraImage(), 0, 4, 160, 120);
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	screen.draw();
 }
 
 void AutonomousDriving::init(){
-	Context::init();
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
@@ -42,15 +42,13 @@ void AutonomousDriving::init(){
 }
 
 void AutonomousDriving::deinit(){
-	Context::deinit();
 	free(backgroundBuffer);
-
 }
 
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		engines.push_back(new DrivingElement(screenLayout, MOTOR,"100",true));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", true));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
@@ -63,9 +61,11 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
-	CameraFeed().loadFrame();
-	cameraBuffer= reinterpret_cast<Color*>(CameraFeed().getFrame());
+	char buffer[4];
+	for(int i = 0; i < 4; i++){
+		sprintf(buffer, "%u", driver->getMotorState(i));
+		engines[i]->setText(buffer);
+	}
 	draw();
-	CameraFeed().releaseFrame();
 	screen.commit();
 }
