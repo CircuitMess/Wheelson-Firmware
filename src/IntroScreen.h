@@ -28,6 +28,7 @@ namespace IntroScreen {
 	private:
 		static IntroScreen *instance;
 		AnimatedSprite* gif = nullptr;
+		uint16_t previousTime = 0;
 
 	};
 }

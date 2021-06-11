@@ -71,11 +71,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 	draw();
 	screen.commit();
 
-	uint16_t currentTime = millis();
-	uint16_t previousTime = 0;
-	if(currentTime - previousTime >= 500){
-
-		previousTime = currentTime;
+	if(millis() - previousTime >= 500){
+		previousTime = millis();
 		if(LED.getHeadlight() == 0){
 			LED.setHeadlight(255);
 		}else{
