@@ -13,10 +13,15 @@ public:
 private:
 	static const uint16_t checkInterval;
 	uint checkMicros = 0;
+	uint blinkMicros = 0;
+	static const uint8_t longBlinkInterval;
+	static const uint8_t shortBlinkInterval;
 
 	static ShutdownPopup *shutdownPopup;
 	static WarningPopup *warningPopup;
 	bool warningShown = false;
+
+	bool blinkActive = false;
 
 };
 
