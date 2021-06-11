@@ -41,8 +41,6 @@ void Simple::ActionSelector::init(){
 }
 
 void Simple::ActionSelector::deinit(){
-	selectedAction = 0;
-
 }
 
 void Simple::ActionSelector::buildUI(){

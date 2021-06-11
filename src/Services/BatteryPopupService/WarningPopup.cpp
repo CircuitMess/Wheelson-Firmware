@@ -2,10 +2,12 @@
 #include <Loop/LoopManager.h>
 #include "../../Wheelson.h"
 #include <WiFi.h>
-
+#include <Support/ModalTransition.h>
 const uint8_t WarningPopup::warningTime = 5;
+WarningPopup* WarningPopup::instance = nullptr;
 
 WarningPopup::WarningPopup(Context &context) : Modal(context, 70, 30){
+	instance = this;
 }
 
 void WarningPopup::draw(){
@@ -31,7 +33,15 @@ void WarningPopup::stop(){
 void WarningPopup::loop(uint micros){
 	warningTimer += micros;
 	if(warningTimer >= warningTime * 1000000){
-		pop();
+		warningTimer = 0;
+		ModalTransition* transition = static_cast<ModalTransition*>((void*)pop());
+		if(prevModal == nullptr) return;
+		transition->setDoneCallback([](Context* currentContext, Modal*){
+			instance->prevModal->push(currentContext);
+		});
 	}
 }
 
+void WarningPopup::returned(void *data){
+	prevModal = (Modal*)data;
+}

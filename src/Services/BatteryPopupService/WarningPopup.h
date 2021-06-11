@@ -15,9 +15,14 @@ public:
 	void stop() override;
 
 	void loop(uint) override;
+
+	void returned(void* data) override;
 private:
 	uint warningTimer = 0;
 	static const uint8_t warningTime;
+	Modal* prevModal = nullptr;
+
+	static WarningPopup* instance;
 };
 
 
