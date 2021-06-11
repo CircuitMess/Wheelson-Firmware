@@ -4,7 +4,10 @@
 #include "../../Components/Driver.h"
 #include "../../Components/CameraFeed.h"
 #include <Display/Display.h>
-#include "../../Components/trace_skeleton.cpp"
+
+struct polyline_t;
+class SkeletonTracer;
+
 
 class LineDriver : public Driver {
 public:
@@ -15,7 +18,8 @@ protected:
 	Color* thinningBuffer;
 
 private:
-	skeleton_tracer_t::polyline_t line;
+	polyline_t* line;
+	SkeletonTracer* tracer;
 };
 
 
