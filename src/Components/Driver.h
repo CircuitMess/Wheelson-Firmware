@@ -13,7 +13,7 @@ public:
 	void stop();
 
 	virtual uint getMotorState(uint id);
-	const Color* getCameraImage();
+	virtual Color* getCameraImage();
 
 	bool isRunning() const;
 

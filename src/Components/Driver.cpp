@@ -38,7 +38,7 @@ uint Driver::getMotorState(uint id){
 	return motors[id];
 }
 
-const Color* Driver::getCameraImage(){
+Color* Driver::getCameraImage(){
 	return frameBuffer;
 }
 
