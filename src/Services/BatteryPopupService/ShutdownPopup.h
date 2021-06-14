@@ -19,6 +19,7 @@ private:
 	uint shutdownTimer = 0;
 	static const uint8_t shutdownTime;
 
+	Color* batteryIconBuffer = nullptr;
 };
 
 
