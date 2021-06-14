@@ -45,10 +45,12 @@ void LineDriver::process(){
 	//copy longest polyline, point by point
 	skeleton_tracer_t::point_t* copyPoint = new skeleton_tracer_t::point_t(*longestPolyPtr->head);
 	line.head = copyPoint;
-	for (skeleton_tracer_t::point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
+	for(skeleton_tracer_t::point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
 		copyPoint->next = new skeleton_tracer_t::point_t(*point);
 		copyPoint = copyPoint->next;
+		drawLine(point->x, point->y, point->next->x, point->next->y, getCameraImage(),TFT_RED);
 	}
+
 	copyPoint->next = nullptr;
 	line.tail = copyPoint;
 
@@ -59,3 +61,51 @@ void LineDriver::process(){
 	free(thinningBuffer);
 }
 
+Color* LineDriver::getCameraImage(){
+	return Driver::getCameraImage();
+}
+
+void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
+
+        // Bresenham's line algorithm
+  const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+  if(steep)
+  {
+    std::swap(x1, y1);
+    std::swap(x2, y2);
+  }
+
+  if(x1 > x2)
+  {
+    std::swap(x1, x2);
+    std::swap(y1, y2);
+  }
+
+  const float dx = x2 - x1;
+  const float dy = fabs(y2 - y1);
+
+  float error = dx / 2.0f;
+  const int ystep = (y1 < y2) ? 1 : -1;
+  int y = (int)y1;
+
+  const int maxX = (int)x2;
+
+  for(int x=(int)x1; x<=maxX; x++)
+  {
+    if(steep)
+    {
+        buffer[x*120+y]=color;
+    }
+    else
+    {
+       buffer[y*160+x]=color;
+    }
+
+    error -= dy;
+    if(error < 0)
+    {
+        y += ystep;
+        error += dx;
+    }
+  }
+}
