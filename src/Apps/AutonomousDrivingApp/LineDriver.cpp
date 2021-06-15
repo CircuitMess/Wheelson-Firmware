@@ -16,7 +16,7 @@ LineDriver::~LineDriver(){
 }
 
 void LineDriver::process(){
-
+	if(getCameraImage() == nullptr) return;
 	memcpy(thinningBuffer, getCameraImage(), 160 * 120 * sizeof(Color));
 
 	//B/W contrasting
@@ -54,7 +54,9 @@ void LineDriver::process(){
 	for (point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
 		copyPoint->next = new point_t(*point);
 		copyPoint = copyPoint->next;
-		drawLine(point->x, point->y, point->next->x, point->next->y, getCameraImage(),TFT_RED);
+		if(point->next != nullptr){
+			drawLine(point->x, point->y, point->next->x, point->next->y, processedBuffer, TFT_RED);
+		}
 	}
 	copyPoint->next = nullptr;
 	line->tail = copyPoint;
