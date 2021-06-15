@@ -12,7 +12,10 @@ class SkeletonTracer;
 class LineDriver : public Driver {
 public:
 	LineDriver();
-	Color* getCameraImage() override;
+
+	virtual ~LineDriver();
+
+
 
 protected:
 	void process() override;

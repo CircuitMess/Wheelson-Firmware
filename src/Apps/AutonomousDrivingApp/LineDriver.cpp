@@ -9,6 +9,12 @@ LineDriver::LineDriver() : Driver(), thinningBuffer((Color*)ps_malloc(160 * 120 
 	tracer->im = thinningBuffer;
 }
 
+LineDriver::~LineDriver(){
+	delete tracer;
+	free(thinningBuffer);
+	delete line;
+}
+
 void LineDriver::process(){
 
 	memcpy(thinningBuffer, getCameraImage(), 160 * 120 * sizeof(Color));
