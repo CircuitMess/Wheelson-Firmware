@@ -51,7 +51,8 @@ void LineDriver::process(){
 	//copy longest polyline, point by point
 	point_t* copyPoint = new point_t(*longestPolyPtr->head);
 	line->head = copyPoint;
-	for (point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
+	memcpy(processedBuffer, Driver::getCameraImage(), 160 * 120 * sizeof(Color));
+	for(point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
 		copyPoint->next = new point_t(*point);
 		copyPoint = copyPoint->next;
 		if(point->next != nullptr){
@@ -64,10 +65,6 @@ void LineDriver::process(){
 	// clean up
 	delete tracer;
 	free(thinningBuffer);
-}
-
-Color* LineDriver::getCameraImage(){
-	return Driver::getCameraImage();
 }
 
 void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
