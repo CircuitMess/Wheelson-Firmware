@@ -93,16 +93,12 @@ void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t
 
   const int maxX = (int)x2;
 
-  for(int x=(int)x1; x<=maxX; x++)
-  {
-    if(steep)
-    {
-        buffer[x*120+y]=color;
-    }
-    else
-    {
-       buffer[y*160+x]=color;
-    }
+	for(int x = (int) x1; x <= maxX; x++){
+		if(steep){//x*120+y
+			buffer[x * 160 + y] = color;
+		}else{//y*160+x
+			buffer[y * 160 + x] = color;
+		}
 
     error -= dy;
     if(error < 0)
