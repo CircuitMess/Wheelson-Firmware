@@ -15,6 +15,8 @@ public:
 	virtual uint getMotorState(uint id);
 	virtual Color* getCameraImage();
 
+	Color* getProcessedImage() const;
+
 	bool isRunning() const;
 
 	static void taskFunc(Task* task);
@@ -22,6 +24,7 @@ public:
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);
+	Color* processedBuffer = nullptr;
 
 private:
 	CameraFeed cam;

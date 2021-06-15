@@ -6,6 +6,7 @@
 
 Driver::Driver(): task("Driver", taskFunc, 4096, this){
 	frameBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
+	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }
 
 void Driver::start(){
@@ -44,4 +45,8 @@ Color* Driver::getCameraImage(){
 
 bool Driver::isRunning() const{
 	return !task.isStopped();
+}
+
+Color* Driver::getProcessedImage() const{
+	return processedBuffer;
 }
