@@ -32,7 +32,7 @@ void Simple::Playback::start(){
 		pop();
 		return;
 	}
-
+	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
 	player.start();
 	draw();
@@ -48,6 +48,7 @@ void Simple::Playback::draw(){
 void Simple::Playback::stop(){
 	player.stop();
 	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void Simple::Playback::init(){
@@ -110,33 +111,7 @@ void Simple::Playback::selectAction(uint8_t num){
 }
 
 void Simple::Playback::buttonPressed(uint id){
-	uint8_t numItems = items.size();
-	switch(id){
-		case BTN_UP:
-			if(currentAction == 0){
-				selectAction(numItems - 1);
-			}else{
-				selectAction(currentAction - 1);
-			}
-
-			scrollLayout->scrollIntoView(currentAction, 5);
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_DOWN:
-			if(currentAction == numItems - 1){
-				selectAction(0);
-			}else{
-				selectAction(currentAction + 1);
-			}
-
-			scrollLayout->scrollIntoView(currentAction, 5);
-			draw();
-			screen.commit();
-			break;
-		case BTN_BACK:
-			this->pop();
-			break;
+	if(id == BTN_BACK){
+		pop();
 	}
 }
