@@ -69,7 +69,8 @@ void Simple::App::loadProgs(){
 	list->getChildren().clear();
 
 	for(int i = 0; i < storage.getNumProgs(); i++){
-		programs.push_back(new ProgramElement(list, "Program " + String((long) i + 1)));
+		const Simple::Program * prog = storage.getProg(i);
+		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id +1)));
 		list->addChild(programs.back());
 	}
 
@@ -135,6 +136,7 @@ void Simple::App::loop(uint micros){
 		if(programNum >= programs.size()) return;
 
 		const Program* prog = storage.getProg(programNum);
+
 		Context* play = new Playback(*screen.getDisplay(), prog);
 		play->push(this);
 	}
