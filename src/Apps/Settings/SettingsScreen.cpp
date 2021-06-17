@@ -93,10 +93,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_LEFT:
 			if(shutDownSlider->isSliderSelected()){
 				shutDownSlider->selectPrev();
-				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(-1);
-				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
@@ -105,10 +103,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_RIGHT:
 			if(shutDownSlider->isSliderSelected()){
 				shutDownSlider->selectNext();
-				Settings.get().shutdownTime = shutDownSlider->getIndex();
 			}else if(speedSlider->isSliderSelected()){
 				speedSlider->moveSliderValue(1);
-				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 			}
 			draw();
 			screen.commit();
@@ -187,8 +183,16 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			}else if(selectedSetting == 2){
 
 			}else if(selectedSetting == 3){
+				Settings.get().shutdownTime = shutDownSlider->getIndex();
+				Settings.get().speedMultiplier = speedSlider->getSliderValue();
+				Settings.store();
 				this->pop();
 			}
+			draw();
+			screen.commit();
+			break;
+		case BTN_BACK:
+			this->pop();
 			draw();
 			screen.commit();
 			break;
