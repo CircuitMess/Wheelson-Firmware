@@ -69,9 +69,9 @@ void Simple::Playback::deinit(){
 }
 
 void Simple::Playback::buildUI(){
-	scrollLayout->setWHType(FIXED, PARENT);
-	scrollLayout->setWidth(120);
-	layout->setWHType(PARENT, PARENT);
+	scrollLayout->setWHType(PARENT, PARENT);
+	scrollLayout->addChild(layout);
+	layout->setWHType(PARENT, CHILDREN);
 	layout->setGutter(5);
 	layout->setPadding(10);
 
@@ -85,8 +85,9 @@ void Simple::Playback::buildUI(){
 		items.front()->setIsSelected(true);
 	}
 
+	scrollLayout->reflow();
 	layout->reflow();
-	screen.addChild(layout);
+	screen.addChild(scrollLayout);
 	screen.repos();
 }
 
@@ -95,10 +96,9 @@ void Simple::Playback::loop(uint micros){
 		pop();
 		return;
 	}
-
 	if(player.getCurrent() != currentAction){
 		selectAction(player.getCurrent());
-		scrollLayout->scrollIntoView(currentAction);
+		scrollLayout->scrollIntoView(currentAction,5);
 		draw();
 		screen.commit();
 	}
