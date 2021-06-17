@@ -30,9 +30,9 @@ void SettingsScreen::DiscreteSlider::drawControl(){
 	movingCursor = map(index, 0, shutDownTime.size()-1, 0, 51);
 
 	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setCursor(getTotalX() + 125, getTotalY() + 8);
+	getSprite()->setCursor(getTotalX() + 125, getTotalY() + 6);
 	getSprite()->println(shutDownTime[index]);
-	getSprite()->setCursor(getTotalX() + 137, getTotalY() + 8);
+	getSprite()->setCursor(getTotalX() + 137, getTotalY() + 6);
 	getSprite()->println("m");
 
 	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 16, 2, 5, TFT_WHITE);
