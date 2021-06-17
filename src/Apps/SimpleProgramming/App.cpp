@@ -100,6 +100,7 @@ void Simple::App::buildUI(){
 	list->setPadding(5);
 	list->setGutter(5);
 
+	list->addChild(addIcon);
 	scrollLayout->reflow();
 	list->reflow();
 

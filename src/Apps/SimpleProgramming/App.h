@@ -39,7 +39,7 @@ namespace Simple {
 		ScrollLayout* scrollLayout;
 		LinearLayout* list;
 		std::vector<ProgramElement*> programs;
-		AddIcon* addIcon;
+		AddIcon* addIcon = nullptr;
 		Color* backgroundBuffer = nullptr;
 		uint8_t programNum = 0;
 		uint32_t backPressTime = 0;
