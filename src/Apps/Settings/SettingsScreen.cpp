@@ -187,7 +187,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			}else if(selectedSetting == 2){
 
 			}else if(selectedSetting == 3){
-
+				this->pop();
 			}
 			draw();
 			screen.commit();
