@@ -123,6 +123,12 @@ void Simple::App::loop(uint micros){
 		if(programNum >= programs.size()) return;
 
 		storage.removeProg(programNum);
+		if(programs.size() > 1){
+			if(programNum == 0){
+				selectAction(programNum+1);
+			}
+			selectAction(programNum - 1);
+		}
 		loadProgs();
 		draw();
 		screen.commit();
