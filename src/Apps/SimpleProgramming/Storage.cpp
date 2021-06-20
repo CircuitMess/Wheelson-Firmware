@@ -1,5 +1,6 @@
 #include "Storage.h"
 #include <SPIFFS.h>
+#include <set>
 const char* const Simple::Storage::filePath ="/SimpleProgs.bin";
 
 Simple::Storage::Storage(){
@@ -28,10 +29,21 @@ const Simple::Program *Simple::Storage::getProg(uint8_t index){
 
 void Simple::Storage::addProg(const Simple::Action *actions, uint8_t numActions){
 	if(programs.size() == 0xFF) return;
-
 	Action* newActions = (Action*)malloc(numActions*sizeof(Action));
 	memcpy(newActions, actions, numActions*sizeof(Action));
-	programs.push_back(new Program{ newActions, numActions});
+	uint8_t id = 0;
+	std::set<uint8_t> usedID;
+	for(int i = 0; i < programs.size(); ++i){
+		usedID.insert(programs[i]->id);
+		if(id < programs[i]->id){
+			id = programs[i]->id;
+		}
+	}
+	while(usedID.count(id)){
+		id++;
+	}
+
+	programs.push_back(new Program{ newActions, numActions,id});
 	writeProgs();
 }
 

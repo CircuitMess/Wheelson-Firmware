@@ -35,10 +35,7 @@ private:
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
 	Color* backgroundBuffer = nullptr;
-	const Color* cameraBuffer = nullptr;
 	Driver* driver;
-	uint8_t motorPower[4] = {0};
-	char buffer[4];
 
 	void buildUI();
 

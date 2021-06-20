@@ -1,5 +1,6 @@
 #include "MainMenu.h"
 #include "../SimpleProgramming/App.h"
+#include "../Settings/SettingsScreen.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
@@ -14,7 +15,7 @@ Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return nullptr; },
 		[](Display& display) -> Context* { return nullptr; },
 		[](Display& display) -> Context* { return nullptr; },
-		[](Display& display) -> Context* { return nullptr; }
+		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
 };
 
 MainMenu* MainMenu::instance = nullptr;

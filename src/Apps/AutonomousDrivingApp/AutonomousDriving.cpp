@@ -1,7 +1,6 @@
 #include <FS/CompressedFile.h>
 #include "AutonomousDriving.h"
 #include "../../Components/CameraFeed.h"
-#include <string>
 
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
@@ -24,13 +23,12 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->drawIcon(cameraBuffer, 0, 4, 160, 120);
+	screen.getSprite()->drawIcon(driver->getCameraImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	screen.draw();
 }
 
 void AutonomousDriving::init(){
-	Context::init();
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
@@ -44,16 +42,13 @@ void AutonomousDriving::init(){
 }
 
 void AutonomousDriving::deinit(){
-	Context::deinit();
 	free(backgroundBuffer);
 }
 
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		motorPower[i] = driver->getMotorState(i);
-		sprintf(buffer, "%s", motorPower);
-		engines.push_back(new DrivingElement(screenLayout, MOTOR, buffer, true));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", true));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
@@ -66,10 +61,10 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
-	cameraBuffer = driver->getCameraImage();
+	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		motorPower[i] = driver->getMotorState(i);
-		sprintf(buffer, "%s", motorPower);
+		sprintf(buffer, "%u", driver->getMotorState(i));
+		engines[i]->setText(buffer);
 	}
 	draw();
 	screen.commit();

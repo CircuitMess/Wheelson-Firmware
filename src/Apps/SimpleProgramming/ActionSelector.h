@@ -48,7 +48,7 @@ namespace Simple {
 
 		void buttonPressed(uint id) override;
 
-
+		static const char* const ActionTitles[7];
 	};
 }
 

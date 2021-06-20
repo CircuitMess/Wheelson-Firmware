@@ -10,6 +10,7 @@ namespace Simple {
 struct Program{
 	const Action* actions;
 	uint8_t numActions;
+	uint8_t id;
 };
 class Storage {
 public:
