@@ -7,6 +7,7 @@
 #include <Display/Display.h>
 #include <SPIFFS.h>
 #include <esp32-hal-psram.h>
+#include <Settings.h>
 #include "src/IntroScreen.h"
 
 
@@ -30,6 +31,7 @@ void setup(){
 		for(;;);
 	}
 
+	Settings.begin();
 	Input* input = new WheelsonInput();
 	input->preregisterButtons({ 0, 1, 2, 3, 4, 5 });
 	LoopManager::addListener(input);

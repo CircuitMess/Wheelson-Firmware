@@ -32,7 +32,7 @@ void Simple::Playback::start(){
 		pop();
 		return;
 	}
-
+	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
 	player.start();
 	draw();
@@ -48,6 +48,7 @@ void Simple::Playback::draw(){
 void Simple::Playback::stop(){
 	player.stop();
 	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void Simple::Playback::init(){
@@ -68,9 +69,9 @@ void Simple::Playback::deinit(){
 }
 
 void Simple::Playback::buildUI(){
-	scrollLayout->setWHType(FIXED, PARENT);
-	scrollLayout->setWidth(120);
-	layout->setWHType(PARENT, PARENT);
+	scrollLayout->setWHType(PARENT, PARENT);
+	scrollLayout->addChild(layout);
+	layout->setWHType(PARENT, CHILDREN);
 	layout->setGutter(5);
 	layout->setPadding(10);
 
@@ -84,8 +85,9 @@ void Simple::Playback::buildUI(){
 		items.front()->setIsSelected(true);
 	}
 
+	scrollLayout->reflow();
 	layout->reflow();
-	screen.addChild(layout);
+	screen.addChild(scrollLayout);
 	screen.repos();
 }
 
@@ -94,10 +96,9 @@ void Simple::Playback::loop(uint micros){
 		pop();
 		return;
 	}
-
 	if(player.getCurrent() != currentAction){
 		selectAction(player.getCurrent());
-		scrollLayout->scrollIntoView(currentAction);
+		scrollLayout->scrollIntoView(currentAction,5);
 		draw();
 		screen.commit();
 	}
@@ -110,33 +111,7 @@ void Simple::Playback::selectAction(uint8_t num){
 }
 
 void Simple::Playback::buttonPressed(uint id){
-	uint8_t numItems = items.size();
-	switch(id){
-		case BTN_UP:
-			if(currentAction == 0){
-				selectAction(numItems - 1);
-			}else{
-				selectAction(currentAction - 1);
-			}
-
-			scrollLayout->scrollIntoView(currentAction, 5);
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_DOWN:
-			if(currentAction == numItems - 1){
-				selectAction(0);
-			}else{
-				selectAction(currentAction + 1);
-			}
-
-			scrollLayout->scrollIntoView(currentAction, 5);
-			draw();
-			screen.commit();
-			break;
-		case BTN_BACK:
-			this->pop();
-			break;
+	if(id == BTN_BACK){
+		pop();
 	}
 }

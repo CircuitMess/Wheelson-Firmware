@@ -1,4 +1,5 @@
 #include "AddIcon.hpp"
+#include <U8g2_for_TFT_eSPI.h>
 
 
 Simple::AddIcon::AddIcon(ElementContainer* parent) : CustomElement(parent, 15, 15){
@@ -22,6 +23,14 @@ void Simple::AddIcon::draw(){
 	if(selected && borderBuffer != nullptr){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), getWidth(), getHeight(), 1, TFT_TRANSPARENT);
 	}
+	FontWriter u8f = getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_6x12_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 25);
+	u8f.println("Hold BACK to delete,");
+	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, getTotalY() + 37);
+	u8f.println("hold SELECT to play");
 
 }
 
