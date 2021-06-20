@@ -53,8 +53,9 @@ void LineDriver::process(){
 	}
 	copyPoint->next = nullptr;
 	line->tail = copyPoint;
+}
 
-	// clean up
+LineDriver::~LineDriver(){
 	delete tracer;
 	free(thinningBuffer);
 }
