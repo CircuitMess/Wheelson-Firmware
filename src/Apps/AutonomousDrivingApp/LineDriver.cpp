@@ -9,14 +9,18 @@ LineDriver::LineDriver() : Driver(), thinningBuffer((Color*)ps_malloc(160 * 120 
 	tracer->im = thinningBuffer;
 }
 
-void LineDriver::process(){
+LineDriver::~LineDriver(){
+	delete tracer;
+	free(thinningBuffer);
+	delete line;
+}
 
+void LineDriver::process(){
+	if(getCameraImage() == nullptr) return;
 	memcpy(thinningBuffer, getCameraImage(), 160 * 120 * sizeof(Color));
 
 	//B/W contrasting
 	ImageProc::contrast(thinningBuffer, 160, 120, thinningBuffer, 122);
-
-
 
 	//algorithm expects binary image
 	for(uint i = 0; i < tracer->H * tracer->H; i++){
@@ -45,18 +49,62 @@ void LineDriver::process(){
 	}
 
 	//copy longest polyline, point by point
+	line = new polyline_t();
 	point_t* copyPoint = new point_t(*longestPolyPtr->head);
 	line->head = copyPoint;
-	for (point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
+	memcpy(processedBuffer, Driver::getCameraImage(), 160 * 120 * sizeof(Color));
+	for(point_t* point = longestPolyPtr->head->next; point != nullptr; point = point->next){
 		copyPoint->next = new point_t(*point);
 		copyPoint = copyPoint->next;
+		if(point->next != nullptr){
+			drawLine(point->x, point->y, point->next->x, point->next->y, processedBuffer, TFT_RED);
+		}
 	}
 	copyPoint->next = nullptr;
 	line->tail = copyPoint;
+
+	tracer->destroy_polylines(p);
+	tracer->destroy_polylines(line);
+
 }
 
-LineDriver::~LineDriver(){
-	delete tracer;
-	free(thinningBuffer);
-}
+void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 
+        // Bresenham's line algorithm
+  const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+  if(steep)
+  {
+    std::swap(x1, y1);
+    std::swap(x2, y2);
+  }
+
+  if(x1 > x2)
+  {
+    std::swap(x1, x2);
+    std::swap(y1, y2);
+  }
+
+  const float dx = x2 - x1;
+  const float dy = fabs(y2 - y1);
+
+  float error = dx / 2.0f;
+  const int ystep = (y1 < y2) ? 1 : -1;
+  int y = (int)y1;
+
+  const int maxX = (int)x2;
+
+	for(int x = (int) x1; x <= maxX; x++){
+		if(steep){//x*120+y
+			buffer[x * 160 + y] = color;
+		}else{//y*160+x
+			buffer[y * 160 + x] = color;
+		}
+
+    error -= dy;
+    if(error < 0)
+    {
+        y += ystep;
+        error += dx;
+    }
+  }
+}

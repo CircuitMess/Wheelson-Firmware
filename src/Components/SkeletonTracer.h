@@ -124,6 +124,7 @@ public:
 	 * @return        an array of polylines
 	*/
 	polyline_t *trace_skeleton(int x, int y, int w, int h, int iter);
+	void destroy_polylines(polyline_t *q);
 
 
 private:
@@ -138,7 +139,6 @@ private:
 
 	std::string print_polylines(polyline_t *q);
 
-	void destroy_polylines(polyline_t *q);
 
 	void reverse_polyline(polyline_t *q);
 

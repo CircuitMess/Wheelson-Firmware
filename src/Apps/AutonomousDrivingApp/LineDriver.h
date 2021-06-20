@@ -14,6 +14,10 @@ public:
 	LineDriver();
 	virtual ~LineDriver();
 
+	virtual ~LineDriver();
+
+
+
 protected:
 	void process() override;
 	Color* thinningBuffer;
@@ -21,6 +25,7 @@ protected:
 private:
 	polyline_t* line;
 	SkeletonTracer* tracer;
+	void drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, Color* buffer, uint32_t color);
 };
 
 
