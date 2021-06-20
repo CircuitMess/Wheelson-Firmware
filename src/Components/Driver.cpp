@@ -9,6 +9,11 @@ Driver::Driver(): task("Driver", taskFunc, 4096, this){
 	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }
 
+Driver::~Driver(){
+	free(frameBuffer);
+	free(processedBuffer);
+}
+
 void Driver::start(){
 	task.start(1, 0);
 }
