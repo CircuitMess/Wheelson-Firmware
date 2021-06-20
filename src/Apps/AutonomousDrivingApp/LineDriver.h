@@ -14,9 +14,6 @@ public:
 	LineDriver();
 	virtual ~LineDriver();
 
-	virtual ~LineDriver();
-
-
 
 protected:
 	void process() override;
