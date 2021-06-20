@@ -12,6 +12,7 @@ class SkeletonTracer;
 class LineDriver : public Driver {
 public:
 	LineDriver();
+	virtual ~LineDriver();
 
 	virtual ~LineDriver();
 
