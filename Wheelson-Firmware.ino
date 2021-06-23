@@ -9,6 +9,7 @@
 #include <esp32-hal-psram.h>
 #include <Settings.h>
 #include "src/IntroScreen.h"
+#include "src/Services/BatteryPopupService/BatteryPopupService.h"
 
 
 Display display(160, 128, -1, -1);
@@ -45,6 +46,9 @@ void setup(){
 	intro->start();
 
 	LED.setBacklight(true);
+	LoopManager::addListener(&BatteryPopup);
+	LoopManager::addListener(&Battery);
+	Battery.disableShutdown(true);
 }
 
 void loop(){
