@@ -35,24 +35,17 @@ void LEDHWTest::stop(){
 }
 
 void LEDHWTest::loop(uint micros){
-	LED.setHeadlight(255);
-	LED.setRGB(RED);
-	delay(500);
-	LED.setRGB(GREEN);
-	delay(500);
-	LED.setRGB(YELLOW);
-	delay(500);
-	LED.setRGB(BLUE);
-	delay(500);
-	LED.setRGB(MAGENTA);
-	delay(500);
-	LED.setRGB(CYAN);
-	delay(500);
-	LED.setRGB(WHITE);
-	delay(500);
-	LED.setRGB(OFF);
-	LED.setHeadlight(0);
-	delay(1000);
+	if(millis() - previousTime >= 500){
+		previousTime = millis();
+		if(LED.getRGB() == OFF || LED.getBacklight() == 0){
+			LED.setRGB(static_cast<WLEDColor>(random(1, 6)));
+			LED.setHeadlight(255);
+		}else{
+			LED.setRGB(OFF);
+			LED.setHeadlight(0);
+		}
+	}
+
 }
 
 void LEDHWTest::buttonPressed(uint id){

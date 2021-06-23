@@ -19,12 +19,12 @@ public:
 
 	void start();
 
-	void stop() ;
+	void stop();
 
 	void buttonPressed(uint id) override;
 
 private:
-
+	uint32_t previousTime = 0;
 };
 
 #endif //WHEELSON_FIRMWARE_LEDHWTEST_H
