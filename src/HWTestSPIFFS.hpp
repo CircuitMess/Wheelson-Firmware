@@ -20,6 +20,8 @@ static const struct {
 
 		{"/Setts/settings_bg.raw.hs", 91334},
 
+		{"/Intro/intro.g565.hs", 4235833},
+
 		{"/MainMenu/app_autonomous.raw", 607697},
 		{"/MainMenu/app_ball.raw", 671122},
 		{"/MainMenu/app_object.raw", 475486},
