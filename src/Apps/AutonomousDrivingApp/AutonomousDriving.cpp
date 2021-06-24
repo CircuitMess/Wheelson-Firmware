@@ -1,4 +1,5 @@
 #include <FS/CompressedFile.h>
+#include <SPIFFS.h>
 #include "AutonomousDriving.h"
 #include "../../Components/CameraFeed.h"
 

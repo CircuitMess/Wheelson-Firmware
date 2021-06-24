@@ -6,6 +6,7 @@
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
+#include <SPIFFS.h>
 
 
 const char* const MainMenu::AppTitles[] = {"Simple programming", "Autonomous", "Ball", "Object", "Settings"};

@@ -2,6 +2,8 @@
 #include <Loop/LoopManager.h>
 #include <Wheelson.h>
 #include <WiFi.h>
+#include <SPIFFS.h>
+
 const uint8_t ShutdownPopup::shutdownTime = 5;
 
 ShutdownPopup::ShutdownPopup(Context &context) : Modal(context, 135, 60){

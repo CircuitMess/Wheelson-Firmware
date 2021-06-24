@@ -1,3 +1,4 @@
+#include <SPIFFS.h>
 #include "MainMenuItem.h"
 
 const char* const MainMenuItem::AppIcons[] = {"/MainMenu/app_simple.raw", "/MainMenu/app_autonomous.raw", "/MainMenu/app_ball.raw", "/MainMenu/app_object.raw", "/MainMenu/app_settings.raw"};

@@ -2,6 +2,7 @@
 #include "Playback.h"
 #include <Wheelson.h>
 #include <Loop/LoopManager.h>
+#include <SPIFFS.h>
 
 Simple::Playback::Playback(Display& display, const Program* program) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)),
 												program(program), player(program){

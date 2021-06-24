@@ -6,6 +6,7 @@
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
+#include <SPIFFS.h>
 
 Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 

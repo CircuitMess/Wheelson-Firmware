@@ -1,5 +1,6 @@
 #include "AddIcon.hpp"
 #include <U8g2_for_TFT_eSPI.h>
+#include <SPIFFS.h>
 
 
 Simple::AddIcon::AddIcon(ElementContainer* parent) : CustomElement(parent, 15, 15){

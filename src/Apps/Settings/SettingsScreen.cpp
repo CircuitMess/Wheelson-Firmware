@@ -3,6 +3,7 @@
 #include <Input/Input.h>
 #include <FS/CompressedFile.h>
 #include <Settings.h>
+#include <SPIFFS.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 																   shutDownSlider(new DiscreteSlider(screenLayout, "Shutdown time", {0, 1, 5, 15, 30})),
