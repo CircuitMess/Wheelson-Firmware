@@ -8,10 +8,11 @@
 #include <Input/InputListener.h>
 #include <Loop/LoopListener.h>
 #include "DrivingElement.h"
+#include "../../Components/Driver.h"
 
 class AutonomousDriving : public Context, public LoopListener {
 public:
-	AutonomousDriving(Display& display);
+	AutonomousDriving(Display& display, Driver* driver);
 
 	virtual ~AutonomousDriving();
 
@@ -34,7 +35,7 @@ private:
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
 	Color* backgroundBuffer = nullptr;
-	Color* cameraBuffer = nullptr;
+	Driver* driver;
 
 	void buildUI();
 

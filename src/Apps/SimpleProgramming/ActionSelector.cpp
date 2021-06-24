@@ -2,6 +2,7 @@
 #include <Input/Input.h>
 #include <Wheelson.h>
 
+const char* const Simple::ActionSelector::ActionTitles[] = {"Forward","Backward","Left","Right","LED OFF","LED ON","Pause"};
 
 Simple::ActionSelector* Simple::ActionSelector::instance = nullptr;
 
@@ -24,6 +25,12 @@ Simple::ActionSelector::~ActionSelector(){
 void Simple::ActionSelector::draw(){
 	screen.getSprite()->clear(TFT_TRANSPARENT);
 	modalBg.draw();
+	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_HelvetiPixel_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	u8f.setCursor((100 - u8f.getUTF8Width(ActionTitles[selectedAction])) / 2, 95);
+	u8f.print(ActionTitles[selectedAction]);
 	screen.draw();
 }
 
@@ -43,8 +50,6 @@ void Simple::ActionSelector::init(){
 }
 
 void Simple::ActionSelector::deinit(){
-	selectedAction = 0;
-
 }
 
 void Simple::ActionSelector::buildUI(){

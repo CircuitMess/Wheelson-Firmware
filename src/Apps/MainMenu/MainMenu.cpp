@@ -1,9 +1,12 @@
 #include "MainMenu.h"
 #include "../SimpleProgramming/App.h"
+#include "../Settings/SettingsScreen.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
+#include <Loop/LoopManager.h>
+
 
 const char* const MainMenu::AppTitles[] = {"Simple programming", "Autonomous", "Ball", "Object", "Settings"};
 
@@ -12,7 +15,7 @@ Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return nullptr; },
 		[](Display& display) -> Context* { return nullptr; },
 		[](Display& display) -> Context* { return nullptr; },
-		[](Display& display) -> Context* { return nullptr; }
+		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
 };
 
 MainMenu* MainMenu::instance = nullptr;
@@ -32,6 +35,7 @@ MainMenu::~MainMenu(){
 }
 
 void MainMenu::start(){
+	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
@@ -39,6 +43,7 @@ void MainMenu::start(){
 
 
 void MainMenu::stop(){
+	LoopManager::removeListener(this);
 	Input::getInstance()->removeListener(this);
 }
 
@@ -49,7 +54,7 @@ void MainMenu::init(){
 		return;
 	}
 
-	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/MainMenu/mainmenu_bg.raw.hs"),13,12);
+	fs::File backgroundFile = CompressedFile::open(SPIFFS.open("/MainMenu/mainmenu_bg.raw.hs"), 13, 12);
 
 	backgroundFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
 	backgroundFile.close();
@@ -82,11 +87,16 @@ void MainMenu::buildUI(){
 		apps.push_back(app);
 		layout.addChild(app);
 	}
-	apps[0]->setX(10);apps[0]->setY(15);
-	apps[1]->setX(60);apps[1]->setY(15);
-	apps[2]->setX(110);apps[2]->setY(15);
-	apps[3]->setX(40);apps[3]->setY(65);
-	apps[4]->setX(90);apps[4]->setY(65);
+	apps[0]->setX(10);
+	apps[0]->setY(15);
+	apps[1]->setX(60);
+	apps[1]->setY(15);
+	apps[2]->setX(110);
+	apps[2]->setY(15);
+	apps[3]->setX(40);
+	apps[3]->setY(65);
+	apps[4]->setX(90);
+	apps[4]->setY(65);
 	layout.reflow();
 	screen.addChild(&layout);
 	screen.repos();
@@ -138,6 +148,16 @@ void MainMenu::buttonPressed(uint id){
 			app->push(this);
 			break;
 	}
+}
+
+void MainMenu::loop(uint micros){
+	if(lastDrawnBatteryLevel != Battery.getLastDrawnLevel()){
+		lastDrawnBatteryLevel = Battery.getLastDrawnLevel();
+		screen.draw();
+		Battery.drawIcon(screen.getSprite());
+		screen.commit();
+	}
+
 }
 
 

@@ -4,6 +4,7 @@
 #include <Loop/LoopManager.h>
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
+#include <Wheelson.h>
 
 IntroScreen::IntroScreen* IntroScreen::IntroScreen::instance = nullptr;
 
@@ -11,7 +12,7 @@ IntroScreen::IntroScreen* IntroScreen::IntroScreen::instance = nullptr;
 IntroScreen::IntroScreen::IntroScreen(Display& display) : Context(display){
 	instance = this;
 
-	fs::File f = SPIFFS.open("/intro.g565.hs");
+	fs::File f = SPIFFS.open("/Intro/intro.g565.hs");
 	if(!f){
 		Serial.println("Error opening intro gif");
 		return;
@@ -49,7 +50,7 @@ void IntroScreen::IntroScreen::start(){
 
 		instance->stop();
 		delete instance;
-
+		LED.setHeadlight(0);
 		MainMenu* main = new MainMenu(display);
 		main->unpack();
 		main->start();
@@ -67,8 +68,16 @@ void IntroScreen::IntroScreen::stop(){
 
 void IntroScreen::IntroScreen::loop(uint micros){
 	if(!gif || !gif->checkFrame()) return;
-
 	draw();
 	screen.commit();
-}
 
+	if(millis() - previousTime >= 500){
+		previousTime = millis();
+		if(LED.getHeadlight() == 0){
+			LED.setHeadlight(255);
+		}else{
+			LED.setHeadlight(0);
+		}
+	}
+
+}
