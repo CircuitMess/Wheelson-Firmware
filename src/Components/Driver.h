@@ -9,11 +9,15 @@
 class Driver {
 public:
 	Driver();
+	virtual ~Driver();
+
 	void start();
 	void stop();
 
 	virtual uint getMotorState(uint id);
-	const Color* getCameraImage();
+	virtual Color* getCameraImage();
+
+	Color* getProcessedImage() const;
 
 	bool isRunning() const;
 
@@ -22,6 +26,7 @@ public:
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);
+	Color* processedBuffer = nullptr;
 
 private:
 	CameraFeed cam;

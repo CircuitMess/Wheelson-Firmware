@@ -153,3 +153,4 @@ camera_fb_t* CameraFeed::getFrame(){
 uint8_t* CameraFeed::getRawRGB() const{
 	return bufferRGB;
 }
+
