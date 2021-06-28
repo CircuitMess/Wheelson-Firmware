@@ -12,7 +12,7 @@ AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context
 }
 
 AutonomousDriving::~AutonomousDriving(){
-
+	delete driver;
 }
 
 void AutonomousDriving::start(){

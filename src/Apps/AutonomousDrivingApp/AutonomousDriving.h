@@ -35,7 +35,7 @@ private:
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
 	Color* backgroundBuffer = nullptr;
-	Driver* driver;
+	Driver* driver = nullptr;
 
 	void buildUI();
 	void buttonPressed(uint i) override;
