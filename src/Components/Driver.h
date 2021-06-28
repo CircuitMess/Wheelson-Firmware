@@ -4,7 +4,7 @@
 #include <Loop/LoopListener.h>
 #include <Display/Color.h>
 #include <Util/Task.h>
-#include "CameraFeed.h"
+#include <Camera.h>
 
 class Driver {
 public:
@@ -14,10 +14,10 @@ public:
 	void start();
 	void stop();
 
-	virtual uint getMotorState(uint id);
-	virtual Color* getCameraImage();
+	uint getMotorState(uint id);
+	const Color* getCameraImage() const;
 
-	Color* getProcessedImage() const;
+	const Color* getProcessedImage() const;
 
 	bool isRunning() const;
 
@@ -29,11 +29,12 @@ protected:
 	Color* processedBuffer = nullptr;
 
 private:
-	CameraFeed cam;
 	Color* frameBuffer = nullptr;
 	int8_t motors[4] = {0};
 
 	Task task;
+
+	Camera cam;
 };
 
 #endif //WHEELSON_FIRMWARE_DRIVER_HPP

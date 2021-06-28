@@ -27,11 +27,11 @@ void Driver::taskFunc(Task* task){
 
 	while(task->running){
 		driver->cam.loadFrame();
-		driver->cam.decodeFrame();
-		memcpy(driver->frameBuffer, driver->cam.getRaw(), 160 * 120 * sizeof(Color));
-		driver->cam.releaseFrame();
+		memcpy(driver->frameBuffer, driver->cam.getRGB565(), 160 * 120 * sizeof(Color));
 
 		driver->process();
+
+		driver->cam.releaseFrame();
 	}
 }
 
@@ -44,7 +44,7 @@ uint Driver::getMotorState(uint id){
 	return motors[id];
 }
 
-Color* Driver::getCameraImage(){
+const Color* Driver::getCameraImage() const{
 	return frameBuffer;
 }
 
@@ -52,6 +52,6 @@ bool Driver::isRunning() const{
 	return !task.isStopped();
 }
 
-Color* Driver::getProcessedImage() const{
+const Color* Driver::getProcessedImage() const{
 	return processedBuffer;
 }

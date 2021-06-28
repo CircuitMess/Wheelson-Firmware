@@ -2,7 +2,6 @@
 #define WHEELSON_FIRMWARE_LINEDRIVER_H
 
 #include "../../Components/Driver.h"
-#include "../../Components/CameraFeed.h"
 #include <Display/Display.h>
 
 struct polyline_t;
