@@ -23,6 +23,8 @@ public:
 
 	static void taskFunc(Task* task);
 
+	virtual void toggleDisplayMode();
+
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);

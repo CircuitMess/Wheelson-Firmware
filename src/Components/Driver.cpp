@@ -55,3 +55,7 @@ bool Driver::isRunning() const{
 const Color* Driver::getProcessedImage() const{
 	return processedBuffer;
 }
+
+void Driver::toggleDisplayMode(){
+
+}

@@ -2,6 +2,8 @@
 #include <SPIFFS.h>
 #include "AutonomousDriving.h"
 #include <Loop/LoopManager.h>
+#include <Input/Input.h>
+#include <Wheelson.h>
 
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
@@ -18,11 +20,13 @@ void AutonomousDriving::start(){
 	draw();
 	screen.commit();
 	LoopManager::addListener(this);
+	Input::getInstance()->addListener(this);
 }
 
 void AutonomousDriving::stop(){
 	driver->stop();
 	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void AutonomousDriving::draw(){
@@ -71,4 +75,10 @@ void AutonomousDriving::loop(uint micros){
 	}
 	draw();
 	screen.commit();
+}
+
+void AutonomousDriving::buttonPressed(uint i){
+	if(i == BTN_MID){
+		driver->toggleDisplayMode();
+	}
 }

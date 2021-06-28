@@ -57,9 +57,12 @@ void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 
 void MarkerDriver::process(){
 	const Color* frame = getCameraImage();
-	//memcpy(processedBuffer, frame, 160 * 120 * sizeof(Color));
 
-	auto markers = Markers::detect((uint8_t*) frame, 160, 120, Markers::RGB565, processedBuffer);
+	auto markers = Markers::detect((uint8_t*) frame, 160, 120, Markers::RGB565, displayMode == BW ? processedBuffer : nullptr);
+
+	if(displayMode == RAW){
+		memcpy(processedBuffer, frame, 160 * 120 * sizeof(Color));
+	}
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
 		if(state != IDLE){
@@ -105,4 +108,8 @@ void MarkerDriver::process(){
 		setMotor(MOTOR_BR, 80);
 		state = BURNOUT;
 	}
+}
+
+void MarkerDriver::toggleDisplayMode(){
+	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
 }

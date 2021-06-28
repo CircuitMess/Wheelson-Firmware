@@ -10,7 +10,7 @@
 #include "DrivingElement.h"
 #include "../../Components/Driver.h"
 
-class AutonomousDriving : public Context, public LoopListener {
+class AutonomousDriving : public Context, public LoopListener, public InputListener {
 public:
 	AutonomousDriving(Display& display, Driver* driver);
 
@@ -38,6 +38,7 @@ private:
 	Driver* driver;
 
 	void buildUI();
+	void buttonPressed(uint i) override;
 
 };
 
