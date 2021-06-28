@@ -4,6 +4,7 @@
 #include "Wire.h"
 #include "HWTestSPIFFS.hpp"
 #include <Wheelson.h>
+#include <SPIFFS.h>
 
 HardwareTest *HardwareTest::test = nullptr;
 
