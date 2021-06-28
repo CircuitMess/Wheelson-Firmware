@@ -4,7 +4,7 @@
 #include "Driver.h"
 
 
-Driver::Driver(): task("Driver", taskFunc, 4096, this){
+Driver::Driver(): task("Driver", taskFunc, 20000, this){
 	frameBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }

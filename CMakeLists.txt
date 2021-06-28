@@ -49,6 +49,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/U8g2
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/JPEGDecoder/src)
 
 include_directories(${ArduinoLibs}/Wheelson-Library/src)
+include_directories(${ArduinoLibs}/OpenCV-ESP32/src)
 
 
 # Source directories
