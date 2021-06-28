@@ -7,6 +7,7 @@
 #include "DiscreteSlider.h"
 #include <Input/InputListener.h>
 #include "TextElement.h"
+#include <FS.h>
 
 namespace SettingsScreen {
 	class SettingsScreen : public Context, private InputListener {

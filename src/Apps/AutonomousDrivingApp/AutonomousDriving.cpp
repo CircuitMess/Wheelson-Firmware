@@ -1,4 +1,5 @@
 #include <FS/CompressedFile.h>
+#include <SPIFFS.h>
 #include "AutonomousDriving.h"
 #include "../../Components/CameraFeed.h"
 
@@ -63,7 +64,7 @@ void AutonomousDriving::buildUI(){
 void AutonomousDriving::loop(uint micros){
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		sprintf(buffer, "%u", driver->getMotorState(i));
+		sprintf(buffer, "%u", ((driver->getMotorState(i))/127)*100);
 		engines[i]->setText(buffer);
 	}
 	draw();

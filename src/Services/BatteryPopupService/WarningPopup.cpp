@@ -3,6 +3,8 @@
 #include "../../Wheelson.h"
 #include <WiFi.h>
 #include <Support/ModalTransition.h>
+#include <SPIFFS.h>
+
 const uint8_t WarningPopup::warningTime = 5;
 WarningPopup* WarningPopup::instance = nullptr;
 

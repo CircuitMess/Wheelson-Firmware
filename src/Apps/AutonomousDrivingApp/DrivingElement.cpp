@@ -1,5 +1,6 @@
 #include "DrivingElement.h"
 #include <U8g2_for_TFT_eSPI.h>
+#include <SPIFFS.h>
 
 const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.raw"};
 
