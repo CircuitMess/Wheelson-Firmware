@@ -40,7 +40,7 @@ void Driver::setMotor(uint8_t id, int8_t state){
 	Motors.setMotor(id, state);
 }
 
-uint Driver::getMotorState(uint id){
+uint Driver::getMotorState(int id){
 	return motors[id];
 }
 

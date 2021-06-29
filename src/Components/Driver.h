@@ -14,7 +14,7 @@ public:
 	void start();
 	void stop();
 
-	virtual uint getMotorState(uint id);
+	virtual uint getMotorState(int id);
 	virtual Color* getCameraImage();
 
 	Color* getProcessedImage() const;
