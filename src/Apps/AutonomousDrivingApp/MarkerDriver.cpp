@@ -98,6 +98,17 @@ void MarkerDriver::process(){
 		state = LEDOFF;
 	}else if(action == 4 && state != DO360){
 		// do 360
+		bool direction = random(0, 2);
+		int8_t intensity = 127;
+		if(direction){
+			intensity *= -1;
+		}
+		Motors.setMotor(MOTOR_FR, intensity);
+		Motors.setMotor(MOTOR_BR, intensity);
+		intensity *= -1;
+		Motors.setMotor(MOTOR_FL, intensity);
+		Motors.setMotor(MOTOR_BL, intensity);
+		delay(1250);
 		state = DO360;
 	}
 	else if(action == 5 && state != BURNOUT){
