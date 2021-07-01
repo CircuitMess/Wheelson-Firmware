@@ -17,8 +17,6 @@ namespace SettingsScreen {
 
 		uint8_t getSliderValue() const;
 
-		bool isSliderSelected() const;
-
 	private:
 
 		bool sliderIsSelected = false;
