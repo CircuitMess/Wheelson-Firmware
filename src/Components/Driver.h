@@ -16,6 +16,7 @@ public:
 
 	uint getMotorState(uint id);
 	const Color* getCameraImage() const;
+	const Color* getCameraImage888() const;
 
 	const Color* getProcessedImage() const;
 
@@ -32,6 +33,7 @@ protected:
 
 private:
 	Color* frameBuffer = nullptr;
+	Color* frameBuffer888 = nullptr;
 	int8_t motors[4] = {0};
 
 	Task task;

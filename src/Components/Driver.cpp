@@ -6,11 +6,13 @@
 
 Driver::Driver(): task("Driver", taskFunc, 20000, this){
 	frameBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
+	frameBuffer888 = static_cast<Color*>(ps_malloc(160 * 120 * 3));
 	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }
 
 Driver::~Driver(){
 	free(frameBuffer);
+	free(frameBuffer888);
 	free(processedBuffer);
 }
 
@@ -28,6 +30,7 @@ void Driver::taskFunc(Task* task){
 	while(task->running){
 		driver->cam.loadFrame();
 		memcpy(driver->frameBuffer, driver->cam.getRGB565(), 160 * 120 * sizeof(Color));
+		memcpy(driver->frameBuffer888, driver->cam.getRGB888(), 160 * 120 * 3);
 
 		driver->process();
 
@@ -58,4 +61,8 @@ const Color* Driver::getProcessedImage() const{
 
 void Driver::toggleDisplayMode(){
 
+}
+
+const Color* Driver::getCameraImage888() const{
+	return frameBuffer888;
 }
