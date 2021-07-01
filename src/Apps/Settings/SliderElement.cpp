@@ -33,7 +33,3 @@ void SettingsScreen::SliderElement::drawControl(){
 		getSprite()->fillRoundRect(getTotalX() + 100 + movingCursor, getTotalY() + 11, 4, 7, 1, TFT_WHITE);
 
 }
-
-bool SettingsScreen::SliderElement::isSliderSelected() const{
-	return sliderIsSelected;
-}
