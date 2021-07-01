@@ -13,6 +13,9 @@ ShutdownPopup::ShutdownPopup(Context &context) : Modal(context, 135, 60){
 	bgFile.close();
 	screen.getSprite()->setChroma(TFT_TRANSPARENT);
 }
+ShutdownPopup::~ShutdownPopup(){
+	free(batteryIconBuffer);
+}
 
 void ShutdownPopup::draw(){
 	Sprite& sprite = *screen.getSprite();

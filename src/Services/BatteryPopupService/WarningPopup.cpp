@@ -18,6 +18,10 @@ WarningPopup::WarningPopup(Context &context) : Modal(context, 135, 60){
 	screen.getSprite()->setChroma(TFT_TRANSPARENT);
 }
 
+WarningPopup::~WarningPopup(){
+	free(batteryIconBuffer);
+}
+
 void WarningPopup::draw(){
 	Sprite& sprite = *screen.getSprite();
 
