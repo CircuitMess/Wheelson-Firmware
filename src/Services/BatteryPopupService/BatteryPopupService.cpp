@@ -4,6 +4,9 @@
 #include <Support/ModalTransition.h>
 #include "ShutdownPopup.h"
 #include "WarningPopup.h"
+#include <Settings.h>
+#include <Display/Display.h>
+#include <WiFi.h>
 
 BatteryPopupService BatteryPopup;
 const uint16_t BatteryPopupService::checkInterval = 20; //in seconds
@@ -11,10 +14,36 @@ const uint8_t BatteryPopupService::shortBlinkInterval = 1; //in seconds
 const uint8_t BatteryPopupService::longBlinkInterval = 5; //in seconds
 ShutdownPopup *BatteryPopupService::shutdownPopup = nullptr;
 WarningPopup *BatteryPopupService::warningPopup = nullptr;
+const uint8_t shutdownTimes[5] = {0, 1, 5, 15, 30};
 
 void BatteryPopupService::loop(uint time){
 	checkMicros += time;
 	blinkMicros += time;
+	if(lastShutdownTime == 0xFF){
+		lastShutdownTime = Settings.get().shutdownTime;
+	}
+	if(lastShutdownTime != Settings.get().shutdownTime){
+		autoShutdownMicros = 0;
+	}
+	if(Settings.get().shutdownTime != 0){
+		autoShutdownMicros += time;
+		if(autoShutdownMicros >= shutdownTimes[Settings.get().shutdownTime]*6000000){
+			if(tft != nullptr){
+				tft->writecommand(16);
+			}
+			Nuvo.shutdown();
+			WiFi.mode(WIFI_OFF);
+			btStop();
+			esp_deep_sleep_start();
+			return;
+		}
+	}
+
+
+	//voltage not yet read
+	if(Battery.getVoltage() == 0){
+		return;
+	}
 	uint8_t percentage = Battery.getPercentage();
 
 	if(blinkActive){
@@ -36,12 +65,6 @@ void BatteryPopupService::loop(uint time){
 	}
 
 	if(checkMicros >= checkInterval * 1000000){
-
-		//voltage not yet read
-		if(Battery.getVoltage() == 0){
-			checkMicros = 0;
-			return;
-		}
 
 		if(percentage <= 1){
 			if(ContextTransition::isRunning() ||
@@ -74,4 +97,8 @@ void BatteryPopupService::loop(uint time){
 		}
 		checkMicros = 0;
 	}
+}
+
+void BatteryPopupService::setTFT(TFT_eSPI* _tft){
+	tft=_tft;
 }

@@ -45,6 +45,7 @@ void ShutdownPopup::stop(){
 void ShutdownPopup::loop(uint micros){
 	shutdownTimer += micros;
 	if(shutdownTimer >= shutdownTime * 1000000){
+		screen.getDisplay()->getTft()->writecommand(16);
 		Nuvo.shutdown();
 		WiFi.mode(WIFI_OFF);
 		btStop();

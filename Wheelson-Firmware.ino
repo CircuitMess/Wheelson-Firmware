@@ -49,6 +49,7 @@ void setup(){
 	LoopManager::addListener(&BatteryPopup);
 	LoopManager::addListener(&Battery);
 	Battery.disableShutdown(true);
+	BatteryPopup.setTFT(display.getTft());
 }
 
 void loop(){
