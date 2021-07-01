@@ -27,7 +27,7 @@ void BatteryPopupService::loop(uint time){
 	}
 	if(Settings.get().shutdownTime != 0){
 		autoShutdownMicros += time;
-		if(autoShutdownMicros >= shutdownTimes[Settings.get().shutdownTime]*6000000){
+		if(autoShutdownMicros >= shutdownTimes[Settings.get().shutdownTime]*600000000){
 			if(tft != nullptr){
 				tft->writecommand(16);
 			}
