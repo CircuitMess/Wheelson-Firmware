@@ -78,7 +78,12 @@ void AutonomousDriving::loop(uint micros){
 }
 
 void AutonomousDriving::buttonPressed(uint i){
-	if(i == BTN_MID){
-		driver->toggleDisplayMode();
+	switch(i){
+		case BTN_BACK:
+			this->pop();
+			break;
+		case BTN_MID:
+			driver->toggleDisplayMode();
+			break;
 	}
 }
