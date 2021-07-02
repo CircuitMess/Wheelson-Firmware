@@ -61,10 +61,10 @@ void AutonomousDriving::buildUI(){
 	screenLayout->reflow();
 	screen.addChild(screenLayout);
 	screen.repos();
-	engines[0]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 20);
-	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 100);
-	engines[2]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 20);
-	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 100);
+	engines[0]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 15);
+	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 95);
+	engines[2]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 15);
+	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 95);
 }
 
 void AutonomousDriving::loop(uint micros){

@@ -14,10 +14,9 @@ public:
 	void start();
 	void stop();
 
-	uint getMotorState(uint id);
+	int8_t getMotorState(uint8_t id);
 	const Color* getCameraImage() const;
 	const Color* getCameraImage888() const;
-
 	const Color* getProcessedImage() const;
 
 	bool isRunning() const;

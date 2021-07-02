@@ -33,16 +33,25 @@ DrivingElement::~DrivingElement(){
 }
 
 void DrivingElement::draw(){
+	uint xShift = 0;
 	getSprite()->drawIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, TFT_TRANSPARENT);
-
 	FontWriter u8f = getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont10_tf);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor(getTotalX() - 3, getTotalY() + 23);
+	if(text.length() == 1){
+		xShift = 6;
+	}else if(text.length() == 2){
+		xShift = 3;
+	}else if(text.length() == 3){
+		xShift = 1;
+	}else if(text.length() == 4){
+		xShift = 0;
+	}
+	u8f.setCursor(getTotalX() + xShift, getTotalY() + 22);
 	u8f.print(text);
 	if(needPercentage){
-		getSprite()->drawIcon(percentageBuffer, getTotalX() + 13, getTotalY() + 17, 6, 6, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(percentageBuffer, (getTotalX() + 6), (getTotalY() + 23), 6, 6, 1, TFT_TRANSPARENT);
 	}
 
 }
