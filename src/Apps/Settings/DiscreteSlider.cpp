@@ -29,12 +29,6 @@ void SettingsScreen::DiscreteSlider::drawControl(){
 
 	movingCursor = map(index, 0, shutDownTime.size()-1, 0, 51);
 
-	getSprite()->setTextColor(TFT_WHITE);
-	getSprite()->setCursor(getTotalX() + 125, getTotalY() + 6);
-	getSprite()->println(shutDownTime[index]);
-	getSprite()->setCursor(getTotalX() + 137, getTotalY() + 6);
-	getSprite()->println("m");
-
 	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 16, 2, 5, TFT_WHITE);
 	getSprite()->drawRect(getTotalX() + 153, getTotalY() + 16, 2, 5, TFT_WHITE);
 	getSprite()->drawRect(getTotalX() + 100, getTotalY() + 18, 55, 1, TFT_WHITE);
@@ -43,6 +37,16 @@ void SettingsScreen::DiscreteSlider::drawControl(){
 	}else{
 		getSprite()->fillRoundRect(getTotalX() + 100 + movingCursor, getTotalY() + 15, 4, 7, 1, TFT_WHITE);
 	}
+	getSprite()->setTextColor(TFT_WHITE);
+	if(index == 0){
+		getSprite()->setCursor(getTotalX() + 120, getTotalY() + 6);
+		getSprite()->println("OFF");
+		return;
+	}
+	getSprite()->setCursor(getTotalX() + 115, getTotalY() + 6);
+	getSprite()->println(shutDownTime[index]);
+	getSprite()->setCursor(getTotalX() + 127, getTotalY() + 6);
+	getSprite()->println("min");
 
 }
 

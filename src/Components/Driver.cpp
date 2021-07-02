@@ -4,13 +4,15 @@
 #include "Driver.h"
 
 
-Driver::Driver(): task("Driver", taskFunc, 4096, this){
+Driver::Driver(): task("Driver", taskFunc, 20000, this){
 	frameBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
+	frameBuffer888 = static_cast<Color*>(ps_malloc(160 * 120 * 3));
 	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }
 
 Driver::~Driver(){
 	free(frameBuffer);
+	free(frameBuffer888);
 	free(processedBuffer);
 }
 
@@ -27,11 +29,12 @@ void Driver::taskFunc(Task* task){
 
 	while(task->running){
 		driver->cam.loadFrame();
-		driver->cam.decodeFrame();
-		memcpy(driver->frameBuffer, driver->cam.getRaw(), 160 * 120 * sizeof(Color));
-		driver->cam.releaseFrame();
+		memcpy(driver->frameBuffer, driver->cam.getRGB565(), 160 * 120 * sizeof(Color));
+		memcpy(driver->frameBuffer888, driver->cam.getRGB888(), 160 * 120 * 3);
 
 		driver->process();
+
+		driver->cam.releaseFrame();
 	}
 }
 
@@ -44,7 +47,7 @@ int8_t Driver::getMotorState(uint8_t id){
 	return motors[id];
 }
 
-Color* Driver::getCameraImage(){
+const Color* Driver::getCameraImage() const{
 	return frameBuffer;
 }
 
@@ -52,6 +55,14 @@ bool Driver::isRunning() const{
 	return !task.isStopped();
 }
 
-Color* Driver::getProcessedImage() const{
+const Color* Driver::getProcessedImage() const{
 	return processedBuffer;
+}
+
+void Driver::toggleDisplayMode(){
+
+}
+
+const Color* Driver::getCameraImage888() const{
+	return frameBuffer888;
 }

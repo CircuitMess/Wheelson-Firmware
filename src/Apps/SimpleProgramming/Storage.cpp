@@ -78,6 +78,7 @@ void Simple::Storage::readProgs(){
 	for(uint8_t i = 0; i < numProgs; i++){
 		Program* prog = new Program();
 		progsFile.read(&prog->numActions, 1);
+		progsFile.read(&prog->id, 1);
 		prog->actions = (Action*)malloc(prog->numActions*sizeof(Action));
 		progsFile.read((uint8_t*)prog->actions, prog->numActions*sizeof(Action));
 		programs.push_back(prog);
@@ -96,6 +97,7 @@ void Simple::Storage::writeProgs(){
 	for(uint8_t i = 0; i < numProgs; i++){
 		Program *prog = programs[i];
 		progsFile.write(&prog->numActions, 1);
+		progsFile.write(&prog->id, 1);
 		progsFile.write((uint8_t*)prog->actions, sizeof(Action)*prog->numActions);
 	}
 	progsFile.close();

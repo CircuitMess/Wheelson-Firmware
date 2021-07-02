@@ -6,7 +6,7 @@
 #include <SPIFFS.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
-																   shutDownSlider(new DiscreteSlider(screenLayout, "Shutdown time", {0, 1, 5, 15, 30})),
+																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", {0, 1, 5, 15, 30})),
 																   speedSlider(new SliderElement(screenLayout, "Speed modifier")), inputTest(new TextElement(screenLayout, "Input Test")),
 																   save(new TextElement(screenLayout, "Save")){
 
@@ -92,9 +92,9 @@ void SettingsScreen::SettingsScreen::selectApp(int8_t num){
 void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
-			if(shutDownSlider->isSliderSelected()){
+			if(selectedSetting == 0){
 				shutDownSlider->selectPrev();
-			}else if(speedSlider->isSliderSelected()){
+			}else if(selectedSetting == 1){
 				speedSlider->moveSliderValue(-1);
 			}
 			draw();
@@ -102,9 +102,9 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_RIGHT:
-			if(shutDownSlider->isSliderSelected()){
+			if(selectedSetting == 0){
 				shutDownSlider->selectNext();
-			}else if(speedSlider->isSliderSelected()){
+			}else if(selectedSetting == 1){
 				speedSlider->moveSliderValue(1);
 			}
 			draw();
@@ -112,7 +112,6 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_UP:
-			if(!disableMainSelector){
 				selectedSetting--;
 				if(selectedSetting < 0){
 					selectedSetting = 3;
@@ -140,11 +139,9 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 
 				draw();
 				screen.commit();
-			}
 			break;
 
 		case BTN_DOWN:
-			if(!disableMainSelector){
 				selectedSetting++;
 				if(selectedSetting > 3){
 					selectedSetting = 0;
@@ -171,19 +168,11 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				}
 				draw();
 				screen.commit();
-			}
+
 			break;
 
 		case BTN_MID:
-			if(selectedSetting == 0){
-				shutDownSlider->toggle();
-				disableMainSelector = !disableMainSelector;
-			}else if(selectedSetting == 1){
-				speedSlider->toggle();
-				disableMainSelector = !disableMainSelector;
-			}else if(selectedSetting == 2){
-
-			}else if(selectedSetting == 3){
+		if(selectedSetting == 3){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 				Settings.store();
@@ -193,6 +182,9 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			screen.commit();
 			break;
 		case BTN_BACK:
+			Settings.get().shutdownTime = shutDownSlider->getIndex();
+			Settings.get().speedMultiplier = speedSlider->getSliderValue();
+			Settings.store();
 			this->pop();
 			draw();
 			screen.commit();

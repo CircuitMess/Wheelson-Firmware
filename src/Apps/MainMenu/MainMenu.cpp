@@ -1,6 +1,8 @@
 #include "MainMenu.h"
 #include "../SimpleProgramming/App.h"
 #include "../Settings/SettingsScreen.h"
+#include "../AutonomousDrivingApp/AutonomousDriving.h"
+#include "../AutonomousDrivingApp/MarkerDriver.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
@@ -9,13 +11,13 @@
 #include <SPIFFS.h>
 
 
-const char* const MainMenu::AppTitles[] = {"Simple programming", "Autonomous", "Ball", "Object", "Settings"};
+const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Settings"};
 
 Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return new Simple::App(display); },
 		[](Display& display) -> Context* { return nullptr; },
 		[](Display& display) -> Context* { return nullptr; },
-		[](Display& display) -> Context* { return nullptr; },
+		[](Display& display) -> Context* { return new AutonomousDriving(display, new MarkerDriver()); },
 		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
 };
 

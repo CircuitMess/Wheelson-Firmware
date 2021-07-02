@@ -1,7 +1,9 @@
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
 #include "AutonomousDriving.h"
-#include "../../Components/CameraFeed.h"
+#include <Loop/LoopManager.h>
+#include <Input/Input.h>
+#include <Wheelson.h>
 
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
@@ -10,21 +12,25 @@ AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context
 }
 
 AutonomousDriving::~AutonomousDriving(){
-
+	delete driver;
 }
 
 void AutonomousDriving::start(){
 	driver->start();
 	draw();
 	screen.commit();
+	LoopManager::addListener(this);
+	Input::getInstance()->addListener(this);
 }
 
 void AutonomousDriving::stop(){
 	driver->stop();
+	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->drawIcon(driver->getCameraImage(), 0, 4, 160, 120);
+	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	screen.draw();
 }
@@ -69,4 +75,15 @@ void AutonomousDriving::loop(uint micros){
 	}
 	draw();
 	screen.commit();
+}
+
+void AutonomousDriving::buttonPressed(uint i){
+	switch(i){
+		case BTN_BACK:
+			this->pop();
+			break;
+		case BTN_MID:
+			driver->toggleDisplayMode();
+			break;
+	}
 }

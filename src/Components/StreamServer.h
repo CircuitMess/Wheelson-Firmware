@@ -3,7 +3,7 @@
 
 
 #include <Loop/LoopListener.h>
-#include "CameraFeed.h"
+#include <Camera.h>
 #include <esp_http_server.h>
 
 class StreamServer {
@@ -19,7 +19,7 @@ public:
 private:
 	static StreamServer* instance;
 
-	CameraFeed* cam = nullptr;
+	Camera* cam = nullptr;
 	httpd_handle_t httpd = nullptr;
 
 };

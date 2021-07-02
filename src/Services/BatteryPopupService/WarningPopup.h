@@ -7,7 +7,7 @@
 class WarningPopup : public Modal, public LoopListener {
 public:
 	WarningPopup(Context &context);
-
+	~WarningPopup();
 	void draw() override;
 
 	void start() override;

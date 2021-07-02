@@ -7,7 +7,7 @@
 class ShutdownPopup : public Modal, public LoopListener {
 public:
 	ShutdownPopup(Context &context);
-
+	~ShutdownPopup();
 	void draw() override;
 
 	void start() override;

@@ -25,7 +25,7 @@ void StreamServer::start(){
 	WiFi.softAP("Wheelson Stream", "");
 	WiFi.softAPConfig(spencerIP, spencerIP, IPAddress(255, 255, 255, 0));
 
-	cam = new CameraFeed();
+	cam = new Camera();
 
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.server_port = 80;
@@ -65,7 +65,7 @@ esp_err_t StreamServer::stream_handler(httpd_req_t* req){
 
 	for(;;){
 		instance->cam->loadFrame();
-		camera_fb_t* frame = instance->cam->getFrame();
+		const camera_fb_t* frame = instance->cam->getFrame();
 		size_t hlen = snprintf((char*) part_buf, 64, _STREAM_PART, frame->len);
 
 		if(httpd_resp_send_chunk(req, (const char *)part_buf, hlen) != ESP_OK){

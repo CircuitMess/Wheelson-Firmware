@@ -13,6 +13,9 @@ ShutdownPopup::ShutdownPopup(Context &context) : Modal(context, 135, 60){
 	bgFile.close();
 	screen.getSprite()->setChroma(TFT_TRANSPARENT);
 }
+ShutdownPopup::~ShutdownPopup(){
+	free(batteryIconBuffer);
+}
 
 void ShutdownPopup::draw(){
 	Sprite& sprite = *screen.getSprite();
@@ -42,6 +45,7 @@ void ShutdownPopup::stop(){
 void ShutdownPopup::loop(uint micros){
 	shutdownTimer += micros;
 	if(shutdownTimer >= shutdownTime * 1000000){
+		screen.getDisplay()->getTft()->writecommand(16);
 		Nuvo.shutdown();
 		WiFi.mode(WIFI_OFF);
 		btStop();
