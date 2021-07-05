@@ -7,7 +7,7 @@
 #include <Elements/GridMenu.h>
 #include <Input/InputListener.h>
 #include <Loop/LoopListener.h>
-#include "../Components/CameraFeed.h"
+#include <Camera.h>
 #include "UserHWTest.h"
 #include "HWTestPart.h"
 
@@ -28,7 +28,7 @@ public:
 	void buttonPressed(uint id) override;
 
 private:
-	CameraFeed cameraFeed;
+	Camera cameraFeed;
 
 };
 

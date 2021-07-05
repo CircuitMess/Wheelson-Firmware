@@ -16,7 +16,7 @@ CameraHWTest::~CameraHWTest(){
 void CameraHWTest::draw(){
 	userHwTest->getScreen().draw();
 	cameraFeed.loadFrame();
-	userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRaw()), 0, 0, 160, 120);
+	userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRGB565()), 0, 0, 160, 120);
 	cameraFeed.releaseFrame();
 	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
