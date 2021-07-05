@@ -3,6 +3,8 @@
 #include "../Settings/SettingsScreen.h"
 #include "../AutonomousDrivingApp/AutonomousDriving.h"
 #include "../AutonomousDrivingApp/MarkerDriver.h"
+#include "../AutonomousDrivingApp/LineDriver.h"
+#include "../AutonomousDrivingApp/BallDriver.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
@@ -15,8 +17,8 @@ const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking"
 
 Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return new Simple::App(display); },
-		[](Display& display) -> Context* { return nullptr; },
-		[](Display& display) -> Context* { return nullptr; },
+		[](Display& display) -> Context* { return new AutonomousDriving(display, new LineDriver()); },
+		[](Display& display) -> Context* { return new AutonomousDriving(display, new BallDriver()); },
 		[](Display& display) -> Context* { return new AutonomousDriving(display, new MarkerDriver()); },
 		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
 };
