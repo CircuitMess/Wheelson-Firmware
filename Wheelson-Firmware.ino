@@ -23,6 +23,10 @@ void setup(){
 		Serial.println("No PSRAM");
 	}
 
+	display.begin();
+	display.getBaseSprite()->clear(TFT_BLACK);
+	display.commit();
+
 	if(!SPIFFS.begin()){
 		Serial.println("SPIFFS error");
 	}
@@ -37,7 +41,10 @@ void setup(){
 	input->preregisterButtons({ 0, 1, 2, 3, 4, 5 });
 	LoopManager::addListener(input);
 
-	display.begin();
+	Battery.disableShutdown(true);
+	BatteryPopup.setTFT(display.getTft());
+	LoopManager::addListener(&BatteryPopup);
+	LoopManager::addListener(&Battery);
 
 	Context::setDeleteOnPop(true);
 
@@ -46,10 +53,6 @@ void setup(){
 	intro->start();
 
 	LED.setBacklight(true);
-	LoopManager::addListener(&BatteryPopup);
-	LoopManager::addListener(&Battery);
-	Battery.disableShutdown(true);
-	BatteryPopup.setTFT(display.getTft());
 }
 
 void loop(){
