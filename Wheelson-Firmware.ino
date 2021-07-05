@@ -10,9 +10,12 @@
 #include <Settings.h>
 #include "src/IntroScreen.h"
 #include "src/Services/BatteryPopupService/BatteryPopupService.h"
+#include "src/HardwareTest.h"
 
-
-Display display(160, 128, -1, -1);
+bool checkJig(){
+	pinMode(PIN_JIG, INPUT_PULLDOWN);
+	return digitalRead(PIN_JIG) == HIGH;
+}
 
 void setup(){
 	Serial.begin(115200);
@@ -23,17 +26,32 @@ void setup(){
 		Serial.println("No PSRAM");
 	}
 
-	display.begin();
-	display.getBaseSprite()->clear(TFT_BLACK);
-	display.commit();
+	if(checkJig()){
+		Display display(160, 128, -1, -1);
+		display.begin();
 
-	if(!SPIFFS.begin()){
-		Serial.println("SPIFFS error");
+		Nuvo.begin();
+		LED.setBacklight(true);
+
+		HardwareTest test(display);
+		test.start();
+
+		for(;;);
 	}
 
 	if(!Nuvo.begin()){
 		Serial.println("Nuvoton error");
 		for(;;);
+	}
+
+	Display* display = new Display(160, 128, -1, -1);
+
+	display->begin();
+	display->getBaseSprite()->clear(TFT_BLACK);
+	display->commit();
+
+	if(!SPIFFS.begin()){
+		Serial.println("SPIFFS error");
 	}
 
 	Settings.begin();
@@ -42,13 +60,13 @@ void setup(){
 	LoopManager::addListener(input);
 
 	Battery.disableShutdown(true);
-	BatteryPopup.setTFT(display.getTft());
+	BatteryPopup.setTFT(display->getTft());
 	LoopManager::addListener(&BatteryPopup);
 	LoopManager::addListener(&Battery);
 
 	Context::setDeleteOnPop(true);
 
-	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(display);
+	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(*display);
 	intro->unpack();
 	intro->start();
 

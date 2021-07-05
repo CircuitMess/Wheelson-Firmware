@@ -12,8 +12,8 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 
 	test = this;
 
-	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
+	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 
 	Wire.begin(I2C_SDA, I2C_SCL);
@@ -74,7 +74,7 @@ bool HardwareTest::psram(){
 
 	uint32_t free = ESP.getFreePsram();
 
-	if(free != 4194252){
+	if(free != 4153272){
 		test->log("free", free);
 		return false;
 	}
