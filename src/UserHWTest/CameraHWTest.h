@@ -1,0 +1,35 @@
+#ifndef WHEELSON_FIRMWARE_CAMERAHWTEST_H
+#define WHEELSON_FIRMWARE_CAMERAHWTEST_H
+
+#include <Arduino.h>
+#include <Support/Context.h>
+#include <UI/Layout.h>
+#include <Elements/GridMenu.h>
+#include <Input/InputListener.h>
+#include <Loop/LoopListener.h>
+#include "../Components/CameraFeed.h"
+#include "UserHWTest.h"
+#include "HWTestPart.h"
+
+class CameraHWTest : public HWTestPart, public LoopListener{
+public:
+	CameraHWTest(UserHWTest* userHwTest);
+
+	virtual ~CameraHWTest();
+
+	void loop(uint micros) override;
+
+	void draw() override;
+
+	void start();
+
+	void stop();
+
+	void buttonPressed(uint id) override;
+
+private:
+	CameraFeed cameraFeed;
+
+};
+
+#endif //WHEELSON_FIRMWARE_CAMERAHWTEST_H
