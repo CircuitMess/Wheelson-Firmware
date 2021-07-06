@@ -20,18 +20,18 @@ Simple::AddIcon::~AddIcon(){
 }
 
 void Simple::AddIcon::draw(){
-	getSprite()->drawIcon(addBuffer, getTotalX(), getTotalY(), getWidth(), getHeight(), 1, TFT_TRANSPARENT);
+	getSprite()->drawIcon(addBuffer, getTotalX(), getTotalY()+3, getWidth(), getHeight(), 1, TFT_TRANSPARENT);
 	if(selected && borderBuffer != nullptr){
-		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY(), getWidth(), getHeight(), 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY()+3, getWidth(), getHeight(), 1, TFT_TRANSPARENT);
 	}
 	FontWriter u8f = getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_6x12_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 25);
+	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 35);
 	u8f.println("Hold BACK to delete,");
-	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, getTotalY() + 37);
-	u8f.println("hold SELECT to play");
+	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play.")) / 2, getTotalY() + 45);
+	u8f.println("hold SELECT to play.");
 
 }
 

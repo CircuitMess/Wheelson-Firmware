@@ -22,7 +22,6 @@ void Simple::App::start(){
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
-
 }
 
 void Simple::App::stop(){
@@ -70,8 +69,8 @@ void Simple::App::loadProgs(){
 	list->getChildren().clear();
 
 	for(int i = 0; i < storage.getNumProgs(); i++){
-		const Simple::Program * prog = storage.getProg(i);
-		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id +1)));
+		const Simple::Program* prog = storage.getProg(i);
+		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id + 1)));
 		list->addChild(programs.back());
 	}
 
@@ -94,22 +93,22 @@ void Simple::App::loadProgs(){
 
 void Simple::App::buildUI(){
 	scrollLayout->setWHType(PARENT, FIXED);
-	scrollLayout->setHeight(80);
+	scrollLayout->setHeight(60);
 	scrollLayout->addChild(list);
 
 	list->setWHType(PARENT, CHILDREN);
 	list->setY(100);
 	list->setPadding(5);
 	list->setGutter(5);
-
 	list->addChild(addIcon);
+
 	scrollLayout->reflow();
 	list->reflow();
 
 	screen.addChild(scrollLayout);
 	screen.repos();
 
-	scrollLayout->setY(screen.getTotalY() + 25);
+	scrollLayout->setY(screen.getTotalY() + 20);
 	addIcon->setX(70);
 }
 
@@ -128,7 +127,7 @@ void Simple::App::loop(uint micros){
 		storage.removeProg(programNum);
 		if(programs.size() > 1){
 			if(programNum == 0){
-				selectAction(programNum+1);
+				selectAction(programNum + 1);
 			}
 			selectAction(programNum - 1);
 		}
