@@ -105,7 +105,11 @@ void Simple::Edit::loop(uint micros){
 		list->getChildren().erase(list->getChildren().begin() + actionNum);
 		list->reflow();
 		list->repos();
-		selectAction(actionNum + 1);
+		if(actionNum>1){
+			selectAction(actionNum - 1);
+		}else{
+			selectAction(0);
+		}
 		draw();
 		screen.commit();
 	}
