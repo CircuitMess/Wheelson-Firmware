@@ -28,9 +28,9 @@ void Simple::AddIcon::draw(){
 	u8f.setFont(u8g2_font_6x12_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 25);
+	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 31);
 	u8f.println("Hold BACK to delete,");
-	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, getTotalY() + 37);
+	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, getTotalY() + 41);
 	u8f.println("hold SELECT to play");
 
 }
