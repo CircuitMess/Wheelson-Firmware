@@ -30,8 +30,8 @@ void Simple::AddIcon::draw(){
 	u8f.setFontMode(1);
 	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 35);
 	u8f.println("Hold BACK to delete,");
-	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, getTotalY() + 45);
-	u8f.println("hold SELECT to play");
+	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play.")) / 2, getTotalY() + 45);
+	u8f.println("hold SELECT to play.");
 
 }
 
