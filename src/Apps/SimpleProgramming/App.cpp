@@ -40,17 +40,6 @@ void Simple::App::draw(){
 	u8f.setFontMode(1);
 	u8f.setCursor((160 - u8f.getUTF8Width("Simple programming")) / 2, screen.getTotalY() + 13);
 	u8f.println("Simple programming");
-
-/*	screen.getSprite()->drawIcon(backgroundBuffer, 0, 108, 160, 108, 1);
-	screen.getSprite()->drawLine(0, 108, screen.getWidth(), 108, TFT_WHITE);
-
-	u8f.setFont(u8g2_font_5x7_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, screen.getTotalY() + 116);
-	u8f.println("Hold BACK to delete,");
-	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, screen.getTotalY() + 124);
-	u8f.println("hold SELECT to play");*/
 }
 
 void Simple::App::deinit(){
