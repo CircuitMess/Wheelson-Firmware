@@ -8,7 +8,7 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 
-Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
+Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)), footer(new LinearLayout(&screen, VERTICAL)){
 
 	buildUI();
 	App::pack();
@@ -22,7 +22,6 @@ void Simple::App::start(){
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
-
 }
 
 void Simple::App::stop(){
@@ -41,6 +40,17 @@ void Simple::App::draw(){
 	u8f.setFontMode(1);
 	u8f.setCursor((160 - u8f.getUTF8Width("Simple programming")) / 2, screen.getTotalY() + 13);
 	u8f.println("Simple programming");
+
+/*	screen.getSprite()->drawIcon(backgroundBuffer, 0, 108, 160, 108, 1);
+	screen.getSprite()->drawLine(0, 108, screen.getWidth(), 108, TFT_WHITE);
+
+	u8f.setFont(u8g2_font_5x7_tr);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, screen.getTotalY() + 116);
+	u8f.println("Hold BACK to delete,");
+	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play")) / 2, screen.getTotalY() + 124);
+	u8f.println("hold SELECT to play");*/
 }
 
 void Simple::App::deinit(){
@@ -70,8 +80,8 @@ void Simple::App::loadProgs(){
 	list->getChildren().clear();
 
 	for(int i = 0; i < storage.getNumProgs(); i++){
-		const Simple::Program * prog = storage.getProg(i);
-		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id +1)));
+		const Simple::Program* prog = storage.getProg(i);
+		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id + 1)));
 		list->addChild(programs.back());
 	}
 
@@ -80,7 +90,7 @@ void Simple::App::loadProgs(){
 	list->reflow();
 	list->repos();
 	scrollLayout->scrollIntoView(0, 0);
-	addIcon->setX(70);
+	addIcon->setX(73);
 
 	if(programs.empty()){
 		addIcon->setSelected(true);
@@ -94,22 +104,22 @@ void Simple::App::loadProgs(){
 
 void Simple::App::buildUI(){
 	scrollLayout->setWHType(PARENT, FIXED);
-	scrollLayout->setHeight(80);
+	scrollLayout->setHeight(60);
 	scrollLayout->addChild(list);
 
 	list->setWHType(PARENT, CHILDREN);
 	list->setY(100);
 	list->setPadding(5);
 	list->setGutter(5);
-
 	list->addChild(addIcon);
+
 	scrollLayout->reflow();
 	list->reflow();
 
 	screen.addChild(scrollLayout);
 	screen.repos();
 
-	scrollLayout->setY(screen.getTotalY() + 25);
+	scrollLayout->setY(screen.getTotalY() + 20);
 	addIcon->setX(70);
 }
 
@@ -128,7 +138,7 @@ void Simple::App::loop(uint micros){
 		storage.removeProg(programNum);
 		if(programs.size() > 1){
 			if(programNum == 0){
-				selectAction(programNum+1);
+				selectAction(programNum + 1);
 			}
 			selectAction(programNum - 1);
 		}
