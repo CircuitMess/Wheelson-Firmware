@@ -8,7 +8,7 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 
-Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)), footer(new LinearLayout(&screen, VERTICAL)){
+Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
 	buildUI();
 	App::pack();
@@ -90,7 +90,7 @@ void Simple::App::loadProgs(){
 	list->reflow();
 	list->repos();
 	scrollLayout->scrollIntoView(0, 0);
-	addIcon->setX(73);
+	addIcon->setX(70);
 
 	if(programs.empty()){
 		addIcon->setSelected(true);
