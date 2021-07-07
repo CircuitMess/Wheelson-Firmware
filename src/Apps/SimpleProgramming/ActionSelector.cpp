@@ -2,7 +2,7 @@
 #include <Input/Input.h>
 #include <Wheelson.h>
 
-const char* const Simple::ActionSelector::ActionTitles[] = {"Forward","Backward","Left","Right","LED OFF","LED ON","Pause"};
+const char* const Simple::ActionSelector::ActionTitles[] = {"Forward","Backward","Left","Right","LED ON","LED OFF","Pause"};
 
 Simple::ActionSelector* Simple::ActionSelector::instance = nullptr;
 
