@@ -4,12 +4,12 @@
 #include <Loop/LoopManager.h>
 
 LEDHWTest::LEDHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest){
-	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
 }
 
 LEDHWTest::~LEDHWTest(){
-	Input::getInstance()->removeListener(this);
+	LED.setRGB(OFF);
+	LED.setHeadlight(0);
 	LoopManager::removeListener(this);
 }
 

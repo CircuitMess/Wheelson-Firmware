@@ -7,11 +7,10 @@
 
 UserHWTest::UserHWTest(Display& display) : Context(display){
 	hwTestPart = new InputHWTest(this);
-	Input::getInstance()->addListener(this);
 }
 
 UserHWTest::~UserHWTest(){
-	Input::getInstance()->removeListener(this);
+
 }
 
 void UserHWTest::draw(){
@@ -19,12 +18,13 @@ void UserHWTest::draw(){
 }
 
 void UserHWTest::start(){
+	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
 }
 
 void UserHWTest::stop(){
-
+	Input::getInstance()->removeListener(this);
 }
 
 void UserHWTest::buttonPressed(uint id){
