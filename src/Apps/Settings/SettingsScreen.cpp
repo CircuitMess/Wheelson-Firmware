@@ -1,4 +1,5 @@
 #include "SettingsScreen.h"
+#include "../../UserHWTest/UserHWTest.h"
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <FS/CompressedFile.h>
@@ -112,71 +113,75 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_UP:
-				selectedSetting--;
-				if(selectedSetting < 0){
-					selectedSetting = 3;
-				}
-				if(selectedSetting == 0){
-					shutDownSlider->setIsSelected(true);
-				}else{
-					shutDownSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 1){
-					speedSlider->setIsSelected(true);
-				}else{
-					speedSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 2){
-					inputTest->setIsSelected(true);
-				}else{
-					inputTest->setIsSelected(false);
-				}
-				if(selectedSetting == 3){
-					save->setIsSelected(true);
-				}else{
-					save->setIsSelected(false);
-				}
+			selectedSetting--;
+			if(selectedSetting < 0){
+				selectedSetting = 3;
+			}
+			if(selectedSetting == 0){
+				shutDownSlider->setIsSelected(true);
+			}else{
+				shutDownSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 1){
+				speedSlider->setIsSelected(true);
+			}else{
+				speedSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
+				inputTest->setIsSelected(true);
+			}else{
+				inputTest->setIsSelected(false);
+			}
+			if(selectedSetting == 3){
+				save->setIsSelected(true);
+			}else{
+				save->setIsSelected(false);
+			}
 
-				draw();
-				screen.commit();
+			draw();
+			screen.commit();
 			break;
 
 		case BTN_DOWN:
-				selectedSetting++;
-				if(selectedSetting > 3){
-					selectedSetting = 0;
-				}
-				if(selectedSetting == 0){
-					shutDownSlider->setIsSelected(true);
-				}else{
-					shutDownSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 1){
-					speedSlider->setIsSelected(true);
-				}else{
-					speedSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 2){
-					inputTest->setIsSelected(true);
-				}else{
-					inputTest->setIsSelected(false);
-				}
-				if(selectedSetting == 3){
-					save->setIsSelected(true);
-				}else{
-					save->setIsSelected(false);
-				}
-				draw();
-				screen.commit();
+			selectedSetting++;
+			if(selectedSetting > 3){
+				selectedSetting = 0;
+			}
+			if(selectedSetting == 0){
+				shutDownSlider->setIsSelected(true);
+			}else{
+				shutDownSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 1){
+				speedSlider->setIsSelected(true);
+			}else{
+				speedSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
+				inputTest->setIsSelected(true);
+			}else{
+				inputTest->setIsSelected(false);
+			}
+			if(selectedSetting == 3){
+				save->setIsSelected(true);
+			}else{
+				save->setIsSelected(false);
+			}
+			draw();
+			screen.commit();
 
 			break;
 
 		case BTN_MID:
-		if(selectedSetting == 3){
+			if(selectedSetting == 3){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 				Settings.get().speedMultiplier = speedSlider->getSliderValue();
 				Settings.store();
 				this->pop();
+			}else if(selectedSetting == 2){
+				Display& display = *this->getScreen().getDisplay();
+				Context* hwTest = new UserHWTest(display);
+				hwTest->push(this);
 			}
 			draw();
 			screen.commit();
