@@ -3,20 +3,16 @@
 #include "CameraHWTest.h"
 
 CameraHWTest::CameraHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest){
-	LoopManager::addListener(this);
-	Input::getInstance()->addListener(this);
 
 }
 
 CameraHWTest::~CameraHWTest(){
-	LoopManager::removeListener(this);
-	Input::getInstance()->removeListener(this);
+
 }
 
 void CameraHWTest::draw(){
-	userHwTest->getScreen().draw();
 	cameraFeed.loadFrame();
-	userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRGB565()), 0, 0, 160, 120);
+	userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRGB565()), 0, 4, 160, 120);
 	cameraFeed.releaseFrame();
 	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
@@ -29,12 +25,16 @@ void CameraHWTest::draw(){
 }
 
 void CameraHWTest::start(){
+	LoopManager::addListener(this);
+	Input::getInstance()->addListener(this);
+
 	draw();
 	userHwTest->getScreen().commit();
 }
 
 void CameraHWTest::stop(){
-
+	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void CameraHWTest::loop(uint micros){
@@ -51,8 +51,6 @@ void CameraHWTest::buttonPressed(uint id){
 		case BTN_MID:
 		case BTN_BACK:
 			userHwTest->currentTestDone();
-			draw();
-			userHwTest->getScreen().commit();
 			break;
 	}
 }

@@ -12,7 +12,8 @@ public:
 
 	virtual void draw();
 
-	virtual void buttonPressed(uint id) override;
+	virtual void start() = 0;
+	virtual void stop() = 0;
 
 private:
 

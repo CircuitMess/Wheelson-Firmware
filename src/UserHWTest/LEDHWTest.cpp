@@ -4,13 +4,10 @@
 #include <Loop/LoopManager.h>
 
 LEDHWTest::LEDHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest){
-	LoopManager::addListener(this);
 }
 
 LEDHWTest::~LEDHWTest(){
-	LED.setRGB(OFF);
-	LED.setHeadlight(0);
-	LoopManager::removeListener(this);
+
 }
 
 void LEDHWTest::draw(){
@@ -26,12 +23,18 @@ void LEDHWTest::draw(){
 }
 
 void LEDHWTest::start(){
+	LoopManager::addListener(this);
+	Input::getInstance()->addListener(this);
+
 	draw();
 	userHwTest->getScreen().commit();
 }
 
 void LEDHWTest::stop(){
-
+	LED.setRGB(OFF);
+	LED.setHeadlight(0);
+	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 }
 
 void LEDHWTest::loop(uint micros){

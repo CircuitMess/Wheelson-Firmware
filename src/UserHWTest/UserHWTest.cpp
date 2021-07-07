@@ -1,5 +1,4 @@
 #include "UserHWTest.h"
-#include "HWTestPart.h"
 #include "InputHWTest.h"
 #include "CameraHWTest.h"
 #include "LEDHWTest.h"
@@ -10,7 +9,7 @@ UserHWTest::UserHWTest(Display& display) : Context(display){
 }
 
 UserHWTest::~UserHWTest(){
-
+	delete hwTestPart;
 }
 
 void UserHWTest::draw(){
@@ -18,21 +17,17 @@ void UserHWTest::draw(){
 }
 
 void UserHWTest::start(){
-	Input::getInstance()->addListener(this);
-	draw();
-	screen.commit();
+	hwTestPart->start();
 }
 
 void UserHWTest::stop(){
-	Input::getInstance()->removeListener(this);
-}
-
-void UserHWTest::buttonPressed(uint id){
-	hwTestPart->buttonPressed(id);
+	hwTestPart->stop();
 }
 
 void UserHWTest::currentTestDone(){
+	hwTestPart->stop();
 	delete hwTestPart;
+
 	testCounter++;
 	if(testCounter > 2){
 		if(doneCallback){
@@ -48,12 +43,17 @@ void UserHWTest::currentTestDone(){
 void UserHWTest::nextTest(){
 	if(testCounter == 1){
 		hwTestPart = new CameraHWTest(this);
-	}
-	if(testCounter == 2){
+	}else if(testCounter == 2){
 		hwTestPart = new LEDHWTest(this);
+	}else{
+		if(doneCallback){
+			doneCallback(this);
+		}else{
+			this->pop();
+		}
+		return;
 	}
-	hwTestPart->draw();
-	screen.commit();
+	hwTestPart->start();
 }
 
 void UserHWTest::setDoneCallback(void (* doneCallback)(UserHWTest*)){
