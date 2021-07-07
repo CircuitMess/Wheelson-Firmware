@@ -14,10 +14,8 @@
 #include "src/UserHWTest/UserHWTest.h"
 
 bool checkJig(){
-	Serial.println(TFT_CS);
 	pinMode(TFT_CS, INPUT_PULLUP);
 	digitalWrite(TFT_CS, HIGH);
-
 	return digitalRead(TFT_CS) == LOW;
 }
 
