@@ -8,7 +8,7 @@
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
 																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", {0, 1, 5, 15, 30})),
-																   speedSlider(new SliderElement(screenLayout, "Speed modifier")), inputTest(new TextElement(screenLayout, "Input Test")),
+																   speedSlider(new SliderElement(screenLayout, "Speed modifier")), inputTest(new TextElement(screenLayout, "Hardware test")),
 																   save(new TextElement(screenLayout, "Save")){
 
 	buildUI();
