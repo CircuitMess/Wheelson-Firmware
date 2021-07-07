@@ -11,6 +11,7 @@
 #include "src/IntroScreen.h"
 #include "src/Services/BatteryPopupService/BatteryPopupService.h"
 #include "src/HardwareTest.h"
+#include "src/UserHWTest/UserHWTest.h"
 
 bool checkJig(){
 	pinMode(PIN_JIG, INPUT_PULLDOWN);
@@ -65,11 +66,21 @@ void setup(){
 	LoopManager::addListener(&Battery);
 
 	Context::setDeleteOnPop(true);
+if(!Settings.get().inputTested){
+	UserHWTest* test = new UserHWTest(*display);
+	test->setDoneCallback([](UserHWTest*test){
+		Settings.get().inputTested = true;
+		Settings.store();
 
+		ESP.restart();
+	});
+	test->unpack();
+	test->start();
+}else{
 	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(*display);
 	intro->unpack();
 	intro->start();
-
+}
 	LED.setBacklight(true);
 }
 
