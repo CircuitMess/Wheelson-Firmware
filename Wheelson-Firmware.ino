@@ -56,6 +56,8 @@ void setup(){
 		Serial.println("SPIFFS error");
 	}
 
+	LoopManager::addListener(&Nuvo.getI2C());
+
 	Settings.begin();
 	Input* input = new WheelsonInput();
 	input->preregisterButtons({ 0, 1, 2, 3, 4, 5 });
