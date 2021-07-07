@@ -69,21 +69,21 @@ void setup(){
 	LoopManager::addListener(&Battery);
 
 	Context::setDeleteOnPop(true);
-if(!Settings.get().inputTested){
-	UserHWTest* test = new UserHWTest(*display);
-	test->setDoneCallback([](UserHWTest*test){
-		Settings.get().inputTested = true;
-		Settings.store();
+	if(!Settings.get().inputTested){
+		UserHWTest* test = new UserHWTest(*display);
+		test->setDoneCallback([](UserHWTest* test){
+			Settings.get().inputTested = true;
+			Settings.store();
 
-		ESP.restart();
-	});
-	test->unpack();
-	test->start();
-}else{
-	IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(*display);
-	intro->unpack();
-	intro->start();
-}
+			ESP.restart();
+		});
+		test->unpack();
+		test->start();
+	}else{
+		IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(*display);
+		intro->unpack();
+		intro->start();
+	}
 	LED.setBacklight(true);
 }
 
