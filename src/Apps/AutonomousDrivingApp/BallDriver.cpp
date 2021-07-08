@@ -35,30 +35,40 @@ void BallDriver::process(){
 			memcpy(processedBuffer, draw.data, 160 * 120 * 2);
 		}
 	}
+	int currentX = 0;
 
 	if(bestBall == nullptr || maxFitness == 0){
-		setMotor(MOTOR_FL, 0);
-		setMotor(MOTOR_BL, 0);
-		setMotor(MOTOR_FR, 0);
-		setMotor(MOTOR_BR, 0);
-		return;
+		if(lastX == -1 || noBallCounter > 4){
+			setMotor(MOTOR_FL, 0);
+			setMotor(MOTOR_BL, 0);
+			setMotor(MOTOR_FR, 0);
+			setMotor(MOTOR_BR, 0);
+			return;
+		}else{
+			noBallCounter++;
+			currentX = lastX;
+		}
+	}else{
+		currentX = bestBall->center.x;
+		noBallCounter = 0;
 	}
 
 
-	float amt = abs(80.0 - (float)bestBall->center.x) / 80.0;
+	float amt = abs(80.0 - (float)currentX) / 80.0;
 	float amtR, amtL;
 	if(amt <= 0.1){
-		amtL = 1;
-		amtR = 1;
+		amtL = 40;
+		amtR = 40;
 	}else{
-		if(bestBall->center.x < 80){
-			amtR = 30.0f * amt + 1.0f;
+		if(currentX < 80){
+			amtR = 40.0f * amt + 40.0f;
 			amtL = 0;
 		}else{
 			amtR = 0;
-			amtL = 30.0f * amt + 1.0f;
+			amtL = 40.0f * amt + 40.0f;
 		}
 	}
+	 lastX = currentX;
 
 	setMotor(MOTOR_FL, (int8_t)amtL);
 	setMotor(MOTOR_BL, (int8_t)amtL);
