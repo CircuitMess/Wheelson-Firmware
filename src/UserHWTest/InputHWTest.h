@@ -18,9 +18,9 @@ public:
 
 	void draw() override;
 
-	void start();
+	void start() override;
 
-	void stop();
+	void stop() override;
 
 	void buttonPressed(uint id) override;
 

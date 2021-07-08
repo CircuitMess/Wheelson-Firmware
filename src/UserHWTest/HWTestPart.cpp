@@ -11,8 +11,3 @@ HWTestPart::~HWTestPart(){
 void HWTestPart::draw(){
 
 }
-
-void HWTestPart::buttonPressed(uint id){
-
-}
-

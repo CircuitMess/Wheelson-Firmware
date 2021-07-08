@@ -9,7 +9,7 @@
 
 class HWTestPart;
 
-class UserHWTest : public Context, public InputListener {
+class UserHWTest : public Context {
 	friend HWTestPart;
 public:
 	UserHWTest(Display& display);
@@ -21,8 +21,6 @@ public:
 	void start() override;
 
 	void stop() override;
-
-	void buttonPressed(uint id) override;
 
 	void currentTestDone();
 

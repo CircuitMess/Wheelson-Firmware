@@ -71,15 +71,13 @@ void IntroScreen::IntroScreen::loop(uint micros){
 	if(!gif || !gif->checkFrame()) return;
 	draw();
 	screen.commit();
-
+	LED.setRGB(static_cast<WLEDColor>(random(1, 6)));
 	if(millis() - previousTime >= 500){
 		previousTime = millis();
 		if(LED.getHeadlight() == 0 || LED.getRGB() == OFF){
-			LED.setRGB(static_cast<WLEDColor>(random(1, 6)));
 			LED.setHeadlight(255);
 		}else{
 			LED.setHeadlight(0);
-			LED.setRGB(OFF);
 		}
 	}
 

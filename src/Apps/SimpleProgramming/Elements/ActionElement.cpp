@@ -1,7 +1,7 @@
 #include <SPIFFS.h>
 #include "ActionElement.h"
 
-const char* const Simple::ActionElement::ActionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_off.raw", "/Simple/light_on.raw", "/Simple/pause.raw" , "/Simple/add.raw"};
+const char* const Simple::ActionElement::ActionIcons[] = {"/Simple/arrow_up.raw", "/Simple/arrow_down.raw", "/Simple/arrow_left.raw", "/Simple/arrow_right.raw", "/Simple/light_on.raw", "/Simple/light_off.raw", "/Simple/pause.raw" , "/Simple/add.raw"};
 
 Simple::ActionElement::ActionElement(ElementContainer* parent, Action::Type action, String text) : CustomElement(parent, 18, 18),action(action){
 
