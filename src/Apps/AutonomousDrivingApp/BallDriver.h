@@ -16,6 +16,8 @@ private:
 		BW,
 		COUNT
 	} displayMode = RAW;
+	int lastX = -1;
+	uint8_t noBallCounter = 0;
 };
 
 
