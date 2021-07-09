@@ -16,6 +16,7 @@
 bool checkJig(){
 	pinMode(TFT_CS, INPUT_PULLUP);
 	digitalWrite(TFT_CS, HIGH);
+	delay(100);
 	return digitalRead(TFT_CS) == LOW;
 }
 
