@@ -73,6 +73,8 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
+	driver->prepareFrame();
+	driver->draw();
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
 		sprintf(buffer, "%u", ((driver->getMotorState(i))/127)*100);
