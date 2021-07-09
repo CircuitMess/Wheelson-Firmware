@@ -25,9 +25,6 @@ void UserHWTest::stop(){
 }
 
 void UserHWTest::currentTestDone(){
-	hwTestPart->stop();
-	delete hwTestPart;
-
 	testCounter++;
 	if(testCounter > 2){
 		if(doneCallback){
@@ -36,6 +33,9 @@ void UserHWTest::currentTestDone(){
 			this->pop();
 		}
 		return;
+	}else{
+		hwTestPart->stop();
+		delete hwTestPart;
 	}
 	nextTest();
 }
