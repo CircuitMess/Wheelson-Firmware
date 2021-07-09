@@ -1,40 +1,33 @@
-#include <BallTracker.h>
+#include "BallDriver.h"
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgproc.hpp>
-#include "BallDriver.h"
 #include <Wheelson.h>
 
 using namespace cv;
 
-void BallDriver::process(){
-	const Color* frameData = getCameraImage();
+BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)){}
 
-	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
+BallDriver::~BallDriver(){
+	free(workingBuffer);
+}
+
+void BallDriver::process(){
+	bufferMutex.lock();
+	memcpy(workingBuffer, getCameraImage888(), 160*120*3);
+	bufferMutex.unlock();
+
+	balls = BallTracker::detect(workingBuffer, 160, 120, BallTracker::RGB888, displayMode == BW ? (Color*)workingBuffer : nullptr);
 
 	Ball* bestBall = nullptr;
 	float maxFitness = 0;
 
-	if(displayMode == RAW && balls.empty()){
-		memcpy(processedBuffer, getCameraImage(), 160 * 120 * 2);
-	}else{
-		Mat draw(120, 160, CV_8UC2);
-		memcpy(draw.data, getCameraImage(), 160 * 120 * 2);
-
-
-
-		for(auto &ball : balls){
-			if(ball.fitness > maxFitness){
-				maxFitness = ball.fitness;
-				bestBall = &ball;
-			}
-			if(displayMode == RAW){
-				cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
-			}
-		}
-		if(displayMode == RAW){
-			memcpy(processedBuffer, draw.data, 160 * 120 * 2);
+	for(auto &ball : balls){
+		if(ball.fitness > maxFitness){
+			maxFitness = ball.fitness;
+			bestBall = &ball;
 		}
 	}
+
 	int currentX = 0;
 
 	if(bestBall == nullptr || maxFitness == 0){
@@ -79,4 +72,15 @@ void BallDriver::process(){
 
 void BallDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+void BallDriver::draw(){
+	if(displayMode == RAW && !balls.empty()){
+		Mat draw(120, 160, CV_8UC2, processedBuffer);
+		for(auto &ball : balls){
+			cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
+		}
+	}else if(displayMode == BW){
+		memcpy(processedBuffer, workingBuffer, 160*120*sizeof(Color));
+	}
 }

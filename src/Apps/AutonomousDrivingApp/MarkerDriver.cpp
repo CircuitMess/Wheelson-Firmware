@@ -1,5 +1,4 @@
 #include "MarkerDriver.h"
-#include <Markers.h>
 #include <Util/Vector.h>
 #include <Wheelson.h>
 
@@ -55,14 +54,18 @@ void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 	}
 }
 
+MarkerDriver::MarkerDriver() : workingBuffer((Color*)ps_malloc(160*120*sizeof(Color))){}
+
+MarkerDriver::~MarkerDriver(){
+	free(workingBuffer);
+}
+
 void MarkerDriver::process(){
-	const Color* frame = getCameraImage();
+	bufferMutex.lock();
+	memcpy(workingBuffer, getCameraImage(), 160*120*sizeof(Color));
+	bufferMutex.unlock();
 
-	auto markers = Markers::detect((uint8_t*) frame, 160, 120, Markers::RGB565, displayMode == BW ? processedBuffer : nullptr);
-
-	if(displayMode == RAW){
-		memcpy(processedBuffer, frame, 160 * 120 * sizeof(Color));
-	}
+	markers = Markers::detect((uint8_t*) workingBuffer, 160, 120, Markers::RGB565, displayMode == BW ? workingBuffer : nullptr);
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
 		if(state != IDLE){
@@ -71,14 +74,6 @@ void MarkerDriver::process(){
 
 		state = IDLE;
 		return;
-	}
-
-	for(auto marker : markers){
-		auto points = marker.projected;
-		for(int i = 1; i < 4; i++){
-			drawLine(points[i-1].x * 2, points[i-1].y * 2, points[i].x * 2, points[i].y * 2, processedBuffer, TFT_RED);
-		}
-		drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, processedBuffer, TFT_RED);
 	}
 
 	uint16_t id = markers[0].id;
@@ -123,4 +118,15 @@ void MarkerDriver::process(){
 
 void MarkerDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+void MarkerDriver::draw(){
+	if(displayMode == BW || markers.empty()) return;
+	for(const auto& marker : markers){
+		auto points = marker.projected;
+		for(int i = 1; i < 4; i++){
+			drawLine(points[i-1].x * 2, points[i-1].y * 2, points[i].x * 2, points[i].y * 2, processedBuffer, TFT_RED);
+		}
+		drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, processedBuffer, TFT_RED);
+	}
 }

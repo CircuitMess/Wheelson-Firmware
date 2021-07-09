@@ -1,4 +1,3 @@
-#include <opencv2/core/mat.hpp>
 #include <MarkerDetection/imgproc.h>
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/imgproc.hpp>
@@ -80,7 +79,9 @@ void LineDriver::rotR(){
 
 void LineDriver::process(){
 	Mat frame(120, 160, CV_8UC3);
+	bufferMutex.lock();
 	memcpy(frame.data, getCameraImage888(), 160 * 120 * 3);
+	bufferMutex.unlock();
 
 	resize(frame, frame, Size(), 0.5, 0.5);
 
@@ -106,21 +107,19 @@ void LineDriver::process(){
 
 	bitwise_not(thresh, thresh);*/
 
-	Mat draw;
 	if(displayMode == RAW){
-		cvtColor(frame, draw, CV_RGB2BGR565);
+		cvtColor(frame, drawMat, CV_RGB2BGR565);
 	}else if(displayMode == GRAY){
-		cvtColor(gray, draw, CV_GRAY2BGR565);
+		cvtColor(gray, drawMat, CV_GRAY2BGR565);
 	}else if(displayMode == THRESH_SIMPLE){
-		cvtColor(thresh, draw, CV_GRAY2BGR565);
+		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}/*else if(displayMode == THRESH_ADAPTIVE){
-		cvtColor(thresh, draw, CV_GRAY2BGR565);
+		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}*/
 
 	auto linePoints = findLine(thresh.data, thresh.cols, thresh.rows);
 	if(linePoints.empty()){
-		resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-		memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
 
 		if(lastx == -1) return;
 
@@ -178,15 +177,14 @@ void LineDriver::process(){
 	}*/
 
 	for(int i = 1; i < broken.size(); i++){
-		line(draw, broken[i-1], broken[i], C_RGB(0, 0, 255));
+		line(drawMat, broken[i - 1], broken[i], C_RGB(0, 0, 255));
 	}
 
 	int midIndex = (int) ((float) broken.size() * 0.75f);
-	line(draw, broken[1], broken[midIndex], Scalar(C_RGB(0, 0, 255) >> 8, C_RGB(0, 0, 255) & 0xff));
+	line(drawMat, broken[1], broken[midIndex], Scalar(C_RGB(0, 0, 255) >> 8, C_RGB(0, 0, 255) & 0xff));
 
 	if(broken[1].x == -1 || broken[1].x == 0 || broken[midIndex].x == -1 || broken[midIndex].x == 0){
-		resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-		memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
 
 		if(lastx == -1) return;
 
@@ -262,11 +260,13 @@ void LineDriver::process(){
 
 	lastx = xpos;
 
-	resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-
-	memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+	resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
 }
 
 void LineDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+void LineDriver::draw(){
+	memcpy(processedBuffer, drawMat.data, 120 * 160 * 2);
 }

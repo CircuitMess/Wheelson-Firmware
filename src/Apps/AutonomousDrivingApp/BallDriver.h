@@ -3,14 +3,21 @@
 
 
 #include "../../Components/Driver.h"
+#include <BallTracker.h>
 
 class BallDriver : public Driver {
+public:
+	BallDriver();
+	~BallDriver() override;
+	void toggleDisplayMode() override;
+	void draw() override;
+
 protected:
 	void process() override;
-public:
-	void toggleDisplayMode() override;
 
 private:
+	uint8_t* workingBuffer;
+	std::vector<Ball> balls;
 	enum DisplayMode {
 		RAW,
 		BW,

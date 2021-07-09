@@ -3,15 +3,19 @@
 
 
 #include "../../Components/Driver.h"
+#include <opencv2/core/types.hpp>
+#include <opencv2/core/mat.hpp>
 
 class LineDriver : public Driver {
 public:
 	void toggleDisplayMode() override;
+	void draw() override;
 
 protected:
 	void process() override;
 
 private:
+	std::vector<cv::Point2i> linePoints;
 	enum DisplayMode {
 		RAW,
 		GRAY,
@@ -24,6 +28,8 @@ private:
 
 	void rotL();
 	void rotR();
+
+	cv::Mat drawMat;
 };
 
 
