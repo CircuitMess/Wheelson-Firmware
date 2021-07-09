@@ -50,8 +50,6 @@ void IntroScreen::IntroScreen::start(){
 
 		instance->stop();
 		delete instance;
-		LED.setHeadlight(0);
-		LED.setRGB(OFF);
 		MainMenu* main = new MainMenu(display);
 		main->unpack();
 		main->start();
@@ -83,6 +81,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 			color = static_cast<WLEDColor>(random(1, 6));
 		} while(color == lastColor);
 		LED.setRGB(color);
+
+		lastColor = color;
 
 		if(LED.getHeadlight() == 0 || LED.getRGB() == OFF){
 			LED.setHeadlight(255);
