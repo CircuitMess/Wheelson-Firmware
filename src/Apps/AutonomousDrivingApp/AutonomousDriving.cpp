@@ -77,7 +77,8 @@ void AutonomousDriving::loop(uint micros){
 	driver->draw();
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		sprintf(buffer, "%u", ((driver->getMotorState(i))/127)*100);
+		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
+		sprintf(buffer, "%d",percentage);
 		engines[i]->setText(buffer);
 	}
 	draw();
