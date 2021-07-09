@@ -167,6 +167,12 @@ void Simple::App::selectAction(uint8_t num){
 	}
 
 	programNum = num;
+
+	if(programNum == list->getChildren().size()-1 && list->getChildren().size() != 1){
+		scrollLayout->scrollIntoView(programNum-1, 5);
+	}else{
+		scrollLayout->scrollIntoView(programNum, 5);
+	}
 }
 
 void Simple::App::buttonPressed(uint id){
@@ -177,7 +183,6 @@ void Simple::App::buttonPressed(uint id){
 			}else{
 				selectAction(programNum - 1);
 			}
-			scrollLayout->scrollIntoView(programNum, 5);
 			draw();
 			screen.commit();
 			break;
@@ -189,7 +194,6 @@ void Simple::App::buttonPressed(uint id){
 				selectAction(programNum + 1);
 			}
 
-			scrollLayout->scrollIntoView(programNum, 5);
 			draw();
 			screen.commit();
 			break;
