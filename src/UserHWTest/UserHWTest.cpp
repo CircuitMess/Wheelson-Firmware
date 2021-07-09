@@ -1,6 +1,7 @@
 #include "UserHWTest.h"
 #include "InputHWTest.h"
 #include "CameraHWTest.h"
+#include "MotorHWTest.h"
 #include "LEDHWTest.h"
 
 
@@ -29,7 +30,7 @@ void UserHWTest::currentTestDone(){
 	delete hwTestPart;
 
 	testCounter++;
-	if(testCounter > 2){
+	if(testCounter > 3){
 		if(doneCallback){
 			doneCallback(this);
 		}else{
@@ -45,6 +46,8 @@ void UserHWTest::nextTest(){
 		hwTestPart = new CameraHWTest(this);
 	}else if(testCounter == 2){
 		hwTestPart = new LEDHWTest(this);
+	}else if(testCounter == 3){
+		hwTestPart = new MotorHWTest(this);
 	}else{
 		if(doneCallback){
 			doneCallback(this);
