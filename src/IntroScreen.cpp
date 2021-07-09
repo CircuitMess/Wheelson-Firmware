@@ -65,6 +65,8 @@ void IntroScreen::IntroScreen::start(){
 
 void IntroScreen::IntroScreen::stop(){
 	LoopManager::removeListener(this);
+	LED.setHeadlight(false);
+	LED.setRGB(OFF);
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
@@ -75,7 +77,13 @@ void IntroScreen::IntroScreen::loop(uint micros){
 
 	if(millis() - previousTime >= 500){
 		previousTime = millis();
-		LED.setRGB(static_cast<WLEDColor>(random(1, 6)));
+
+		WLEDColor color;
+		do {
+			color = static_cast<WLEDColor>(random(1, 6));
+		} while(color == lastColor);
+		LED.setRGB(color);
+
 		if(LED.getHeadlight() == 0 || LED.getRGB() == OFF){
 			LED.setHeadlight(255);
 		}else{
