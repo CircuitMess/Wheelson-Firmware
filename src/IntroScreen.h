@@ -5,7 +5,7 @@
 #include <UI/Screen.h>
 #include <Loop/LoopListener.h>
 #include <Display/AnimatedSprite.h>
-
+#include <Nuvoton/WheelsonLED.h>
 
 
 namespace IntroScreen {
@@ -29,6 +29,7 @@ namespace IntroScreen {
 		static IntroScreen *instance;
 		AnimatedSprite* gif = nullptr;
 		uint16_t previousTime = 0;
+		WLEDColor lastColor = WHITE;
 
 	};
 }
