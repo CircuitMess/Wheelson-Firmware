@@ -14,10 +14,17 @@ namespace Simple {
 
 		void setIsSelected(bool isSelected);
 
+		void touchStart(Color color);
+		void touchEnd();
+
+
 	private:
 
 		bool selected = false;
 		String name;
+
+		Color touchColor;
+		uint32_t touchStartTime = 0;
 	};
 }
 

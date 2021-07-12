@@ -16,6 +16,7 @@ AutonomousDriving::~AutonomousDriving(){
 }
 
 void AutonomousDriving::start(){
+	LED.setHeadlight(255);
 	driver->start();
 	draw();
 	screen.commit();
@@ -24,8 +25,8 @@ void AutonomousDriving::start(){
 }
 
 void AutonomousDriving::stop(){
-	driver->stop();
 	LED.setHeadlight(0);
+	driver->stop();
 	Motors.setMotor(MOTOR_FR, 0);
 	Motors.setMotor(MOTOR_BR, 0);
 	Motors.setMotor(MOTOR_FL, 0);
@@ -75,7 +76,8 @@ void AutonomousDriving::buildUI(){
 void AutonomousDriving::loop(uint micros){
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		sprintf(buffer, "%u", ((driver->getMotorState(i))/127)*100);
+		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
+		sprintf(buffer, "%d",percentage);
 		engines[i]->setText(buffer);
 	}
 	draw();

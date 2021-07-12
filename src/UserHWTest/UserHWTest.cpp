@@ -37,6 +37,7 @@ void UserHWTest::currentTestDone(){
 	}else{
 		hwTestPart->stop();
 		delete hwTestPart;
+		hwTestPart = nullptr;
 	}
 	nextTest();
 }
