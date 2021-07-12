@@ -68,11 +68,6 @@ void IntroScreen::IntroScreen::stop(){
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
-	if(gif && gif->checkFrame()){
-		draw();
-		screen.commit();
-	}
-
 	if(millis() - previousTime >= 500){
 		previousTime = millis();
 
@@ -91,4 +86,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 		}
 	}
 
+	if(gif && gif->checkFrame()){
+		draw();
+		screen.commit();
+	}
 }
