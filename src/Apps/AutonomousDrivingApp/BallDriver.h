@@ -5,10 +5,12 @@
 #include "../../Components/Driver.h"
 
 class BallDriver : public Driver {
+public:
+	const char* getParamName() override;
+	void toggleDisplayMode() override;
+
 protected:
 	void process() override;
-public:
-	void toggleDisplayMode() override;
 
 private:
 	enum DisplayMode {

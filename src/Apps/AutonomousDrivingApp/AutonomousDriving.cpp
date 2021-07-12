@@ -5,6 +5,7 @@
 #include <Input/Input.h>
 #include <Wheelson.h>
 
+#define paramPopupTime 5; //in seconds
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
 	buildUI();
@@ -22,6 +23,7 @@ void AutonomousDriving::start(){
 	screen.commit();
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
+	paramPopupMillis = millis() - paramPopupTime*1000;
 }
 
 void AutonomousDriving::stop(){
@@ -38,6 +40,16 @@ void AutonomousDriving::stop(){
 void AutonomousDriving::draw(){
 	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
+	screen.getSprite()->fillRoundRect(10, 100, 140, 30, 5, C_HEX(0x0082ff));
+	Serial.println(millis() - paramPopupMillis);
+	if(driver->getParamName() != nullptr && (millis() - paramPopupMillis) < paramPopupTime*1000){
+		driver->drawParamControl(*screen.getSprite(), 15, 113, 130, 14);
+		screen.getSprite()->setTextColor(TFT_BLACK);
+		screen.getSprite()->setTextSize(1);
+		screen.getSprite()->setTextFont(1);
+		screen.getSprite()->setCursor(105, 105);
+		screen.getSprite()->printCenter(driver->getParamName());
+	}
 	screen.draw();
 }
 
@@ -91,6 +103,25 @@ void AutonomousDriving::buttonPressed(uint i){
 			break;
 		case BTN_MID:
 			driver->toggleDisplayMode();
+			break;
+		case BTN_LEFT:
+			if(driver->getParamName() != nullptr){
+				if(millis() - paramPopupMillis >= paramPopupTime*1000){
+					paramPopupMillis = millis();
+				}else if(millis() - paramPopupMillis < paramPopupTime*1000){
+					driver->setParam(min(driver->getParam() + 1, 255));
+				}
+			}
+			break;
+		case BTN_RIGHT:
+			if(driver->getParamName() != nullptr){
+				paramPopupMillis = millis();
+				if(millis() - paramPopupMillis >= paramPopupTime*1000){
+					paramPopupMillis = millis();
+				}else if(millis() - paramPopupMillis < paramPopupTime*1000){
+					driver->setParam(max(driver->getParam() - 1, 0));
+				}
+			}
 			break;
 	}
 }

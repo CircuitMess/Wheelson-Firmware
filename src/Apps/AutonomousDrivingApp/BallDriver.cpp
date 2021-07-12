@@ -80,3 +80,7 @@ void BallDriver::process(){
 void BallDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
 }
+
+const char* BallDriver::getParamName(){
+	return "Ball color";
+}

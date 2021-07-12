@@ -66,3 +66,21 @@ void Driver::toggleDisplayMode(){
 const Color* Driver::getCameraImage888() const{
 	return frameBuffer888;
 }
+
+uint8_t Driver::getParam() const{
+	return param;
+}
+
+void Driver::setParam(uint8_t param){
+	Driver::param = param;
+}
+
+const char* Driver::getParamName(){
+	return nullptr;
+}
+
+void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
+	uint fill = (w-2) * param / 255;
+	sprite.drawRoundRect(x, y, w, h, 5, TFT_BLACK);
+	sprite.fillRoundRect(x+1, y+1, fill, h-2, 3, TFT_BLACK);
+}
