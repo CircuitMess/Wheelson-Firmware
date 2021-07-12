@@ -16,23 +16,26 @@ void MotorHWTest::draw(){
 	u8f.setFont(u8g2_font_profont12_tf);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Motor test")) / 2, 10);
+	u8f.setCursor((160 - u8f.getUTF8Width("Motor test")) / 2, 8);
 	u8f.print("Motor test");
 	u8f.setForegroundColor(TFT_RED);
-	u8f.setCursor((160 - u8f.getUTF8Width("WARNING!!!")) / 2, 25);
+	u8f.setCursor((160 - u8f.getUTF8Width("WARNING!!!")) / 2, 23);
 	u8f.print("WARNING!!!");
-	u8f.setCursor((160 - u8f.getUTF8Width("Grab your Wheelson!")) / 2, 35);
+	u8f.setCursor((160 - u8f.getUTF8Width("Grab your Wheelson!")) / 2, 33);
 	u8f.print("Grab your Wheelson!");
+	u8f.setForegroundColor(TFT_GREEN);
+	u8f.setCursor((160 - u8f.getUTF8Width("Motors should go forward")) / 2, 45);
+	u8f.print("Motors should go forward");
 	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setCursor(5, 55);
+	u8f.setCursor(5, 60);
 	u8f.print("Hold UP for FR motor");
-	u8f.setCursor(5, 70);
+	u8f.setCursor(5, 75);
 	u8f.print("Hold RIGHT for BR motor");
-	u8f.setCursor(5, 85);
+	u8f.setCursor(5, 90);
 	u8f.print("Hold DOWN for BL motor");
-	u8f.setCursor(5, 100);
+	u8f.setCursor(5, 105);
 	u8f.print("Hold LEFT for FL motor");
-	u8f.setCursor(5, 120);
+	u8f.setCursor(5, 125);
 	u8f.print("If they work,press BACK!");
 }
 
