@@ -40,7 +40,8 @@ private:
 	void buildUI();
 	void buttonPressed(uint i) override;
 
-	int paramPopupMillis = 0;
+	uint paramPopupMillis = 0;
+	bool paramPopupActive = false;
 
 };
 

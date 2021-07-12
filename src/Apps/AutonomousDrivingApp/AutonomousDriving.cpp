@@ -5,7 +5,7 @@
 #include <Input/Input.h>
 #include <Wheelson.h>
 
-#define paramPopupTime 5; //in seconds
+#define paramPopupTime 3 //in seconds
 
 AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
 	buildUI();
@@ -23,7 +23,8 @@ void AutonomousDriving::start(){
 	screen.commit();
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
-	paramPopupMillis = millis() - paramPopupTime*1000;
+	paramPopupActive = false;
+	paramPopupMillis = millis();
 }
 
 void AutonomousDriving::stop(){
@@ -38,16 +39,17 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
+	screen.getSprite()->clear(TFT_BLACK);
 	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
-	screen.getSprite()->fillRoundRect(10, 100, 140, 30, 5, C_HEX(0x0082ff));
-	Serial.println(millis() - paramPopupMillis);
-	if(driver->getParamName() != nullptr && (millis() - paramPopupMillis) < paramPopupTime*1000){
-		driver->drawParamControl(*screen.getSprite(), 15, 113, 130, 14);
-		screen.getSprite()->setTextColor(TFT_BLACK);
+	if(paramPopupActive){
+		screen.getSprite()->drawRoundRect(29, 91, 102, 32, 7, TFT_WHITE);
+		screen.getSprite()->fillRoundRect(30, 92, 100, 30, 5, C_HEX(0x0082ff));
+		driver->drawParamControl(*screen.getSprite(), 35, 110, 90, 8);
+		screen.getSprite()->setTextColor(TFT_WHITE);
 		screen.getSprite()->setTextSize(1);
 		screen.getSprite()->setTextFont(1);
-		screen.getSprite()->setCursor(105, 105);
+		screen.getSprite()->setCursor(105, 100);
 		screen.getSprite()->printCenter(driver->getParamName());
 	}
 	screen.draw();
@@ -92,6 +94,9 @@ void AutonomousDriving::loop(uint micros){
 		sprintf(buffer, "%d",percentage);
 		engines[i]->setText(buffer);
 	}
+	if(paramPopupActive && millis() - paramPopupMillis >= paramPopupTime*1000){
+		paramPopupActive = false;
+	}
 	draw();
 	screen.commit();
 }
@@ -106,20 +111,21 @@ void AutonomousDriving::buttonPressed(uint i){
 			break;
 		case BTN_LEFT:
 			if(driver->getParamName() != nullptr){
-				if(millis() - paramPopupMillis >= paramPopupTime*1000){
-					paramPopupMillis = millis();
-				}else if(millis() - paramPopupMillis < paramPopupTime*1000){
-					driver->setParam(min(driver->getParam() + 1, 255));
+				paramPopupMillis = millis();
+				if(!paramPopupActive){
+					paramPopupActive = true;
+				}else{
+					driver->setParam(max(driver->getParam() - 15, 0));
 				}
 			}
 			break;
 		case BTN_RIGHT:
 			if(driver->getParamName() != nullptr){
 				paramPopupMillis = millis();
-				if(millis() - paramPopupMillis >= paramPopupTime*1000){
-					paramPopupMillis = millis();
-				}else if(millis() - paramPopupMillis < paramPopupTime*1000){
-					driver->setParam(max(driver->getParam() - 1, 0));
+				if(!paramPopupActive){
+					paramPopupActive = true;
+				}else{
+					driver->setParam(min(driver->getParam() + 15, 255));
 				}
 			}
 			break;
