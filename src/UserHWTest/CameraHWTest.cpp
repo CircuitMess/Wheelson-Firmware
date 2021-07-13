@@ -25,8 +25,8 @@ void CameraHWTest::draw(){
 	}else{
 		u8f.setCursor((160 - u8f.getUTF8Width("If camera works good")) / 2, 53);
 		u8f.print("If camera works good");
-		u8f.setCursor((130 - u8f.getUTF8Width("press any button")) / 2, 63);
-		u8f.print("    press any button");
+		u8f.setCursor((130 - u8f.getUTF8Width("press any button.")) / 2, 63);
+		u8f.print("    press any button.");
 	}
 }
 

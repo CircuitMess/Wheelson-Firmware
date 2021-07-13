@@ -26,16 +26,16 @@ void InputHWTest::draw(){
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor((160 - u8f.getUTF8Width("Press buttons to test them")) / 2, 13);
-		u8f.print("Press buttons to test them");
+		u8f.setCursor((160 - u8f.getUTF8Width("Press buttons to test them.")) / 2, 13);
+		u8f.print("Press buttons to test them.");
 	}
 	else{
 		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-			u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button")) / 2, 13);
-			u8f.print("All OK! Press any button");
+			u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button.")) / 2, 13);
+			u8f.print("All OK! Press any button.");
 	}
 }
 
