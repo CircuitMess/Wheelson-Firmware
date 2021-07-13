@@ -1,3 +1,4 @@
+#include <FS/CompressedFile.h>
 #include "UserHWTest.h"
 #include "InputHWTest.h"
 #include "CameraHWTest.h"
@@ -6,6 +7,7 @@
 
 UserHWTest::UserHWTest(Display& display) : Context(display){
 	hwTestPart = new InputHWTest(this);
+	Context::pack();
 }
 
 UserHWTest::~UserHWTest(){
@@ -13,6 +15,7 @@ UserHWTest::~UserHWTest(){
 }
 
 void UserHWTest::draw(){
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	hwTestPart->draw();
 }
 
@@ -59,6 +62,23 @@ void UserHWTest::nextTest(){
 
 void UserHWTest::setDoneCallback(void (* doneCallback)(UserHWTest*)){
 	UserHWTest::doneCallback = doneCallback;
+}
+
+void UserHWTest::init(){
+	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
+	if(backgroundBuffer == nullptr){
+		Serial.println("HWTest background unpack error");
+		return;
+	}
+
+	fs::File bgFile = CompressedFile::open(SPIFFS.open("/Setts/settings_bg.raw.hs"), 9, 8);
+	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
+	bgFile.close();
+}
+
+void UserHWTest::deinit(){
+	free(backgroundBuffer);
+
 }
 
 
