@@ -33,7 +33,7 @@ void CameraHWTest::start(){
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 
@@ -43,7 +43,7 @@ void CameraHWTest::stop(){
 }
 
 void CameraHWTest::loop(uint micros){
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 
