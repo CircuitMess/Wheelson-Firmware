@@ -11,7 +11,6 @@ LEDHWTest::~LEDHWTest(){
 }
 
 void LEDHWTest::draw(){
-	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
 	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
@@ -26,7 +25,7 @@ void LEDHWTest::start(){
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 

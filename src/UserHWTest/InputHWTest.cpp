@@ -20,7 +20,6 @@ InputHWTest::~InputHWTest(){
 }
 
 void InputHWTest::draw(){
-	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
 	screenLayout->draw();
 	if(!inputIsDone){
 		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
@@ -42,7 +41,7 @@ void InputHWTest::draw(){
 
 void InputHWTest::start(){
 	Input::getInstance()->addListener(this);
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 
@@ -96,11 +95,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_RIGHT:
@@ -111,11 +110,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_UP:
@@ -126,11 +125,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_DOWN:
@@ -141,11 +140,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_MID:
@@ -156,11 +155,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_BACK:
@@ -171,11 +170,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 	}

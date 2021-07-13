@@ -27,12 +27,14 @@ void AutonomousDriving::start(){
 void AutonomousDriving::stop(){
 	LED.setHeadlight(0);
 	driver->stop();
+	Nuvo.getI2C().loop(0);
+	LoopManager::removeListener(this);
+	Input::getInstance()->removeListener(this);
 	Motors.setMotor(MOTOR_FR, 0);
 	Motors.setMotor(MOTOR_BR, 0);
 	Motors.setMotor(MOTOR_FL, 0);
 	Motors.setMotor(MOTOR_BL, 0);
-	LoopManager::removeListener(this);
-	Input::getInstance()->removeListener(this);
+
 }
 
 void AutonomousDriving::draw(){

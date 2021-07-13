@@ -26,12 +26,17 @@ public:
 
 	void setDoneCallback(void (* doneCallback)(UserHWTest*));
 
+protected:
+	void init() override;
+
+	void deinit() override;
+
 private:
 	HWTestPart* hwTestPart;
 
 	uint8_t testCounter = 0;
 	void nextTest();
-
+	Color* backgroundBuffer= nullptr;
 	void (* doneCallback)(UserHWTest* test) = nullptr;
 };
 
