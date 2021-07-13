@@ -11,6 +11,7 @@ CameraHWTest::~CameraHWTest(){
 }
 
 void CameraHWTest::draw(){
+	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
 	cameraFeed.loadFrame();
 	userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRGB565()), 0, 4, 160, 120);
 	cameraFeed.releaseFrame();
