@@ -20,7 +20,7 @@ void MotorHWTest::draw(){
 	u8f.print("Motor test");
 	u8f.setForegroundColor(TFT_RED);
 	u8f.setCursor((160 - u8f.getUTF8Width("WARNING!!!")) / 2, 23);
-	u8f.print("WARNING!!!");
+	u8f.print("WARNING!");
 	u8f.setCursor((160 - u8f.getUTF8Width("Grab your Wheelson!")) / 2, 33);
 	u8f.print("Grab your Wheelson!");
 	u8f.setForegroundColor(TFT_GREEN);
