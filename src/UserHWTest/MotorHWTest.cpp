@@ -50,6 +50,10 @@ void MotorHWTest::start(){
 void MotorHWTest::stop(){
 	LoopManager::removeListener(this);
 	Input::getInstance()->removeListener(this);
+	Motors.setMotor(MOTOR_FR, 0);
+	Motors.setMotor(MOTOR_BR, 0);
+	Motors.setMotor(MOTOR_FL, 0);
+	Motors.setMotor(MOTOR_BL, 0);
 }
 
 void MotorHWTest::buttonPressed(uint id){
