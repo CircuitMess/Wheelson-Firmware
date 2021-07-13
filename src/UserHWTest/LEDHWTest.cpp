@@ -15,8 +15,8 @@ void LEDHWTest::draw(){
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("If all LED's works good")) / 2, 53);
-	u8f.print("If all LED's works good");
+	u8f.setCursor((160 - u8f.getUTF8Width("If all LEDs work good")) / 2, 53);
+	u8f.print("If all LEDs work good");
 	u8f.setCursor((130 - u8f.getUTF8Width("press any button")) / 2, 63);
 	u8f.print("   press any button");
 }
