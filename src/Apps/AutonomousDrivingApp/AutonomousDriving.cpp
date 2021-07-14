@@ -40,6 +40,8 @@ void AutonomousDriving::stop(){
 void AutonomousDriving::draw(){
 	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
+	Battery.drawIcon(screen.getSprite());
+
 	screen.draw();
 }
 
