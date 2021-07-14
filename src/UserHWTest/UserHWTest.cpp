@@ -1,4 +1,5 @@
 #include <FS/CompressedFile.h>
+#include <SPIFFS.h>
 #include "UserHWTest.h"
 #include "InputHWTest.h"
 #include "CameraHWTest.h"
