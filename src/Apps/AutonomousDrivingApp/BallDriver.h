@@ -8,6 +8,7 @@ class BallDriver : public Driver {
 public:
 	const char* getParamName() override;
 	void toggleDisplayMode() override;
+	void drawParamControl(Sprite &sprite, int x, int y, uint w, uint h) override;
 
 protected:
 	void process() override;

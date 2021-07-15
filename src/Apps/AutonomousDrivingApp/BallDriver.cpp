@@ -6,10 +6,82 @@
 
 using namespace cv;
 
+typedef struct {
+	double h;       // angle in degrees
+	double s;       // a fraction between 0 and 1
+	double v;       // a fraction between 0 and 1
+} hsv;
+
+typedef struct {
+	double r;       // a fraction between 0 and 1
+	double g;       // a fraction between 0 and 1
+	double b;       // a fraction between 0 and 1
+} rgb;
+
+rgb hsv2rgb(hsv in)
+{
+	double      hh, p, q, t, ff;
+	long        i;
+	rgb         out;
+
+	if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
+		out.r = in.v;
+		out.g = in.v;
+		out.b = in.v;
+		return out;
+	}
+	hh = in.h;
+	if(hh >= 360.0) hh = 0.0;
+	hh /= 60.0;
+	i = (long)hh;
+	ff = hh - i;
+	p = in.v * (1.0 - in.s);
+	q = in.v * (1.0 - (in.s * ff));
+	t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+	switch(i) {
+		case 0:
+			out.r = in.v;
+			out.g = t;
+			out.b = p;
+			break;
+		case 1:
+			out.r = q;
+			out.g = in.v;
+			out.b = p;
+			break;
+		case 2:
+			out.r = p;
+			out.g = in.v;
+			out.b = t;
+			break;
+
+		case 3:
+			out.r = p;
+			out.g = q;
+			out.b = in.v;
+			break;
+		case 4:
+			out.r = t;
+			out.g = p;
+			out.b = in.v;
+			break;
+		case 5:
+		default:
+			out.r = in.v;
+			out.g = p;
+			out.b = q;
+			break;
+	}
+	return out;
+
+}
+
 void BallDriver::process(){
 	const Color* frameData = getCameraImage();
 
-	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
+	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, param > 0 ? param*180/255 : 0,
+												  BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
 
 	Ball* bestBall = nullptr;
 	float maxFitness = 0;
@@ -83,4 +155,16 @@ void BallDriver::toggleDisplayMode(){
 
 const char* BallDriver::getParamName(){
 	return "Ball color";
+}
+
+void BallDriver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
+	float step = 360.0 / (float)w;
+	int fill = w * param / 255;
+	sprite.fillTriangle(max(fill-2 + x, x), y, min(fill + 2 + x, x+(int)w), y, fill + x, y+2, TFT_BLACK);
+
+	for (int i=0; i < w; i++){
+		hsv in = {(double)step * i, 1.0, 1.0};
+		rgb c = hsv2rgb(in);
+		sprite.drawFastVLine(i + x, y+3, h-3, C_RGB(c.r * 255.0, c.g * 255.0, c.b * 255.0));
+	}
 }
