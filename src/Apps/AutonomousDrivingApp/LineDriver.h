@@ -6,7 +6,9 @@
 
 class LineDriver : public Driver {
 public:
+	LineDriver();
 	void toggleDisplayMode() override;
+	const char* getParamName() override;
 
 protected:
 	void process() override;
