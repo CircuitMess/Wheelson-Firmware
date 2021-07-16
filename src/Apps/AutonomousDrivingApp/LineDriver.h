@@ -21,6 +21,7 @@ private:
 	} displayMode = RAW;
 
 	int lastx = -1;
+	float lastAng = 0;
 
 	void rotL();
 	void rotR();
