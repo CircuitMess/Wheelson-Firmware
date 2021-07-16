@@ -32,5 +32,12 @@ static const struct {
 
 		{"/AutoDrive/engine.raw", 82182},
 		{"/AutoDrive/percentage.raw", 7866},
-		{"/AutoDrive/raw_bg.raw.hs", 7456}
+		{"/AutoDrive/raw_bg.raw.hs", 7456},
+
+		{"/battery_0.raw", 25668},
+		{"/battery_1.raw", 27388},
+		{"/battery_2.raw", 29172},
+		{"/battery_3.raw", 33300},
+		{"/battery_4.raw", 34052}
+
 };
