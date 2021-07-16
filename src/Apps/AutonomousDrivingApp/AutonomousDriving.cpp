@@ -13,9 +13,7 @@ AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context
 
 AutonomousDriving::~AutonomousDriving(){
 	delete driver;
-	if(backgroundBuffer != nullptr){
-		free(backgroundBuffer);
-	}
+	free(backgroundBuffer);
 }
 
 void AutonomousDriving::start(){
@@ -61,6 +59,7 @@ void AutonomousDriving::init(){
 
 void AutonomousDriving::deinit(){
 	free(backgroundBuffer);
+	backgroundBuffer = nullptr;
 }
 
 void AutonomousDriving::buildUI(){
