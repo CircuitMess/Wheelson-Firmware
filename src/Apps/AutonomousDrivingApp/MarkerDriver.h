@@ -20,8 +20,7 @@ protected:
 private:
 	Sprite workingSprite;
 	Color* workingBuffer;
-	Color* resultBuffer;
-	std::vector<Aruco::Marker> markers;
+	std::vector<Aruco::Marker> resultMarkers;
 	enum {
 		IDLE,
 		FORWARD,

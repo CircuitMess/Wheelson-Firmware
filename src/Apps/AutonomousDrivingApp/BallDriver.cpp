@@ -13,8 +13,10 @@ BallDriver::~BallDriver(){
 
 void BallDriver::process(){
 	bufferMutex.lock();
+	resultsMutex.lock();
 	memcpy(workingBuffer, getCameraImage888(), 160*120*3);
 	bufferMutex.unlock();
+	resultsMutex.unlock();
 
 	DisplayMode mode = displayMode;
 	if(mode == BW){
