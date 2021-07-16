@@ -13,6 +13,9 @@ AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context
 
 AutonomousDriving::~AutonomousDriving(){
 	delete driver;
+	if(backgroundBuffer != nullptr){
+		free(backgroundBuffer);
+	}
 }
 
 void AutonomousDriving::start(){
