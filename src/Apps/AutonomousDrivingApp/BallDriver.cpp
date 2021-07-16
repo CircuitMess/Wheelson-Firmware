@@ -57,15 +57,15 @@ void BallDriver::process(){
 	float amt = abs(80.0 - (float)currentX) / 80.0;
 	float amtR, amtL;
 	if(amt <= 0.1){
-		amtL = 40;
-		amtR = 40;
+		amtL = 120;
+		amtR = 120;
 	}else{
 		if(currentX < 80){
-			amtR = 40.0f * amt + 40.0f;
+			amtR = 80.0f * amt + 40.0f;
 			amtL = 0;
 		}else{
 			amtR = 0;
-			amtL = 40.0f * amt + 40.0f;
+			amtL = 80.0f * amt + 40.0f;
 		}
 	}
 	 lastX = currentX;

@@ -38,6 +38,7 @@ static const struct {
 		{"/battery_1.raw", 27388},
 		{"/battery_2.raw", 29172},
 		{"/battery_3.raw", 33300},
-		{"/battery_4.raw", 34052}
+		{"/battery_4.raw", 34052},
+		{"/chargingIcon.raw", 6531}
 
 };
