@@ -16,7 +16,15 @@ void BallDriver::process(){
 	memcpy(workingBuffer, getCameraImage888(), 160*120*3);
 	bufferMutex.unlock();
 
-	balls = BallTracker::detect(workingBuffer, 160, 120, BallTracker::RGB888, displayMode == BW ? (Color*)workingBuffer : nullptr);
+	DisplayMode mode = displayMode;
+	if(mode == BW){
+		resultsMutex.lock();
+	}
+	std::vector<Ball> balls = BallTracker::detect(workingBuffer, 160, 120, BallTracker::RGB888, displayMode == BW ? (Color*)workingBuffer : nullptr);
+	if(mode == BW){
+		resultsMutex.unlock();
+	}
+	ballsResult = balls;
 
 	Ball* bestBall = nullptr;
 	float maxFitness = 0;
@@ -75,12 +83,15 @@ void BallDriver::toggleDisplayMode(){
 }
 
 void BallDriver::draw(){
-	if(displayMode == RAW && !balls.empty()){
+	DisplayMode mode = displayMode;
+	if(mode == RAW && !ballsResult.empty()){
 		Mat draw(120, 160, CV_8UC2, processedBuffer);
-		for(auto &ball : balls){
+		for(auto &ball : ballsResult){
 			cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
 		}
-	}else if(displayMode == BW){
+	}else if(mode == BW){
+		resultsMutex.lock();
 		memcpy(processedBuffer, workingBuffer, 160*120*sizeof(Color));
+		resultsMutex.unlock();
 	}
 }

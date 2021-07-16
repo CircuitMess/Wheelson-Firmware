@@ -15,7 +15,9 @@ protected:
 	void process() override;
 
 private:
-	std::vector<cv::Point2i> linePoints;
+	std::vector<cv::Point2i> brokenLineResult;
+	int midIndex = 0;
+
 	enum DisplayMode {
 		RAW,
 		GRAY,
@@ -30,6 +32,8 @@ private:
 	void rotR();
 
 	cv::Mat drawMat;
+
+	void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color);
 };
 
 

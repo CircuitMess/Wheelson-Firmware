@@ -17,7 +17,7 @@ protected:
 
 private:
 	uint8_t* workingBuffer;
-	std::vector<Ball> balls;
+	std::vector<Ball> ballsResult;
 	enum DisplayMode {
 		RAW,
 		BW,

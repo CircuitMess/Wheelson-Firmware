@@ -35,6 +35,7 @@ protected:
 	void setMotor(uint8_t id, int8_t state);
 	Color* processedBuffer = nullptr;
 	Mutex bufferMutex;
+	Mutex resultsMutex;
 
 
 private:

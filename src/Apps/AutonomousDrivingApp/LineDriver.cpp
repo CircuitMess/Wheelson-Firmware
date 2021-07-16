@@ -63,6 +63,47 @@ std::vector<Point2i> findLine(uint8_t* data, uint16_t w, uint16_t h){
 	return line;
 }
 
+void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
+
+	// Bresenham's line algorithm
+	const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+	if(steep)
+	{
+		std::swap(x1, y1);
+		std::swap(x2, y2);
+	}
+
+	if(x1 > x2)
+	{
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	const float dx = x2 - x1;
+	const float dy = fabs(y2 - y1);
+
+	float error = dx / 2.0f;
+	const int ystep = (y1 < y2) ? 1 : -1;
+	int y = (int)y1;
+
+	const int maxX = (int)x2;
+
+	for(int x = (int) x1; x <= maxX; x++){
+		if(steep){//x*120+y
+			buffer[x * 160 + y] = color;
+		}else{//y*160+x
+			buffer[y * 160 + x] = color;
+		}
+
+		error -= dy;
+		if(error < 0)
+		{
+			y += ystep;
+			error += dx;
+		}
+	}
+}
+
 void LineDriver::rotL(){
 	setMotor(MOTOR_FL, -60);
 	setMotor(MOTOR_BL, -60);
@@ -107,19 +148,19 @@ void LineDriver::process(){
 
 	bitwise_not(thresh, thresh);*/
 
-	if(displayMode == RAW){
-		cvtColor(frame, drawMat, CV_RGB2BGR565);
-	}else if(displayMode == GRAY){
+	resultsMutex.lock();
+	if(displayMode == GRAY){
 		cvtColor(gray, drawMat, CV_GRAY2BGR565);
 	}else if(displayMode == THRESH_SIMPLE){
 		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}/*else if(displayMode == THRESH_ADAPTIVE){
 		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}*/
+	resultsMutex.unlock();
 
 	auto linePoints = findLine(thresh.data, thresh.cols, thresh.rows);
 	if(linePoints.empty()){
-		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
+		brokenLineResult.clear();
 
 		if(lastx == -1) return;
 
@@ -176,15 +217,10 @@ void LineDriver::process(){
 		broken.emplace_back((int) (val / totalWeight), approx[i].y);
 	}*/
 
-	for(int i = 1; i < broken.size(); i++){
-		line(drawMat, broken[i - 1], broken[i], C_RGB(0, 0, 255));
-	}
-
-	int midIndex = (int) ((float) broken.size() * 0.75f);
-	line(drawMat, broken[1], broken[midIndex], Scalar(C_RGB(0, 0, 255) >> 8, C_RGB(0, 0, 255) & 0xff));
+	midIndex = (int) ((float) broken.size() * 0.75f);
 
 	if(broken[1].x == -1 || broken[1].x == 0 || broken[midIndex].x == -1 || broken[midIndex].x == 0){
-		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
+		brokenLineResult = broken;
 
 		if(lastx == -1) return;
 
@@ -259,8 +295,7 @@ void LineDriver::process(){
 	}
 
 	lastx = xpos;
-
-	resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
+	brokenLineResult = broken;
 }
 
 void LineDriver::toggleDisplayMode(){
@@ -268,5 +303,20 @@ void LineDriver::toggleDisplayMode(){
 }
 
 void LineDriver::draw(){
-	memcpy(processedBuffer, drawMat.data, 120 * 160 * 2);
+	resultsMutex.lock();
+	if(displayMode != RAW){
+		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
+		memcpy(processedBuffer, drawMat.data, 120 * 160 * 2);
+	}
+	resultsMutex.unlock();
+
+
+	if(brokenLineResult.empty()) return;
+
+	for(int i = 1; i < brokenLineResult.size(); i++){
+		drawLine(brokenLineResult[i - 1].x*2, brokenLineResult[i - 1].y*2, brokenLineResult[i].x*2, brokenLineResult[i].y*2, processedBuffer, C_RGB(0, 0, 255));
+	}
+
+	drawLine(brokenLineResult[1].x*2, brokenLineResult[1].y*2, brokenLineResult[midIndex].x*2, brokenLineResult[midIndex].y*2, processedBuffer, C_RGB(0, 255, 0));
+
 }

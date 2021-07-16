@@ -54,10 +54,11 @@ void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 	}
 }
 
-MarkerDriver::MarkerDriver() : workingBuffer((Color*)ps_malloc(160*120*sizeof(Color))){}
+MarkerDriver::MarkerDriver() : workingSprite(Sprite(Wheelson.getDisplay(), 160, 120)), workingBuffer((Color*)workingSprite.getPointer()),
+							   resultBuffer((Color*)ps_malloc(160*120*sizeof(Color))){}
 
 MarkerDriver::~MarkerDriver(){
-	free(workingBuffer);
+	free(resultBuffer);
 }
 
 void MarkerDriver::process(){
@@ -65,7 +66,15 @@ void MarkerDriver::process(){
 	memcpy(workingBuffer, getCameraImage(), 160*120*sizeof(Color));
 	bufferMutex.unlock();
 
+	if(displayMode == BW){
+		resultsMutex.lock();
+	}
 	markers = Markers::detect((uint8_t*) workingBuffer, 160, 120, Markers::RGB565, displayMode == BW ? workingBuffer : nullptr);
+
+	if(displayMode == BW){
+		memcpy(resultBuffer, workingBuffer, 160 * 120 * 2);
+		resultsMutex.unlock();
+	}
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
 		if(state != IDLE){
@@ -121,7 +130,12 @@ void MarkerDriver::toggleDisplayMode(){
 }
 
 void MarkerDriver::draw(){
-	if(displayMode == BW || markers.empty()) return;
+	if(displayMode == BW){
+		resultsMutex.lock();
+		memcpy(processedBuffer, workingBuffer, 160*120*sizeof(Color));
+		resultsMutex.unlock();
+	}
+	if(markers.empty()) return;
 	for(const auto& marker : markers){
 		auto points = marker.projected;
 		for(int i = 1; i < 4; i++){

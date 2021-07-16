@@ -5,6 +5,7 @@
 #include "../../Components/Driver.h"
 #include <vector>
 #include <Markers.h>
+#include <Display/Sprite.h>
 
 class MarkerDriver : public Driver {
 public:
@@ -17,7 +18,9 @@ protected:
 	void process() override;
 
 private:
+	Sprite workingSprite;
 	Color* workingBuffer;
+	Color* resultBuffer;
 	std::vector<Aruco::Marker> markers;
 	enum {
 		IDLE,
