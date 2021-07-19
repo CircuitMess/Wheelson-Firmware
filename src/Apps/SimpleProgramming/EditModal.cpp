@@ -4,10 +4,10 @@
 
 
 Simple::EditModal::EditModal(Context& context, Action* action) :
-		Modal(context, 100, 100), layout(new LinearLayout(&screen, VERTICAL)),
+		Modal(context, 100, 80), layout(new LinearLayout(&screen, VERTICAL)),
 		speed(new EditModalItem(layout, "Speed", '%', action->speed, 5)),
 		time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action),
-		modalBg(&screen,100,100, C_HEX(0x00beff), C_HEX(0x00ffff), C_HEX(0x0082ff)){
+		modalBg(&screen,100,80, C_HEX(0x00beff), C_HEX(0x00ffff), C_HEX(0x0082ff)){
 
 	buildUI();
 }

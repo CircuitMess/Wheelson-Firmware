@@ -5,7 +5,7 @@
 const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.bw"};
 bool DrivingElement::motorStop = true;
 
-DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String text, bool needPercentage) : CustomElement(parent, 17, 13),
+DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String text, bool needPercentage) : CustomElement(parent, 17, 15),
 																											   icon(icon), text(text),
 																											   needPercentage(needPercentage){
 	motorStop = true;
@@ -36,25 +36,26 @@ DrivingElement::~DrivingElement(){
 }
 
 void DrivingElement::draw(){
-	uint xShift = 0;
+	uint yShift = 0;
 	getSprite()->drawMonochromeIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, motorStop ? TFT_RED : TFT_WHITE);
 	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_profont10_tf);
+	u8f.setFont(u8g2_font_5x7_tf);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
 	if(text.length() == 1){
-		xShift = 6;
+		yShift = 30;
 	}else if(text.length() == 2){
-		xShift = 3;
+		yShift = 33;
 	}else if(text.length() == 3){
-		xShift = 1;
+		yShift = 38;
 	}else if(text.length() == 4){
-		xShift = 0;
+		yShift = 42;
 	}
-	u8f.setCursor(getTotalX() + xShift, getTotalY() + 22);
+	u8f.setCursor(getTotalX() + 11, getTotalY() + yShift);
+	u8f.setFontDirection(3);
 	u8f.print(text);
 	if(needPercentage){
-		getSprite()->drawIcon(percentageBuffer, (getTotalX() + 6), (getTotalY() + 23), 6, 6, 1, TFT_TRANSPARENT);
+		getSprite()->drawIcon(percentageBuffer, (getTotalX() + 5), (getTotalY() + 16), 6, 6, 1, TFT_TRANSPARENT);
 	}
 
 }

@@ -36,6 +36,7 @@ private:
 	static bool psram();
 	static bool nuvotonTest();
 	static bool SPIFFSTest();
+	static bool camera();
 
 
 };
