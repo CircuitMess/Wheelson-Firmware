@@ -2,7 +2,6 @@
 #include <Loop/LoopManager.h>
 #include <Wheelson.h>
 #include "Driver.h"
-#include <Display/Sprite.h>
 
 
 Driver::Driver(): task("Driver", taskFunc, 20000, this){

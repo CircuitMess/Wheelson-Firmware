@@ -6,6 +6,7 @@
 #include <Util/Task.h>
 #include <Sync/Mutex.h>
 #include <Camera.h>
+#include <Display/Sprite.h>
 
 class Driver {
 public:
