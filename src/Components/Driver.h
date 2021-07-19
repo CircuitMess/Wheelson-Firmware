@@ -5,6 +5,8 @@
 #include <Display/Color.h>
 #include <Util/Task.h>
 #include <Camera.h>
+#include <string>
+#include <Display/Sprite.h>
 
 class Driver {
 public:
@@ -25,11 +27,19 @@ public:
 
 	virtual void toggleDisplayMode();
 
+	uint8_t getParam() const;
+	void setParam(uint8_t param);
+	virtual const char* getParamName();
+
+	virtual void drawParamControl(Sprite &sprite, int x, int y, uint w, uint h);
+
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);
+
 	Color* processedBuffer = nullptr;
 
+	uint8_t param = 0;
 private:
 	Color* frameBuffer = nullptr;
 	Color* frameBuffer888 = nullptr;

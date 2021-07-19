@@ -34,7 +34,6 @@ namespace SettingsScreen {
 
 		LinearLayout* screenLayout;
 		DiscreteSlider* shutDownSlider;
-		SliderElement* speedSlider;
 		TextElement* inputTest;
 		TextElement* save;
 
