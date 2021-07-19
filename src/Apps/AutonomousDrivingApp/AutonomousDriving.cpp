@@ -43,13 +43,13 @@ void AutonomousDriving::draw(){
 	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	if(paramPopupActive){
-		screen.getSprite()->drawRoundRect(29, 91, 102, 32, 7, TFT_WHITE);
-		screen.getSprite()->fillRoundRect(30, 92, 100, 30, 5, C_HEX(0x0082ff));
+		screen.getSprite()->fillRoundRect(30, 95, 100, 27, 3, C_HEX(0x0082ff));
+		screen.getSprite()->drawRoundRect(29, 94, 102, 29, 5, TFT_WHITE);
 		driver->drawParamControl(*screen.getSprite(), 35, 110, 90, 8);
 		screen.getSprite()->setTextColor(TFT_WHITE);
 		screen.getSprite()->setTextSize(1);
 		screen.getSprite()->setTextFont(1);
-		screen.getSprite()->setCursor(105, 100);
+		screen.getSprite()->setCursor(105, 98);
 		screen.getSprite()->printCenter(driver->getParamName());
 	}
 	screen.draw();

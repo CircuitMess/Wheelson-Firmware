@@ -81,6 +81,6 @@ const char* Driver::getParamName(){
 
 void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 	uint fill = w * param / 255;
-	sprite.drawRoundRect(x, y, w, h, 4, TFT_WHITE);
-	sprite.fillRoundRect(x, y, fill, h, 4, TFT_WHITE);
+	sprite.fillRoundRect(x, y, fill, h, 3, TFT_WHITE);
+	sprite.drawRoundRect(x, y, w, h, 3, TFT_WHITE);
 }

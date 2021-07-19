@@ -158,13 +158,18 @@ const char* BallDriver::getParamName(){
 }
 
 void BallDriver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
-	float step = 360.0 / (float)w;
-	int fill = w * param / 255;
-	sprite.fillTriangle(max(fill-2 + x, x), y, min(fill + 2 + x, x+(int)w), y, fill + x, y+2, TFT_BLACK);
+	float step = 360.0 / (float)max(0U, (w-3));
+	int fill = max(0U, (w-3)) * param / 255;
 
 	for (int i=0; i < w; i++){
 		hsv in = {(double)step * i, 1.0, 1.0};
 		rgb c = hsv2rgb(in);
 		sprite.drawFastVLine(i + x, y+3, h-3, C_RGB(c.r * 255.0, c.g * 255.0, c.b * 255.0));
 	}
+
+	sprite.drawRect(x, y+2, w, h-1, TFT_WHITE);
+
+	fill += 1;
+	//sprite.fillTriangle(max(fill-2 + x, x), y, min(fill + 2 + x, x+(int)w), y, fill + x, y+2, TFT_BLACK);
+	sprite.fillTriangle(max(x - 2, x + fill - 3), y, min((int) (x + w + 1), x + fill + 3), y, x + fill, y+3, TFT_BLACK);
 }
