@@ -50,8 +50,6 @@ void IntroScreen::IntroScreen::start(){
 
 		instance->stop();
 		delete instance;
-		LED.setHeadlight(0);
-		LED.setRGB(OFF);
 		MainMenu* main = new MainMenu(display);
 		main->unpack();
 		main->start();
@@ -70,11 +68,6 @@ void IntroScreen::IntroScreen::stop(){
 }
 
 void IntroScreen::IntroScreen::loop(uint micros){
-	if(gif && gif->checkFrame()){
-		draw();
-		screen.commit();
-	}
-
 	if(millis() - previousTime >= 500){
 		previousTime = millis();
 
@@ -84,6 +77,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 		} while(color == lastColor);
 		LED.setRGB(color);
 
+		lastColor = color;
+
 		if(LED.getHeadlight() == 0 || LED.getRGB() == OFF){
 			LED.setHeadlight(255);
 		}else{
@@ -91,4 +86,8 @@ void IntroScreen::IntroScreen::loop(uint micros){
 		}
 	}
 
+	if(gif && gif->checkFrame()){
+		draw();
+		screen.commit();
+	}
 }

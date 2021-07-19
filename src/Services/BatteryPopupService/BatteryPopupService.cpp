@@ -71,6 +71,8 @@ void BatteryPopupService::loop(uint time){
 			   (Modal::getCurrentModal() != nullptr && (Modal::getCurrentModal() == shutdownPopup || Modal::getCurrentModal() == warningPopup))
 			   || ModalTransition::isRunning()) return;
 
+			Motors.stopAll();
+
 			shutdownPopup = new ShutdownPopup(*Context::getCurrentContext());
 			shutdownPopup->push(Context::getCurrentContext());
 		}else if(percentage <= 15 && !warningShown){

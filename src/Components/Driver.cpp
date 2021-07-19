@@ -2,6 +2,7 @@
 #include <Loop/LoopManager.h>
 #include <Wheelson.h>
 #include "Driver.h"
+#include <Display/Sprite.h>
 
 
 Driver::Driver(): task("Driver", taskFunc, 20000, this){
@@ -59,6 +60,24 @@ void Driver::toggleDisplayMode(){
 
 const uint8_t* Driver::getCameraImage888() const{
 	return frameBuffer888;
+}
+
+uint8_t Driver::getParam() const{
+	return param;
+}
+
+void Driver::setParam(uint8_t param){
+	Driver::param = param;
+}
+
+const char* Driver::getParamName(){
+	return nullptr;
+}
+
+void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
+	uint fill = w * param / 255;
+	sprite.fillRoundRect(x, y, fill, h, 3, TFT_WHITE);
+	sprite.drawRoundRect(x, y, w, h, 3, TFT_WHITE);
 }
 
 void Driver::prepareFrame(){

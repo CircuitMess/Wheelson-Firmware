@@ -20,29 +20,28 @@ InputHWTest::~InputHWTest(){
 }
 
 void InputHWTest::draw(){
-	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
 	screenLayout->draw();
 	if(!inputIsDone){
 		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-		u8f.setCursor((160 - u8f.getUTF8Width("Press buttons to test them")) / 2, 13);
-		u8f.print("Press buttons to test them");
+		u8f.setCursor((160 - u8f.getUTF8Width("Press buttons to test them.")) / 2, 13);
+		u8f.print("Press buttons to test them.");
 	}
 	else{
 		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 		u8f.setFont(u8g2_font_HelvetiPixel_tr);
 		u8f.setForegroundColor(TFT_WHITE);
 		u8f.setFontMode(1);
-			u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button")) / 2, 13);
-			u8f.print("All OK! Press any button");
+			u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button.")) / 2, 13);
+			u8f.print("All OK! Press any button.");
 	}
 }
 
 void InputHWTest::start(){
 	Input::getInstance()->addListener(this);
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 
@@ -96,11 +95,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_RIGHT:
@@ -111,11 +110,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_UP:
@@ -126,11 +125,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_DOWN:
@@ -141,11 +140,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_MID:
@@ -156,11 +155,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 		case BTN_BACK:
@@ -171,11 +170,11 @@ void InputHWTest::buttonPressed(uint id){
 			}
 			if(doneCounter >=6){
 				inputIsDone = true;
-				draw();
+				userHwTest->draw();
 				userHwTest->getScreen().commit();
 				break;
 			}
-			draw();
+			userHwTest->draw();
 			userHwTest->getScreen().commit();
 			break;
 	}

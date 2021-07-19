@@ -29,15 +29,21 @@ public:
 
 	virtual void toggleDisplayMode();
 
+	uint8_t getParam() const;
+	void setParam(uint8_t param);
+	virtual const char* getParamName();
+
+	virtual void drawParamControl(Sprite &sprite, int x, int y, uint w, uint h);
 
 protected:
 	virtual void process() = 0;
-	void setMotor(uint8_t id, int8_t state);
 	Color* processedBuffer = nullptr;
+	void setMotor(uint8_t id, int8_t state);
+
 	Mutex bufferMutex;
 	Mutex resultsMutex;
 
-
+	uint8_t param = 0;
 private:
 	Color* frameBuffer = nullptr;
 	uint8_t* frameBuffer888 = nullptr;

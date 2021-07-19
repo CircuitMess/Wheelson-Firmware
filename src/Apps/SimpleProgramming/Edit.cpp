@@ -26,7 +26,7 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 	actionNum = program->numActions;
 
 	buildUI();
-	scrollLayout->scrollIntoView(actionNum,2);
+	scrollLayout->scrollIntoView(actionNum,10);
 	Edit::pack();
 
 }
@@ -50,6 +50,17 @@ void Simple::Edit::stop(){
 void Simple::Edit::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
+	screen.getSprite()->drawIcon(backgroundBuffer, 0, 113, 160, 113, 1);
+	screen.getSprite()->drawLine(0, 113, screen.getWidth(), 113, TFT_WHITE);
+	Battery.drawIcon(screen.getSprite());
+
+	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
+	u8f.setFont(u8g2_font_profont12_tf);
+	u8f.setForegroundColor(TFT_WHITE);
+	u8f.setFontMode(1);
+	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete action")) / 2, screen.getTotalY() + 124);
+	u8f.println("Hold BACK to delete action");
+
 }
 
 void Simple::Edit::init(){
@@ -70,8 +81,9 @@ void Simple::Edit::deinit(){
 }
 
 void Simple::Edit::buildUI(){
-	scrollLayout->setWHType(FIXED, PARENT);
+	scrollLayout->setWHType(FIXED, FIXED);
 	scrollLayout->setWidth(130);
+	scrollLayout->setHeight(115);
 	scrollLayout->addChild(list);
 	//scrollLayout->setBorder(2, TFT_RED);
 

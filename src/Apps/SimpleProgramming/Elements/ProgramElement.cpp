@@ -12,10 +12,17 @@ Simple::ProgramElement::ProgramElement::~ProgramElement(){
 
 void Simple::ProgramElement::ProgramElement::draw(){
 	getSprite()->fillRoundRect(getTotalX(), getTotalY(), getWidth(), getHeight(), 5, C_RGB(0, 132, 255));
-	getSprite()->drawRoundRect(getTotalX(), getTotalY(), getWidth(), getHeight(), 5, TFT_WHITE);
-	if(selected){
-		getSprite()->drawRoundRect(getTotalX(), getTotalY(), getWidth(), getHeight(), 5, TFT_RED);
+
+	if(touchStartTime != 0){
+		float d = (float) (millis() - touchStartTime) / 1000.0f;
+		d = min(d, 1.0f);
+		if(d > 0.1){
+			d = (d - 0.1) * (1.0 / 0.9);
+			getSprite()->fillRoundRect(getTotalX(), getTotalY(), (getWidth()+2) * d, getHeight(), 5, touchColor);
+		}
 	}
+
+	getSprite()->drawRoundRect(getTotalX()-1, getTotalY(), getWidth()+2, getHeight(), 5, selected ? TFT_RED : TFT_WHITE);
 
 	FontWriter u8f = getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);
@@ -32,6 +39,11 @@ void Simple::ProgramElement::ProgramElement::setIsSelected(bool isSelected){
 
 }
 
+void Simple::ProgramElement::touchStart(Color color){
+	touchColor = color;
+	touchStartTime = millis();
+}
 
-
-
+void Simple::ProgramElement::touchEnd(){
+	touchStartTime = 0;
+}

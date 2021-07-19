@@ -33,6 +33,7 @@ void Simple::App::draw(){
 	screen.draw();
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 	screen.getSprite()->drawLine(0, 19, screen.getWidth(), 19, TFT_WHITE);
+	Battery.drawIcon(screen.getSprite());
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);
@@ -134,6 +135,7 @@ void Simple::App::loop(uint micros){
 		loadProgs();
 		draw();
 		screen.commit();
+		return;
 	}
 
 	if(midPressTime != 0 && millis() - midPressTime >= 1000){
@@ -146,7 +148,11 @@ void Simple::App::loop(uint micros){
 
 		Context* play = new Playback(*screen.getDisplay(), prog);
 		play->push(this);
+		return;
 	}
+
+	draw();
+	screen.commit();
 }
 
 void Simple::App::selectAction(uint8_t num){
@@ -154,6 +160,7 @@ void Simple::App::selectAction(uint8_t num){
 		prog->setIsSelected(false);
 	}
 	addIcon->setSelected(false);
+
 	if(num >= programs.size()){
 		addIcon->setSelected(true);
 	}else{
@@ -161,6 +168,12 @@ void Simple::App::selectAction(uint8_t num){
 	}
 
 	programNum = num;
+
+	if(programNum == list->getChildren().size()-1 && list->getChildren().size() != 1){
+		scrollLayout->scrollIntoView(programNum-1, 5);
+	}else{
+		scrollLayout->scrollIntoView(programNum, 5);
+	}
 }
 
 void Simple::App::buttonPressed(uint id){
@@ -171,7 +184,6 @@ void Simple::App::buttonPressed(uint id){
 			}else{
 				selectAction(programNum - 1);
 			}
-			scrollLayout->scrollIntoView(programNum, 5);
 			draw();
 			screen.commit();
 			break;
@@ -183,7 +195,6 @@ void Simple::App::buttonPressed(uint id){
 				selectAction(programNum + 1);
 			}
 
-			scrollLayout->scrollIntoView(programNum, 5);
 			draw();
 			screen.commit();
 			break;
@@ -192,12 +203,22 @@ void Simple::App::buttonPressed(uint id){
 			if(midPressTime != 0) break;
 			backPressTime = millis();
 			LoopManager::addListener(this);
+
+			if(programNum < list->getChildren().size()-1){
+				reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(TFT_RED);
+			}
+
 			break;
 
 		case BTN_MID:
 			if(backPressTime != 0) break;
 			midPressTime = millis();
 			LoopManager::addListener(this);
+
+			if(programNum < list->getChildren().size()-1){
+				reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(C_RGB(0, 170, 0));
+			}
+
 			break;
 	}
 }
@@ -209,7 +230,13 @@ void Simple::App::buttonReleased(uint id){
 		backPressTime = 0;
 		LoopManager::removeListener(this);
 
-		if(elapsed < 1000){
+		if(programNum < list->getChildren().size()-1){
+			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchEnd();
+			draw();
+			screen.commit();
+		}
+
+		if(elapsed < 500){
 			pop();
 			return;
 		}
@@ -219,7 +246,13 @@ void Simple::App::buttonReleased(uint id){
 		midPressTime = 0;
 		LoopManager::removeListener(this);
 
-		if(elapsed < 1000){
+		if(programNum < list->getChildren().size()-1){
+			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchEnd();
+			draw();
+			screen.commit();
+		}
+
+		if(elapsed < 500){
 			if(programNum == programs.size()){
 				storage.addProg(nullptr, 0);
 			}

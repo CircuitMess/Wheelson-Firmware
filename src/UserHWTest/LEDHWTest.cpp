@@ -11,22 +11,25 @@ LEDHWTest::~LEDHWTest(){
 }
 
 void LEDHWTest::draw(){
-	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
 	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("If all LED's works good")) / 2, 53);
-	u8f.print("If all LED's works good");
-	u8f.setCursor((130 - u8f.getUTF8Width("press any button")) / 2, 63);
-	u8f.print("   press any button");
+	u8f.setCursor((160 - u8f.getUTF8Width("Check the headlights and")) / 2, 43);
+	u8f.print("Check the headlights and");
+	u8f.setCursor((160 - u8f.getUTF8Width("RGB LED under the screen.")) / 2, 53);
+	u8f.print("RGB LED under the screen.");
+	u8f.setCursor((160 - u8f.getUTF8Width("Press any key")) / 2, 73);
+	u8f.print("Press any key");
+	u8f.setCursor((160 - u8f.getUTF8Width("if everything is A-OK.")) / 2, 83);
+	u8f.print("if everything is A-OK.");
 }
 
 void LEDHWTest::start(){
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 
-	draw();
+	userHwTest->draw();
 	userHwTest->getScreen().commit();
 }
 

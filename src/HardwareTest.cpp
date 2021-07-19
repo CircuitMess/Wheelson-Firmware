@@ -5,6 +5,7 @@
 #include "HWTestSPIFFS.hpp"
 #include <Wheelson.h>
 #include <SPIFFS.h>
+#include <Camera.h>
 
 HardwareTest *HardwareTest::test = nullptr;
 
@@ -15,6 +16,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::nuvotonTest, "Nuvoton"});
 	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
+	tests.push_back({HardwareTest::camera, "Camera"});
 
 	Wire.begin(I2C_SDA, I2C_SCL);
 }
@@ -57,10 +59,29 @@ void HardwareTest::start(){
 	if(pass){
 		Serial.printf("TEST:pass:%s\n",currentTest);
 
-		canvas->setTextColor(TFT_CYAN);
+		Camera cam;
+
 		canvas->printf("\n");
-		canvas->printCenter("Test Successful!");
-		display->commit();
+
+		if(!cam.isInited()){
+			canvas->setTextColor(TFT_RED);
+			canvas->printCenter("Camera error!");
+			display->commit();
+		}else{
+			int y = canvas->getCursorY();
+			canvas->setTextColor(TFT_GREEN);
+			canvas->clear(TFT_BLACK);
+
+			for(;;){
+				cam.loadFrame();
+				canvas->drawIcon(cam.getRGB565(), 0, 4, 160, 120);
+				cam.releaseFrame();
+
+				canvas->setCursor(0, y);
+				canvas->printCenter("Test successful!\n");
+				display->commit();
+			}
+		}
 
 	}else{
 		Serial.printf("TEST:fail:%s\n", currentTest);
@@ -157,6 +178,12 @@ bool HardwareTest::SPIFFSTest(){
 
 	return true;
 }
+
+bool HardwareTest::camera(){
+	Camera cam;
+	return cam.isInited();
+}
+
 void HardwareTest::log(const char *property, char *value){
 	Serial.printf("\n%s:%s:%s\n", currentTest, property, value);
 }

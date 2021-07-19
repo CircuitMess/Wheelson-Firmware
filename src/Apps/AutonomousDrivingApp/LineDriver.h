@@ -8,7 +8,9 @@
 
 class LineDriver : public Driver {
 public:
+	LineDriver();
 	void toggleDisplayMode() override;
+	const char* getParamName() override;
 	void draw() override;
 
 protected:
@@ -27,6 +29,7 @@ private:
 	} displayMode = RAW;
 
 	int lastx = -1;
+	float lastAng = 0;
 
 	void rotL();
 	void rotR();

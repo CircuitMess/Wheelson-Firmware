@@ -5,6 +5,77 @@
 
 using namespace cv;
 
+typedef struct {
+	double h;       // angle in degrees
+	double s;       // a fraction between 0 and 1
+	double v;       // a fraction between 0 and 1
+} hsv;
+
+typedef struct {
+	double r;       // a fraction between 0 and 1
+	double g;       // a fraction between 0 and 1
+	double b;       // a fraction between 0 and 1
+} rgb;
+
+rgb hsv2rgb(hsv in)
+{
+	double      hh, p, q, t, ff;
+	long        i;
+	rgb         out;
+
+	if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
+		out.r = in.v;
+		out.g = in.v;
+		out.b = in.v;
+		return out;
+	}
+	hh = in.h;
+	if(hh >= 360.0) hh = 0.0;
+	hh /= 60.0;
+	i = (long)hh;
+	ff = hh - i;
+	p = in.v * (1.0 - in.s);
+	q = in.v * (1.0 - (in.s * ff));
+	t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+	switch(i) {
+		case 0:
+			out.r = in.v;
+			out.g = t;
+			out.b = p;
+			break;
+		case 1:
+			out.r = q;
+			out.g = in.v;
+			out.b = p;
+			break;
+		case 2:
+			out.r = p;
+			out.g = in.v;
+			out.b = t;
+			break;
+
+		case 3:
+			out.r = p;
+			out.g = q;
+			out.b = in.v;
+			break;
+		case 4:
+			out.r = t;
+			out.g = p;
+			out.b = in.v;
+			break;
+		case 5:
+		default:
+			out.r = in.v;
+			out.g = p;
+			out.b = q;
+			break;
+	}
+	return out;
+
+}
+
 BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)){}
 
 BallDriver::~BallDriver(){
@@ -18,11 +89,12 @@ void BallDriver::process(){
 	bufferMutex.unlock();
 	resultsMutex.unlock();
 
-	DisplayMode mode = displayMode;
+		DisplayMode mode = displayMode;
 	if(mode == BW){
 		resultsMutex.lock();
 	}
-	std::vector<Ball> balls = BallTracker::detect(workingBuffer, 160, 120, BallTracker::RGB888, displayMode == BW ? (Color*)workingBuffer : nullptr);
+	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, param > 0 ? param*180/255 : 0,
+												  BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
 	if(mode == BW){
 		resultsMutex.unlock();
 	}
@@ -60,15 +132,15 @@ void BallDriver::process(){
 	float amt = abs(80.0 - (float)currentX) / 80.0;
 	float amtR, amtL;
 	if(amt <= 0.1){
-		amtL = 40;
-		amtR = 40;
+		amtL = 120;
+		amtR = 120;
 	}else{
 		if(currentX < 80){
-			amtR = 40.0f * amt + 40.0f;
+			amtR = 80.0f * amt + 40.0f;
 			amtL = 0;
 		}else{
 			amtR = 0;
-			amtL = 40.0f * amt + 40.0f;
+			amtL = 80.0f * amt + 40.0f;
 		}
 	}
 	 lastX = currentX;
@@ -82,6 +154,27 @@ void BallDriver::process(){
 
 void BallDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+const char* BallDriver::getParamName(){
+	return "Ball color";
+}
+
+void BallDriver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
+	float step = 360.0 / (float)max(0U, (w-3));
+	int fill = max(0U, (w-3)) * param / 255;
+
+	for (int i=0; i < w; i++){
+		hsv in = {(double)step * i, 1.0, 1.0};
+		rgb c = hsv2rgb(in);
+		sprite.drawFastVLine(i + x, y+3, h-3, C_RGB(c.r * 255.0, c.g * 255.0, c.b * 255.0));
+	}
+
+	sprite.drawRect(x, y+2, w, h-1, TFT_WHITE);
+
+	fill += 1;
+	//sprite.fillTriangle(max(fill-2 + x, x), y, min(fill + 2 + x, x+(int)w), y, fill + x, y+2, TFT_BLACK);
+	sprite.fillTriangle(max(x - 2, x + fill - 3), y, min((int) (x + w + 1), x + fill + 3), y, x + fill, y+3, TFT_BLACK);
 }
 
 void BallDriver::draw(){

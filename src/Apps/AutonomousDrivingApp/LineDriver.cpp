@@ -62,6 +62,9 @@ std::vector<Point2i> findLine(uint8_t* data, uint16_t w, uint16_t h){
 
 	return line;
 }
+LineDriver::LineDriver(){
+	setParam(120); //default threshold
+}
 
 void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 
@@ -105,17 +108,17 @@ void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t
 }
 
 void LineDriver::rotL(){
-	setMotor(MOTOR_FL, -60);
-	setMotor(MOTOR_BL, -60);
-	setMotor(MOTOR_FR, 60);
-	setMotor(MOTOR_BR, 60);
+	setMotor(MOTOR_FL, -30);
+	setMotor(MOTOR_BL, -30);
+	setMotor(MOTOR_FR, 30);
+	setMotor(MOTOR_BR, 30);
 }
 
 void LineDriver::rotR(){
-	setMotor(MOTOR_FL, 60);
-	setMotor(MOTOR_BL, 60);
-	setMotor(MOTOR_FR, -60);
-	setMotor(MOTOR_BR, -60);
+	setMotor(MOTOR_FL, 30);
+	setMotor(MOTOR_BL, 30);
+	setMotor(MOTOR_FR, -30);
+	setMotor(MOTOR_BR, -30);
 }
 
 void LineDriver::process(){
@@ -136,7 +139,7 @@ void LineDriver::process(){
 	//cv::boxFilter(gray, blur, gray.depth(), cv::Size(8, 8), cv::Point(-1,-1), true, BORDER_REPLICATE);
 
 	Mat thresh;
-	threshold(gray, thresh, 120, 255, THRESH_BINARY);
+	threshold(gray, thresh, getParam(), 255, THRESH_BINARY);
 
 	/*rectangle(thresh1, Rect(cv::Point(0, 0), thresh1.size()), Scalar(0));
 
@@ -162,12 +165,20 @@ void LineDriver::process(){
 	if(linePoints.empty()){
 		brokenLineResult.clear();
 
-		if(lastx == -1) return;
+		if(lastx == -1 || lastAng == -1) return;
 
-		if(lastx < thresh.cols/2){
-			rotL();
+		if(abs(lastAng) > 0.7){
+			if(lastAng < 0){
+				rotL();
+			}else{
+				rotR();
+			}
 		}else{
-			rotR();
+			if(lastx < thresh.cols/2){
+				rotL();
+			}else{
+				rotR();
+			}
 		}
 
 		return;
@@ -222,12 +233,20 @@ void LineDriver::process(){
 	if(broken[1].x == -1 || broken[1].x == 0 || broken[midIndex].x == -1 || broken[midIndex].x == 0){
 		brokenLineResult = broken;
 
-		if(lastx == -1) return;
+		if(lastx == -1 || lastAng == -1) return;
 
-		if(lastx < thresh.cols/2){
-			rotL();
+		if(abs(lastAng) > 0.7){
+			if(lastAng < 0){
+				rotL();
+			}else{
+				rotR();
+			}
 		}else{
-			rotR();
+			if(lastx < thresh.cols/2){
+				rotL();
+			}else{
+				rotR();
+			}
 		}
 
 		return;
@@ -243,6 +262,7 @@ void LineDriver::process(){
 	// printf("tg: %.3f, ang: %.3f\n", angT, ang);
 
 	ang = constrain(ang, -1, 1);
+	lastAng = ang;
 
 	auto map = [](float x, float in_min, float in_max, float out_min, float out_max){
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -252,7 +272,7 @@ void LineDriver::process(){
 	int xpos = broken[1].x;
 	int xpos2 = broken[midIndex].x;
 
-	if(abs(xpos - xpos2) < frame.cols/4){
+	if(abs(xpos - xpos2) < frame.cols/4 && abs(ang) < 0.3){
 		float midp = (float) (xpos + xpos2) / 2.0f;
 
 		float amt = (float) abs(midp - frame.cols/2) / ((float) frame.cols/2.0f);
@@ -276,11 +296,11 @@ void LineDriver::process(){
 		float rAmtF = map(ang, 1, -1, 0, 1);
 
 		if(lAmtF > rAmtF){
-			lAmtF *= 60.0f;
-			rAmtF *= 20.0f;
+			lAmtF *= 100.0f;
+			rAmtF *= 1.0f;
 		}else{
-			lAmtF *= 20.0f;
-			rAmtF *= 60.0f;
+			lAmtF *= 1.0f;
+			rAmtF *= 100.0f;
 		}
 
 		int lAmt = (int) lAmtF + 20;
@@ -300,6 +320,10 @@ void LineDriver::process(){
 
 void LineDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+const char* LineDriver::getParamName(){
+	return "Contrast";
 }
 
 void LineDriver::draw(){
