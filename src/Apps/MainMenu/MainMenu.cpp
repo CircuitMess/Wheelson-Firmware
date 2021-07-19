@@ -72,6 +72,7 @@ void MainMenu::deinit(){
 
 void MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	Battery.drawIcon(screen.getSprite());
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_HelvetiPixel_tr);

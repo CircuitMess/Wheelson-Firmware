@@ -55,6 +55,7 @@ void AutonomousDriving::draw(){
 		screen.getSprite()->setCursor(105, 98);
 		screen.getSprite()->printCenter(driver->getParamName());
 	}
+	Battery.drawIcon(screen.getSprite());
 	screen.draw();
 }
 
@@ -86,9 +87,9 @@ void AutonomousDriving::buildUI(){
 	screen.addChild(screenLayout);
 	screen.repos();
 	engines[0]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 15);
-	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 80);
+	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 95);
 	engines[2]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 15);
-	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 80);
+	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 95);
 }
 
 void AutonomousDriving::loop(uint micros){
