@@ -25,6 +25,8 @@ public:
 
 	virtual void toggleDisplayMode();
 
+	void toggleMotors();
+
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);
@@ -38,6 +40,8 @@ private:
 	Task task;
 
 	Camera cam;
+
+	bool motorsStop = true;
 };
 
 #endif //WHEELSON_FIRMWARE_DRIVER_HPP

@@ -40,6 +40,8 @@ private:
 	void buildUI();
 	void buttonPressed(uint i) override;
 
+	bool firstStart = false;
+
 };
 
 #endif //WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H

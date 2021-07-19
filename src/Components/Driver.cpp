@@ -17,6 +17,9 @@ Driver::~Driver(){
 }
 
 void Driver::start(){
+	for(uint8_t i = 0; i < 4; i++){
+		setMotor(i, 0);
+	}
 	task.start(1, 0);
 }
 
@@ -39,6 +42,7 @@ void Driver::taskFunc(Task* task){
 }
 
 void Driver::setMotor(uint8_t id, int8_t state){
+	if(motorsStop) return;
 	motors[id] = state;
 	Motors.setMotor(id, state);
 }
@@ -66,3 +70,11 @@ void Driver::toggleDisplayMode(){
 const Color* Driver::getCameraImage888() const{
 	return frameBuffer888;
 }
+
+void Driver::toggleMotors(){
+	for(uint8_t i = 0; i < 4; i++){
+		setMotor(i, 0);
+	}
+	motorsStop = !motorsStop;
+}
+
