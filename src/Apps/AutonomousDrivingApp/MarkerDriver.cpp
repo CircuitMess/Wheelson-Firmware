@@ -54,34 +54,32 @@ void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 	}
 }
 
-MarkerDriver::MarkerDriver() : workingSprite(Sprite(Wheelson.getDisplay(), 160, 120)), workingBuffer((Color*)workingSprite.getPointer()){
-	workingSprite.setTextFont(1);
-	workingSprite.setTextSize(2);
+MarkerDriver::MarkerDriver() : resultSprite(Sprite(Wheelson.getDisplay(), 160, 120)),
+							   workingBuffer((Color*)ps_malloc(160 * 120 * sizeof(Color))){
+	resultSprite.setTextFont(1);
+	resultSprite.setTextSize(2);
 }
 
 MarkerDriver::~MarkerDriver(){
+	free(workingBuffer);
 }
 
 void MarkerDriver::process(){
 
 	bufferMutex.lock();
-	resultsMutex.lock();
 	memcpy(workingBuffer, getCameraImage(), 160*120*sizeof(Color));
-	resultsMutex.unlock();
 	bufferMutex.unlock();
 
 
 	DisplayMode mode = displayMode;
 
-	if(mode == BW){
-		resultsMutex.lock();
-	}
-	std::vector<Aruco::Marker> markers = Markers::detect((uint8_t*) workingBuffer, 160, 120, Markers::RGB565, mode == BW ? workingBuffer : nullptr);
+	std::vector<Aruco::Marker> markers = Markers::detect((uint8_t*) workingBuffer, 160, 120, Markers::RGB565,
+														 mode == BW ? workingBuffer : nullptr);
+	resultsMutex.lock();
 	resultMarkers = markers;
+	memcpy(resultSprite.getPointer(), workingBuffer, 160*120*sizeof(Color));
+	resultsMutex.unlock();
 
-	if(mode == BW){
-		resultsMutex.unlock();
-	}
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
 		if(state != IDLE){
@@ -143,16 +141,14 @@ void MarkerDriver::draw(){
 			int index = actions.indexOf(marker.id);
 			String name;
 			if(index == -1){
-				workingSprite.setTextColor(TFT_BLUE);
+				resultSprite.setTextColor(TFT_BLUE);
 				name = String(marker.id);
 			}else{
-				workingSprite.setTextColor(TFT_GREEN);
+				resultSprite.setTextColor(TFT_GREEN);
 				name = actionNames[actions.indexOf(marker.id)];
 			}
-			Serial.print(name);
-			Serial.print(" ");
 
-			int textWidth = workingSprite.textWidth(name);
+			int textWidth = resultSprite.textWidth(name);
 			int markerX = marker.projected[0].x;
 			int markerY = marker.projected[0].y;
 			int x2 = marker.projected[0].x, y2 = marker.projected[0].y;
@@ -188,28 +184,29 @@ void MarkerDriver::draw(){
 			x = max(25, min(135 - textWidth, x));
 			y = max(2, min(y, 100));
 
-			Serial.printf("markerX: %d, markerY: %d, markerWidth: %d, markerHeight: %d\n", markerX, markerY, markerWidth, markerHeight);
 
 
 			resultsMutex.lock();
-			workingSprite.drawString(name, x, y);
+			resultSprite.drawString(name, x, y);
 			resultsMutex.unlock();
 
 		}
-		Serial.println();
 	}
-	resultsMutex.lock();
-	memcpy(processedBuffer, workingBuffer, 160*120*sizeof(Color));
-	resultsMutex.unlock();
 
+	if(!resultMarkers.empty()){
+		for(const auto &marker : resultMarkers){
+			auto points = marker.projected;
+			resultsMutex.lock();
 
-
-	if(resultMarkers.empty()) return;
-	for(const auto& marker : resultMarkers){
-		auto points = marker.projected;
-		for(int i = 1; i < 4; i++){
-			drawLine(points[i-1].x * 2, points[i-1].y * 2, points[i].x * 2, points[i].y * 2, processedBuffer, TFT_RED);
+			for(int i = 1; i < 4; i++){
+				drawLine(points[i - 1].x * 2, points[i - 1].y * 2, points[i].x * 2, points[i].y * 2, (Color*)resultSprite.getPointer(), TFT_RED);
+			}
+			drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, (Color*)resultSprite.getPointer(), TFT_RED);
+			resultsMutex.unlock();
 		}
-		drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, processedBuffer, TFT_RED);
 	}
+
+	resultsMutex.lock();
+	memcpy(processedBuffer, resultSprite.getPointer(), 160*120*sizeof(Color));
+	resultsMutex.unlock();
 }

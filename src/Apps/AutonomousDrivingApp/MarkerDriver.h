@@ -18,7 +18,7 @@ protected:
 	void process() override;
 
 private:
-	Sprite workingSprite;
+	Sprite resultSprite;
 	Color* workingBuffer;
 	std::vector<Aruco::Marker> resultMarkers;
 	enum {
