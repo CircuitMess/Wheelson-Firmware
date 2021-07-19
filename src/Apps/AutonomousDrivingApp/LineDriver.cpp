@@ -63,6 +63,9 @@ std::vector<Point2i> findLine(uint8_t* data, uint16_t w, uint16_t h){
 
 	return line;
 }
+LineDriver::LineDriver(){
+	setParam(120); //default threshold
+}
 
 void LineDriver::rotL(){
 	setMotor(MOTOR_FL, -30);
@@ -94,7 +97,7 @@ void LineDriver::process(){
 	//cv::boxFilter(gray, blur, gray.depth(), cv::Size(8, 8), cv::Point(-1,-1), true, BORDER_REPLICATE);
 
 	Mat thresh;
-	threshold(gray, thresh, 120, 255, THRESH_BINARY);
+	threshold(gray, thresh, getParam(), 255, THRESH_BINARY);
 
 	/*rectangle(thresh1, Rect(cv::Point(0, 0), thresh1.size()), Scalar(0));
 
@@ -286,4 +289,8 @@ void LineDriver::process(){
 
 void LineDriver::toggleDisplayMode(){
 	displayMode = static_cast<DisplayMode>((displayMode+1) % DisplayMode::COUNT);
+}
+
+const char* LineDriver::getParamName(){
+	return "Contrast";
 }

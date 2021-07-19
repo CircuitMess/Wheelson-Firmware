@@ -40,6 +40,9 @@ private:
 	void buildUI();
 	void buttonPressed(uint i) override;
 
+	uint paramPopupMillis = 0;
+	bool paramPopupActive = false;
+
 };
 
 #endif //WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H
