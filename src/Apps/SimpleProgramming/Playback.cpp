@@ -42,6 +42,8 @@ void Simple::Playback::start(){
 
 void Simple::Playback::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	Battery.drawIcon(screen.getSprite());
+
 	screen.draw();
 
 }

@@ -33,6 +33,7 @@ void Simple::App::draw(){
 	screen.draw();
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
 	screen.getSprite()->drawLine(0, 19, screen.getWidth(), 19, TFT_WHITE);
+	Battery.drawIcon(screen.getSprite());
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);

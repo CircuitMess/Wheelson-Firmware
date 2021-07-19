@@ -52,6 +52,7 @@ void Simple::Edit::draw(){
 	screen.draw();
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 113, 160, 113, 1);
 	screen.getSprite()->drawLine(0, 113, screen.getWidth(), 113, TFT_WHITE);
+	Battery.drawIcon(screen.getSprite());
 
 	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
 	u8f.setFont(u8g2_font_profont12_tf);
