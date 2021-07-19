@@ -19,6 +19,7 @@ Simple::ActionElement::ActionElement(ElementContainer* parent, Action::Type acti
 
 Simple::ActionElement::~ActionElement(){
 	free(iconActionBuffer);
+	free(borderBuffer);
 }
 
 void Simple::ActionElement::draw(){
