@@ -19,15 +19,10 @@ const uint8_t shutdownTimes[5] = {0, 1, 5, 15, 30};
 void BatteryPopupService::loop(uint time){
 	checkMicros += time;
 	blinkMicros += time;
-	if(lastShutdownTime == 0xFF){
-		lastShutdownTime = Settings.get().shutdownTime;
-	}
-	if(lastShutdownTime != Settings.get().shutdownTime){
-		autoShutdownMicros = 0;
-	}
+
 	if(Settings.get().shutdownTime != 0){
 		autoShutdownMicros += time;
-		if(autoShutdownMicros >= shutdownTimes[Settings.get().shutdownTime]*600000000){
+		if(autoShutdownMicros >= shutdownTimes[Settings.get().shutdownTime]*60000000){
 			if(tft != nullptr){
 				tft->writecommand(16);
 			}
@@ -37,6 +32,13 @@ void BatteryPopupService::loop(uint time){
 			esp_deep_sleep_start();
 			return;
 		}
+	}
+	if(lastShutdownTime == 0xFF){
+		autoShutdownMicros = 0;
+		lastShutdownTime = Settings.get().shutdownTime;
+	}
+	if(lastShutdownTime != Settings.get().shutdownTime){
+		autoShutdownMicros = 0;
 	}
 
 
@@ -103,4 +105,8 @@ void BatteryPopupService::loop(uint time){
 
 void BatteryPopupService::setTFT(TFT_eSPI* _tft){
 	tft=_tft;
+}
+
+void BatteryPopupService::anyKeyPressed(){
+	autoShutdownMicros = 0;
 }
