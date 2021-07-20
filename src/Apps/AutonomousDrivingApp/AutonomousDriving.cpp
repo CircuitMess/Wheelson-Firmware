@@ -102,7 +102,7 @@ void AutonomousDriving::deinit(){
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", true));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", false));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
@@ -118,6 +118,7 @@ void AutonomousDriving::loop(uint micros){
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
 		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
+		percentage = map(percentage, -100, 100, -10, 10);
 		sprintf(buffer, "%d",percentage);
 		engines[i]->setText(buffer);
 	}
