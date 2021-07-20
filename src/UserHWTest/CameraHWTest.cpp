@@ -29,6 +29,7 @@ void CameraHWTest::draw(){
 		u8f.setCursor((160 - u8f.getUTF8Width("Camera is not detected!")) / 2, 53);
 		u8f.print("Camera is not detected!");
 	}
+	userHwTest->getScreen().getSprite()->fillRect(0,0,160,5,TFT_BLACK);
 }
 
 void CameraHWTest::start(){
