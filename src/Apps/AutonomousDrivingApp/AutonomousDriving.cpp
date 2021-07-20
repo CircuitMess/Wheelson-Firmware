@@ -45,6 +45,7 @@ void AutonomousDriving::draw(){
 	screen.getSprite()->clear(TFT_BLACK);
 	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
+	Battery.drawIcon(screen.getSprite());
 	if(paramPopupActive){
 		screen.getSprite()->fillRoundRect(30, 95, 100, 27, 3, C_HEX(0x0082ff));
 		screen.getSprite()->drawRoundRect(29, 94, 102, 29, 5, TFT_WHITE);
@@ -55,7 +56,17 @@ void AutonomousDriving::draw(){
 		screen.getSprite()->setCursor(105, 98);
 		screen.getSprite()->printCenter(driver->getParamName());
 	}
-	Battery.drawIcon(screen.getSprite());
+	if(!firstStart){
+		screen.getSprite()->drawRoundRect(29, 91, 102, 32, 7, TFT_WHITE);
+		screen.getSprite()->fillRoundRect(30, 92, 100, 30, 5, C_HEX(0x0082ff));
+		screen.getSprite()->setTextColor(TFT_WHITE);
+		screen.getSprite()->setTextSize(1);
+		screen.getSprite()->setTextFont(1);
+		screen.getSprite()->setCursor(105, 96);
+		screen.getSprite()->printCenter("Press down to");
+		screen.getSprite()->setCursor(105, 109);
+		screen.getSprite()->printCenter("toggle motors");
+	}
 	screen.draw();
 }
 
@@ -133,6 +144,13 @@ void AutonomousDriving::buttonPressed(uint i){
 					driver->setParam(min(driver->getParam() + 15, 255));
 				}
 			}
+			break;
+		case BTN_DOWN:
+			if(!firstStart){
+				firstStart = true;
+			}
+			driver->toggleMotors();
+			DrivingElement::toggleMotors();
 			break;
 	}
 }
