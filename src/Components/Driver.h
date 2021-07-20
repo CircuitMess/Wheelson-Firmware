@@ -33,6 +33,8 @@ public:
 	virtual const char* getParamName();
 	virtual void drawParamControl(Sprite &sprite, int x, int y, uint w, uint h);
 
+	bool camWorks() const;
+
 protected:
 	virtual void process() = 0;
 	void setMotor(uint8_t id, int8_t state);

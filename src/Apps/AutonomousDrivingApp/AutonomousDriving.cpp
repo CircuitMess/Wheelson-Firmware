@@ -45,12 +45,20 @@ void AutonomousDriving::draw(){
 	Sprite* canvas = screen.getSprite();
 
 	canvas->clear(TFT_BLACK);
-	canvas->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
+
+	if(driver->camWorks()){
+		canvas->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
+	}else{
+		canvas->setTextColor(TFT_WHITE);
+		canvas->setTextSize(1);
+		canvas->setTextFont(1);
+		canvas->setCursor(0, 60);
+		canvas->printCenter("Camera error!");
+	}
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	Battery.drawIcon(canvas);
 
-
-	if(paramPopupActive || !firstStart){
+	if(driver->camWorks() && (paramPopupActive || !firstStart)){
 		canvas->fillRoundRect(30, 93, 100, 27, 3, C_HEX(0x0082ff));
 		canvas->drawRoundRect(29, 92, 102, 29, 5, TFT_WHITE);
 
@@ -149,6 +157,8 @@ void AutonomousDriving::buttonPressed(uint i){
 			}
 			break;
 		case BTN_DOWN:
+			if(!driver->camWorks()) break;
+
 			if(!firstStart){
 				firstStart = true;
 			}

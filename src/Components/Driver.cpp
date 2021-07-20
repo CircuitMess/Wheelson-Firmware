@@ -31,6 +31,11 @@ void Driver::taskFunc(Task* task){
 	Driver* driver = static_cast<Driver*>(task->arg);
 
 	while(task->running){
+		if(!driver->cam.isInited()){
+			delay(1);
+			continue;
+		}
+
 		driver->cam.loadFrame();
 		memcpy(driver->frameBuffer, driver->cam.getRGB565(), 160 * 120 * sizeof(Color));
 		memcpy(driver->frameBuffer888, driver->cam.getRGB888(), 160 * 120 * 3);
@@ -96,3 +101,6 @@ void Driver::toggleMotors(){
 	motorsStop = !motorsStop;
 }
 
+bool Driver::camWorks() const{
+	return cam.isInited();
+}
