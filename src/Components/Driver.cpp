@@ -95,10 +95,18 @@ void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 }
 
 void Driver::toggleMotors(){
-	for(uint8_t i = 0; i < 4; i++){
-		setMotor(i, 0);
-	}
 	motorsStop = !motorsStop;
+
+	if(motorsStop){
+		delay(10);
+		Nuvo.getI2C().loop(0);
+
+		for(uint8_t i = 0; i < 4; i++){
+			motors[i] = 0;
+		}
+
+		Motors.stopAll();
+	}
 }
 
 bool Driver::camWorks() const{
