@@ -2,12 +2,12 @@
 #define WHEELSON_FIRMWARE_BATTERYPOPUPSERVICE_H
 
 #include <Loop/LoopListener.h>
-
+#include <Input/InputListener.h>
 class WarningPopup;
 class ShutdownPopup;
 class TFT_eSPI;
 
-class BatteryPopupService : public LoopListener {
+class BatteryPopupService : public LoopListener, public InputListener{
 public:
 	void loop(uint time) override;
 	void setTFT(TFT_eSPI* _tft);
@@ -27,6 +27,8 @@ private:
 	bool blinkActive = false;
 
 	TFT_eSPI* tft = nullptr;
+
+	void anyKeyPressed() override;
 
 };
 
