@@ -42,31 +42,34 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
-	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
-	Battery.drawIcon(screen.getSprite());
-	if(paramPopupActive){
-		screen.getSprite()->fillRoundRect(30, 95, 100, 27, 3, C_HEX(0x0082ff));
-		screen.getSprite()->drawRoundRect(29, 94, 102, 29, 5, TFT_WHITE);
-		driver->drawParamControl(*screen.getSprite(), 35, 110, 90, 8);
-		screen.getSprite()->setTextColor(TFT_WHITE);
-		screen.getSprite()->setTextSize(1);
-		screen.getSprite()->setTextFont(1);
-		screen.getSprite()->setCursor(105, 98);
-		screen.getSprite()->printCenter(driver->getParamName());
+	Sprite* canvas = screen.getSprite();
+
+	canvas->clear(TFT_BLACK);
+	canvas->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
+	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
+	Battery.drawIcon(canvas);
+
+
+	if(paramPopupActive || !firstStart){
+		canvas->fillRoundRect(30, 93, 100, 27, 3, C_HEX(0x0082ff));
+		canvas->drawRoundRect(29, 92, 102, 29, 5, TFT_WHITE);
+
+		canvas->setTextColor(TFT_WHITE);
+		canvas->setTextSize(1);
+		canvas->setTextFont(1);
+
+		if(paramPopupActive){
+			driver->drawParamControl(*screen.getSprite(), 35, 108, 90, 8);
+			canvas->setCursor(105, 96);
+			canvas->printCenter(driver->getParamName());
+		}else if(!firstStart){
+			canvas->setCursor(0, 96);
+			canvas->printCenter("Press down to");
+			canvas->setCursor(0, 109);
+			canvas->printCenter("toggle motors");
+		}
 	}
-	if(!firstStart){
-		screen.getSprite()->drawRoundRect(29, 91, 102, 32, 7, TFT_WHITE);
-		screen.getSprite()->fillRoundRect(30, 92, 100, 30, 5, C_HEX(0x0082ff));
-		screen.getSprite()->setTextColor(TFT_WHITE);
-		screen.getSprite()->setTextSize(1);
-		screen.getSprite()->setTextFont(1);
-		screen.getSprite()->setCursor(105, 96);
-		screen.getSprite()->printCenter("Press down to");
-		screen.getSprite()->setCursor(105, 109);
-		screen.getSprite()->printCenter("toggle motors");
-	}
+
 	screen.draw();
 }
 
