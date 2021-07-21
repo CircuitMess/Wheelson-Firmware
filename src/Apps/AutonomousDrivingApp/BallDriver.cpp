@@ -76,7 +76,9 @@ rgb hsv2rgb(hsv in)
 
 }
 
-BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)), bwBuffer((Color*)ps_malloc(160*120*2)){}
+BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)), bwBuffer((Color*)ps_malloc(160*120*2)){
+	param = (255 * 110) / 180;
+}
 
 BallDriver::~BallDriver(){
 	free(workingBuffer);
