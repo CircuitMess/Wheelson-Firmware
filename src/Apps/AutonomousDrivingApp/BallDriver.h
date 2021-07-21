@@ -19,6 +19,7 @@ protected:
 
 private:
 	uint8_t* workingBuffer;
+	Color* bwBuffer;
 	std::vector<Ball> ballsResult;
 	enum DisplayMode {
 		RAW,

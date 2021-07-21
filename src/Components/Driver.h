@@ -41,12 +41,12 @@ protected:
 	Color* processedBuffer = nullptr;
 	void setMotor(uint8_t id, int8_t state);
 
-	Mutex bufferMutex;
-	Mutex resultsMutex;
+	Mutex frameMutex;
+	Mutex resultMutex;
 
 	uint8_t param = 0;
 private:
-	Color* frameBuffer = nullptr;
+	Color* frameBuffer565 = nullptr;
 	uint8_t* frameBuffer888 = nullptr;
 	int8_t motors[4] = {0};
 

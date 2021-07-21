@@ -22,7 +22,7 @@ private:
 
 	enum DisplayMode {
 		RAW,
-		GRAY,
+		//GRAY,
 		THRESH_SIMPLE,
 		//THRESH_ADAPTIVE,
 		COUNT

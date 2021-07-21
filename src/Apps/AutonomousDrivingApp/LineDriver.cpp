@@ -123,9 +123,9 @@ void LineDriver::rotR(){
 
 void LineDriver::process(){
 	Mat frame(120, 160, CV_8UC3);
-	bufferMutex.lock();
+	frameMutex.lock();
 	memcpy(frame.data, getCameraImage888(), 160 * 120 * 3);
-	bufferMutex.unlock();
+	frameMutex.unlock();
 
 	resize(frame, frame, Size(), 0.5, 0.5);
 
@@ -151,15 +151,15 @@ void LineDriver::process(){
 
 	bitwise_not(thresh, thresh);*/
 
-	resultsMutex.lock();
-	if(displayMode == GRAY){
-		cvtColor(gray, drawMat, CV_GRAY2BGR565);
+	resultMutex.lock();
+	if(displayMode == RAW){
+		cvtColor(frame, drawMat, CV_BGR2BGR565);
 	}else if(displayMode == THRESH_SIMPLE){
 		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}/*else if(displayMode == THRESH_ADAPTIVE){
 		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}*/
-	resultsMutex.unlock();
+	resultMutex.unlock();
 
 	auto linePoints = findLine(thresh.data, thresh.cols, thresh.rows);
 	if(linePoints.empty()){
@@ -327,13 +327,17 @@ const char* LineDriver::getParamName(){
 }
 
 void LineDriver::draw(){
-	resultsMutex.lock();
-	if(displayMode != RAW){
-		resize(drawMat, drawMat, Size(), 2, 2, INTER_NEAREST);
-		memcpy(processedBuffer, drawMat.data, 120 * 160 * 2);
+	if(drawMat.empty()){
+		memcpy(processedBuffer, getCameraImage(), 120 * 160 * 2);
+		return;
 	}
-	resultsMutex.unlock();
 
+	Mat mat;
+	resultMutex.lock();
+	resize(drawMat, mat, Size(), 2, 2, INTER_NEAREST);
+	resultMutex.unlock();
+
+	memcpy(processedBuffer, mat.data, 120 * 160 * 2);
 
 	if(brokenLineResult.empty()) return;
 

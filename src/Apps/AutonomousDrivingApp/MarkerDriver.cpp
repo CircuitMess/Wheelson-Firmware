@@ -55,30 +55,31 @@ void drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
 }
 
 MarkerDriver::MarkerDriver() : resultSprite(Sprite(Wheelson.getDisplay(), 160, 120)),
-							   workingBuffer((Color*)ps_malloc(160 * 120 * sizeof(Color))){
+							   workingBuffer((Color*)ps_malloc(160 * 120 * sizeof(Color))),
+							   bwBuffer((Color*)ps_malloc(160 * 120 * sizeof(Color))){
 	resultSprite.setTextFont(1);
 	resultSprite.setTextSize(2);
 }
 
 MarkerDriver::~MarkerDriver(){
 	free(workingBuffer);
+	free(bwBuffer);
 }
 
 void MarkerDriver::process(){
 
-	bufferMutex.lock();
+	frameMutex.lock();
 	memcpy(workingBuffer, getCameraImage(), 160*120*sizeof(Color));
-	bufferMutex.unlock();
+	frameMutex.unlock();
 
 
 	DisplayMode mode = displayMode;
 
 	std::vector<Aruco::Marker> markers = Markers::detect((uint8_t*) workingBuffer, 160, 120, Markers::RGB565,
-														 mode == BW ? workingBuffer : nullptr);
-	resultsMutex.lock();
+														 mode == BW ? bwBuffer : nullptr);
+	resultMutex.lock();
 	resultMarkers = markers;
-	memcpy(resultSprite.getPointer(), workingBuffer, 160*120*sizeof(Color));
-	resultsMutex.unlock();
+	resultMutex.unlock();
 
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
@@ -136,77 +137,75 @@ void MarkerDriver::toggleDisplayMode(){
 
 void MarkerDriver::draw(){
 
-	if(!resultMarkers.empty()){
-		for(const auto &marker : resultMarkers){
-			int index = actions.indexOf(marker.id);
-			String name;
-			if(index == -1){
-				resultSprite.setTextColor(TFT_BLUE);
-				name = String(marker.id);
-			}else{
-				resultSprite.setTextColor(TFT_GREEN);
-				name = actionNames[actions.indexOf(marker.id)];
-			}
-
-			int textWidth = resultSprite.textWidth(name);
-			int markerX = marker.projected[0].x;
-			int markerY = marker.projected[0].y;
-			int x2 = marker.projected[0].x, y2 = marker.projected[0].y;
-			for(auto point : marker.projected){
-				if(point.x < markerX){
-					markerX = point.x;
-				}
-				if(point.y < markerY){
-					markerY = point.y;
-				}
-				if(point.x > x2){
-					x2 = point.x;
-				}
-				if(point.y > y2){
-					y2 = point.y;
-				}
-			}
-			markerX *= 2;
-			markerY *= 2;
-			x2 *= 2;
-			y2 *= 2;
-			int markerWidth = x2 - markerX;
-			int markerHeight = y2 - markerY;
-			int x = markerX - (textWidth - markerWidth) / 2;
-			int y = markerY + markerHeight + 2;
-			if(x <= 25 && markerX + markerWidth + 2 + textWidth < 135){
-				x = markerX + markerWidth + 2;
-				y = markerY + markerHeight / 2 - 3;
-			}else if(x + textWidth >= 135 && markerX - textWidth - 2 > 25){
-				x = markerX - textWidth - 2;
-				y = markerY + markerHeight / 2 - 3;
-			}
-			x = max(25, min(135 - textWidth, x));
-			y = max(2, min(y, 100));
-
-
-
-			resultsMutex.lock();
-			resultSprite.drawString(name, x, y);
-			resultsMutex.unlock();
-
-		}
+	if(displayMode == RAW){
+		memcpy(resultSprite.getPointer(), getCameraImage(), 160*120*sizeof(Color));
+	}else{
+		memcpy(resultSprite.getPointer(), bwBuffer, 160*120*sizeof(Color));
 	}
 
-	if(!resultMarkers.empty()){
-		for(const auto &marker : resultMarkers){
-			auto points = marker.projected;
-			resultsMutex.lock();
-
-			for(int i = 1; i < 4; i++){
-				drawLine(points[i - 1].x * 2, points[i - 1].y * 2, points[i].x * 2, points[i].y * 2, (Color*)resultSprite.getPointer(), TFT_RED);
-			}
-			drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, (Color*)resultSprite.getPointer(), TFT_RED);
-			resultsMutex.unlock();
-		}
+	if(resultMarkers.empty()){
+		memcpy(processedBuffer, resultSprite.getPointer(), 160*120*sizeof(Color));
+		return;
 	}
 
-	resultsMutex.lock();
+
+	for(const auto &marker : resultMarkers){
+		int index = actions.indexOf(marker.id);
+		String name;
+		if(index == -1){
+			resultSprite.setTextColor(TFT_BLUE);
+			name = String(marker.id);
+		}else{
+			resultSprite.setTextColor(TFT_GREEN);
+			name = actionNames[actions.indexOf(marker.id)];
+		}
+
+		int textWidth = resultSprite.textWidth(name);
+		int markerX = marker.projected[0].x;
+		int markerY = marker.projected[0].y;
+		int x2 = marker.projected[0].x, y2 = marker.projected[0].y;
+		for(auto point : marker.projected){
+			if(point.x < markerX){
+				markerX = point.x;
+			}
+			if(point.y < markerY){
+				markerY = point.y;
+			}
+			if(point.x > x2){
+				x2 = point.x;
+			}
+			if(point.y > y2){
+				y2 = point.y;
+			}
+		}
+		markerX *= 2;
+		markerY *= 2;
+		x2 *= 2;
+		y2 *= 2;
+		int markerWidth = x2 - markerX;
+		int markerHeight = y2 - markerY;
+		int x = markerX - (textWidth - markerWidth) / 2;
+		int y = markerY + markerHeight + 2;
+		if(x <= 25 && markerX + markerWidth + 2 + textWidth < 135){
+			x = markerX + markerWidth + 2;
+			y = markerY + markerHeight / 2 - 3;
+		}else if(x + textWidth >= 135 && markerX - textWidth - 2 > 25){
+			x = markerX - textWidth - 2;
+			y = markerY + markerHeight / 2 - 3;
+		}
+		x = max(25, min(135 - textWidth, x));
+		y = max(2, min(y, 100));
+
+
+		resultSprite.drawString(name, x, y);
+
+		auto points = marker.projected;
+
+		for(int i = 1; i < 4; i++){
+			resultSprite.drawLine(points[i - 1].x * 2, points[i - 1].y * 2, points[i].x * 2, points[i].y * 2, TFT_RED);
+		}
+		resultSprite.drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, TFT_RED);
+	}
+
 	memcpy(processedBuffer, resultSprite.getPointer(), 160*120*sizeof(Color));
-	resultsMutex.unlock();
 }

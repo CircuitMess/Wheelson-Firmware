@@ -5,13 +5,13 @@
 
 
 Driver::Driver(): task("Driver", taskFunc, 20000, this){
-	frameBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
+	frameBuffer565 = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 	frameBuffer888 = static_cast<uint8_t*>(ps_malloc(160 * 120 * 3));
 	processedBuffer = static_cast<Color*>(ps_malloc(160 * 120 * sizeof(Color)));
 }
 
 Driver::~Driver(){
-	free(frameBuffer);
+	free(frameBuffer565);
 	free(frameBuffer888);
 	free(processedBuffer);
 }
@@ -42,7 +42,7 @@ int8_t Driver::getMotorState(uint8_t id){
 }
 
 const Color* Driver::getCameraImage() const{
-	return frameBuffer;
+	return frameBuffer565;
 }
 
 bool Driver::isRunning() const{
@@ -81,10 +81,10 @@ void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 
 void Driver::prepareFrame(){
 	cam.loadFrame();
-	bufferMutex.lock();
-	memcpy(frameBuffer, cam.getRGB565(), 160 * 120 * sizeof(Color));
-	memcpy(processedBuffer, cam.getRGB565(), 160 * 120 * sizeof(Color));
+	frameMutex.lock();
+	memcpy(frameBuffer565, cam.getRGB565(), 160 * 120 * sizeof(Color));
+	//memcpy(processedBuffer, cam.getRGB565(), 160 * 120 * sizeof(Color));
 	memcpy(frameBuffer888, cam.getRGB888(), 160 * 120 * 3);
-	bufferMutex.unlock();
+	frameMutex.unlock();
 	cam.releaseFrame();
 }

@@ -76,29 +76,28 @@ rgb hsv2rgb(hsv in)
 
 }
 
-BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)){}
+BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)), bwBuffer((Color*)ps_malloc(160*120*2)){}
 
 BallDriver::~BallDriver(){
 	free(workingBuffer);
+	free(bwBuffer);
 }
 
 void BallDriver::process(){
-	bufferMutex.lock();
-	resultsMutex.lock();
+	frameMutex.lock();
 	memcpy(workingBuffer, getCameraImage888(), 160*120*3);
-	bufferMutex.unlock();
-	resultsMutex.unlock();
+	frameMutex.unlock();
 
-		DisplayMode mode = displayMode;
-	if(mode == BW){
-		resultsMutex.lock();
-	}
+	DisplayMode mode = displayMode;
+
+	if(mode == BW) resultMutex.lock();
 	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, param > 0 ? param*180/255 : 0,
-												  BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
-	if(mode == BW){
-		resultsMutex.unlock();
-	}
+												  BallTracker::RGB888, displayMode == BW ? bwBuffer : nullptr);
+	if(mode == BW) resultMutex.unlock();
+
+	resultMutex.lock();
 	ballsResult = balls;
+	resultMutex.unlock();
 
 	Ball* bestBall = nullptr;
 	float maxFitness = 0;
@@ -179,14 +178,19 @@ void BallDriver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 
 void BallDriver::draw(){
 	DisplayMode mode = displayMode;
-	if(mode == RAW && !ballsResult.empty()){
+
+	if(mode == RAW){
+		memcpy(processedBuffer, getCameraImage(), 160*120*sizeof(Color));
+	}else if(mode == BW){
+		resultMutex.lock();
+		memcpy(processedBuffer, bwBuffer, 160*120*sizeof(Color));
+		resultMutex.unlock();
+	}
+
+	if(!ballsResult.empty()){
 		Mat draw(120, 160, CV_8UC2, processedBuffer);
 		for(auto &ball : ballsResult){
 			cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
 		}
-	}else if(mode == BW){
-		resultsMutex.lock();
-		memcpy(processedBuffer, workingBuffer, 160*120*sizeof(Color));
-		resultsMutex.unlock();
 	}
 }
