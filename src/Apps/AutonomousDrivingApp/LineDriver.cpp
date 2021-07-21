@@ -1,4 +1,3 @@
-#include <opencv2/core/mat.hpp>
 #include <MarkerDetection/imgproc.h>
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/imgproc.hpp>
@@ -67,6 +66,47 @@ LineDriver::LineDriver(){
 	setParam(120); //default threshold
 }
 
+void LineDriver::drawLine(int x1, int y1, int x2, int y2, Color* buffer,uint32_t color){
+
+	// Bresenham's line algorithm
+	const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+	if(steep)
+	{
+		std::swap(x1, y1);
+		std::swap(x2, y2);
+	}
+
+	if(x1 > x2)
+	{
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	const float dx = x2 - x1;
+	const float dy = fabs(y2 - y1);
+
+	float error = dx / 2.0f;
+	const int ystep = (y1 < y2) ? 1 : -1;
+	int y = (int)y1;
+
+	const int maxX = (int)x2;
+
+	for(int x = (int) x1; x <= maxX; x++){
+		if(steep){//x*120+y
+			buffer[x * 160 + y] = color;
+		}else{//y*160+x
+			buffer[y * 160 + x] = color;
+		}
+
+		error -= dy;
+		if(error < 0)
+		{
+			y += ystep;
+			error += dx;
+		}
+	}
+}
+
 void LineDriver::rotL(){
 	setMotor(MOTOR_FL, -30);
 	setMotor(MOTOR_BL, -30);
@@ -83,7 +123,9 @@ void LineDriver::rotR(){
 
 void LineDriver::process(){
 	Mat frame(120, 160, CV_8UC3);
+	frameMutex.lock();
 	memcpy(frame.data, getCameraImage888(), 160 * 120 * 3);
+	frameMutex.unlock();
 
 	resize(frame, frame, Size(), 0.5, 0.5);
 
@@ -109,21 +151,19 @@ void LineDriver::process(){
 
 	bitwise_not(thresh, thresh);*/
 
-	Mat draw;
+	resultMutex.lock();
 	if(displayMode == RAW){
-		cvtColor(frame, draw, CV_RGB2BGR565);
-	}else if(displayMode == GRAY){
-		cvtColor(gray, draw, CV_GRAY2BGR565);
+		cvtColor(frame, drawMat, CV_BGR2BGR565);
 	}else if(displayMode == THRESH_SIMPLE){
-		cvtColor(thresh, draw, CV_GRAY2BGR565);
+		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}/*else if(displayMode == THRESH_ADAPTIVE){
-		cvtColor(thresh, draw, CV_GRAY2BGR565);
+		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
 	}*/
+	resultMutex.unlock();
 
 	auto linePoints = findLine(thresh.data, thresh.cols, thresh.rows);
 	if(linePoints.empty()){
-		resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-		memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+		brokenLineResult.clear();
 
 		if(lastx == -1 || lastAng == -1) return;
 
@@ -188,16 +228,10 @@ void LineDriver::process(){
 		broken.emplace_back((int) (val / totalWeight), approx[i].y);
 	}*/
 
-	for(int i = 1; i < broken.size(); i++){
-		line(draw, broken[i-1], broken[i], C_RGB(0, 0, 255));
-	}
-
-	int midIndex = (int) ((float) broken.size() * 0.75f);
-	line(draw, broken[1], broken[midIndex], Scalar(C_RGB(0, 0, 255) >> 8, C_RGB(0, 0, 255) & 0xff));
+	midIndex = (int) ((float) broken.size() * 0.75f);
 
 	if(broken[1].x == -1 || broken[1].x == 0 || broken[midIndex].x == -1 || broken[midIndex].x == 0){
-		resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-		memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+		brokenLineResult = broken;
 
 		if(lastx == -1 || lastAng == -1) return;
 
@@ -279,10 +313,7 @@ void LineDriver::process(){
 	}
 
 	lastx = xpos;
-
-	resize(draw, draw, Size(), 2, 2, INTER_NEAREST);
-
-	memcpy(processedBuffer, draw.data, 120 * 160 * 2);
+	brokenLineResult = broken;
 }
 
 void LineDriver::toggleDisplayMode(){
@@ -291,4 +322,27 @@ void LineDriver::toggleDisplayMode(){
 
 const char* LineDriver::getParamName(){
 	return "Contrast";
+}
+
+void LineDriver::draw(){
+	if(drawMat.empty()){
+		memcpy(processedBuffer, getCameraImage(), 120 * 160 * 2);
+		return;
+	}
+
+	Mat mat;
+	resultMutex.lock();
+	resize(drawMat, mat, Size(), 2, 2, INTER_NEAREST);
+	resultMutex.unlock();
+
+	memcpy(processedBuffer, mat.data, 120 * 160 * 2);
+
+	if(brokenLineResult.empty()) return;
+
+	for(int i = 1; i < brokenLineResult.size(); i++){
+		drawLine(brokenLineResult[i - 1].x*2, brokenLineResult[i - 1].y*2, brokenLineResult[i].x*2, brokenLineResult[i].y*2, processedBuffer, C_RGB(0, 0, 255));
+	}
+
+	drawLine(brokenLineResult[1].x*2, brokenLineResult[1].y*2, brokenLineResult[midIndex].x*2, brokenLineResult[midIndex].y*2, processedBuffer, C_RGB(0, 255, 0));
+
 }

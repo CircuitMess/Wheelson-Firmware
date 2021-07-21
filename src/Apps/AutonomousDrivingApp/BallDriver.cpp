@@ -1,7 +1,6 @@
-#include <BallTracker.h>
+#include "BallDriver.h"
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgproc.hpp>
-#include "BallDriver.h"
 #include <Wheelson.h>
 
 using namespace cv;
@@ -77,36 +76,39 @@ rgb hsv2rgb(hsv in)
 
 }
 
-void BallDriver::process(){
-	const Color* frameData = getCameraImage();
+BallDriver::BallDriver() : workingBuffer((uint8_t*)ps_malloc(160*120*3)), bwBuffer((Color*)ps_malloc(160*120*2)){}
 
+BallDriver::~BallDriver(){
+	free(workingBuffer);
+	free(bwBuffer);
+}
+
+void BallDriver::process(){
+	frameMutex.lock();
+	memcpy(workingBuffer, getCameraImage888(), 160*120*3);
+	frameMutex.unlock();
+
+	DisplayMode mode = displayMode;
+
+	if(mode == BW) resultMutex.lock();
 	std::vector<Ball> balls = BallTracker::detect((uint8_t*) getCameraImage888(), 160, 120, param > 0 ? param*180/255 : 0,
-												  BallTracker::RGB888, displayMode == BW ? processedBuffer : nullptr);
+												  BallTracker::RGB888, displayMode == BW ? bwBuffer : nullptr);
+	if(mode == BW) resultMutex.unlock();
+
+	resultMutex.lock();
+	ballsResult = balls;
+	resultMutex.unlock();
 
 	Ball* bestBall = nullptr;
 	float maxFitness = 0;
 
-	if(displayMode == RAW && balls.empty()){
-		memcpy(processedBuffer, getCameraImage(), 160 * 120 * 2);
-	}else{
-		Mat draw(120, 160, CV_8UC2);
-		memcpy(draw.data, getCameraImage(), 160 * 120 * 2);
-
-
-
-		for(auto &ball : balls){
-			if(ball.fitness > maxFitness){
-				maxFitness = ball.fitness;
-				bestBall = &ball;
-			}
-			if(displayMode == RAW){
-				cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
-			}
-		}
-		if(displayMode == RAW){
-			memcpy(processedBuffer, draw.data, 160 * 120 * 2);
+	for(auto &ball : balls){
+		if(ball.fitness > maxFitness){
+			maxFitness = ball.fitness;
+			bestBall = &ball;
 		}
 	}
+
 	int currentX = 0;
 
 	if(bestBall == nullptr || maxFitness == 0){
@@ -172,4 +174,23 @@ void BallDriver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 	fill += 1;
 	//sprite.fillTriangle(max(fill-2 + x, x), y, min(fill + 2 + x, x+(int)w), y, fill + x, y+2, TFT_BLACK);
 	sprite.fillTriangle(max(x - 2, x + fill - 3), y, min((int) (x + w + 1), x + fill + 3), y, x + fill, y+3, TFT_BLACK);
+}
+
+void BallDriver::draw(){
+	DisplayMode mode = displayMode;
+
+	if(mode == RAW){
+		memcpy(processedBuffer, getCameraImage(), 160*120*sizeof(Color));
+	}else if(mode == BW){
+		resultMutex.lock();
+		memcpy(processedBuffer, bwBuffer, 160*120*sizeof(Color));
+		resultMutex.unlock();
+	}
+
+	if(!ballsResult.empty()){
+		Mat draw(120, 160, CV_8UC2, processedBuffer);
+		for(auto &ball : ballsResult){
+			cv::circle(draw, ball.center, ball.radius, Scalar(255, 0, 255));
+		}
+	}
 }

@@ -35,6 +35,7 @@ void setup(){
 
 	Wheelson.begin();
 
+	disableCore0WDT();
 	Battery.disableShutdown(true);
 	BatteryPopup.setTFT(Wheelson.getDisplay().getTft());
 	LoopManager::addListener(&BatteryPopup);

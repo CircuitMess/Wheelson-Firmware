@@ -3,15 +3,25 @@
 
 
 #include "../../Components/Driver.h"
+#include <vector>
+#include <Markers.h>
+#include <Display/Sprite.h>
 
 class MarkerDriver : public Driver {
 public:
+	MarkerDriver();
+	~MarkerDriver() override;
 	void toggleDisplayMode() override;
+	void draw() override;
 
 protected:
 	void process() override;
 
 private:
+	Sprite resultSprite;
+	Color* workingBuffer;
+	Color* bwBuffer;
+	std::vector<Aruco::Marker> resultMarkers;
 	enum {
 		IDLE,
 		FORWARD,

@@ -115,6 +115,8 @@ void AutonomousDriving::buildUI(){
 }
 
 void AutonomousDriving::loop(uint micros){
+	driver->prepareFrame();
+	driver->draw();
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
 		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
