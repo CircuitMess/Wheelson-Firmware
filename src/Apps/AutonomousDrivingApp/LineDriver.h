@@ -3,6 +3,7 @@
 
 
 #include "../../Components/Driver.h"
+#include <opencv2.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/core/mat.hpp>
 
@@ -33,6 +34,7 @@ private:
 
 	void rotL();
 	void rotR();
+	void find();
 
 	cv::Mat drawMat;
 

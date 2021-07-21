@@ -121,6 +121,22 @@ void LineDriver::rotR(){
 	setMotor(MOTOR_BR, -30);
 }
 
+void LineDriver::find(){
+	if(abs(lastAng) > 0.7){
+		if(lastAng < 0){
+			rotL();
+		}else{
+			rotR();
+		}
+	}else{
+		if(lastx < 80/2){
+			rotL();
+		}else{
+			rotR();
+		}
+	}
+}
+
 void LineDriver::process(){
 	Mat frame(120, 160, CV_8UC3);
 	frameMutex.lock();
@@ -128,18 +144,21 @@ void LineDriver::process(){
 	frameMutex.unlock();
 
 	resize(frame, frame, Size(), 0.5, 0.5);
+	if(displayMode == RAW){
+		resultMutex.lock();
+		cvtColor(frame, drawMat, CV_BGR2BGR565);
+		resultMutex.unlock();
+	}
 
-	Mat gray;
-	cvtColor(frame, gray, CV_RGB2GRAY);
+	cvtColor(frame, frame, CV_RGB2GRAY);
 
-	add(gray, Scalar(50), gray);
-	rectangle(gray, Rect(cv::Point(0, 0), gray.size()), Scalar(255));
+	add(frame, Scalar(50), frame);
+	rectangle(frame, Rect(cv::Point(0, 0), frame.size()), Scalar(255));
 
-	Mat blur;
 	//cv::boxFilter(gray, blur, gray.depth(), cv::Size(8, 8), cv::Point(-1,-1), true, BORDER_REPLICATE);
 
 	Mat thresh;
-	threshold(gray, thresh, getParam(), 255, THRESH_BINARY);
+	threshold(frame, thresh, getParam(), 255, THRESH_BINARY);
 
 	/*rectangle(thresh1, Rect(cv::Point(0, 0), thresh1.size()), Scalar(0));
 
@@ -151,15 +170,11 @@ void LineDriver::process(){
 
 	bitwise_not(thresh, thresh);*/
 
-	resultMutex.lock();
-	if(displayMode == RAW){
-		cvtColor(frame, drawMat, CV_BGR2BGR565);
-	}else if(displayMode == THRESH_SIMPLE){
+	if(displayMode == THRESH_SIMPLE){
+		resultMutex.lock();
 		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
-	}/*else if(displayMode == THRESH_ADAPTIVE){
-		cvtColor(thresh, drawMat, CV_GRAY2BGR565);
-	}*/
-	resultMutex.unlock();
+		resultMutex.unlock();
+	}
 
 	auto linePoints = findLine(thresh.data, thresh.cols, thresh.rows);
 	if(linePoints.empty()){
@@ -167,19 +182,7 @@ void LineDriver::process(){
 
 		if(lastx == -1 || lastAng == -1) return;
 
-		if(abs(lastAng) > 0.7){
-			if(lastAng < 0){
-				rotL();
-			}else{
-				rotR();
-			}
-		}else{
-			if(lastx < thresh.cols/2){
-				rotL();
-			}else{
-				rotR();
-			}
-		}
+		find();
 
 		return;
 	}
@@ -197,11 +200,12 @@ void LineDriver::process(){
 
 	std::vector<Point2i> smoothed;
 	for(int i = 0; i < approx.size(); i++){
-
 		float val = 0;
 		float totalWeight = 0;
 
 		for(int j = max(0, i-window); j < min(approx.size(), (size_t) i+window+1); j++){
+			if(approx[j].x == 0 || approx[j].x == -1) continue;
+
 			int d = abs(i - j);
 			float weight = weightLookup[d];//pow(weightFalloff, d);
 
@@ -211,6 +215,7 @@ void LineDriver::process(){
 
 		smoothed.emplace_back((int) (val / totalWeight), approx[i].y);
 	}
+	smoothed.pop_back();
 
 	std::vector<Point2i> broken = smoothed;
 	/*for(int i = 0; i < approx.size(); i += window){
@@ -228,26 +233,23 @@ void LineDriver::process(){
 		broken.emplace_back((int) (val / totalWeight), approx[i].y);
 	}*/
 
-	midIndex = (int) ((float) broken.size() * 0.75f);
+	brokenLineResult = broken;
+
+	if(broken.begin()->x < 10 || broken.begin()->x > 70){
+		lastx = broken.begin()->x;
+		lastAng = 0;
+		find();
+		return;
+	}
+
+	midIndex = (int) ((float) broken.size() * 0.6f);
 
 	if(broken[1].x == -1 || broken[1].x == 0 || broken[midIndex].x == -1 || broken[midIndex].x == 0){
 		brokenLineResult = broken;
 
 		if(lastx == -1 || lastAng == -1) return;
 
-		if(abs(lastAng) > 0.7){
-			if(lastAng < 0){
-				rotL();
-			}else{
-				rotR();
-			}
-		}else{
-			if(lastx < thresh.cols/2){
-				rotL();
-			}else{
-				rotR();
-			}
-		}
+		find();
 
 		return;
 	}
@@ -313,7 +315,6 @@ void LineDriver::process(){
 	}
 
 	lastx = xpos;
-	brokenLineResult = broken;
 }
 
 void LineDriver::toggleDisplayMode(){
