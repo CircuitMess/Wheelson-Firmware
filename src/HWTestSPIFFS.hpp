@@ -30,9 +30,9 @@ static const struct {
 		{"/MainMenu/mainmenu_bg.raw.hs", 91530},
 		{"/MainMenu/mainmenu_border.raw", 116440},
 
-		{"/AutoDrive/engine.raw", 82182},
+		{"/AutoDrive/engine.raw", 5765},
 		{"/AutoDrive/percentage.raw", 7866},
-		{"/AutoDrive/raw_bg.raw.hs", 7456},
+		{"/AutoDrive/raw_bg.raw.hs", 6475},
 
 		{"/battery_0.raw", 25668},
 		{"/battery_1.raw", 27388},

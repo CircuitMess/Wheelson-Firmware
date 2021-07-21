@@ -43,6 +43,7 @@ private:
 	uint paramPopupMillis = 0;
 	bool paramPopupActive = false;
 
+	bool firstStart = false;
 };
 
 #endif //WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H

@@ -42,20 +42,42 @@ void AutonomousDriving::stop(){
 }
 
 void AutonomousDriving::draw(){
-	screen.getSprite()->clear(TFT_BLACK);
-	screen.getSprite()->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
-	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
-	if(paramPopupActive){
-		screen.getSprite()->fillRoundRect(30, 95, 100, 27, 3, C_HEX(0x0082ff));
-		screen.getSprite()->drawRoundRect(29, 94, 102, 29, 5, TFT_WHITE);
-		driver->drawParamControl(*screen.getSprite(), 35, 110, 90, 8);
-		screen.getSprite()->setTextColor(TFT_WHITE);
-		screen.getSprite()->setTextSize(1);
-		screen.getSprite()->setTextFont(1);
-		screen.getSprite()->setCursor(105, 98);
-		screen.getSprite()->printCenter(driver->getParamName());
+	Sprite* canvas = screen.getSprite();
+
+	canvas->clear(TFT_BLACK);
+
+	if(driver->camWorks()){
+		canvas->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
+	}else{
+		canvas->setTextColor(TFT_WHITE);
+		canvas->setTextSize(1);
+		canvas->setTextFont(1);
+		canvas->setCursor(0, 60);
+		canvas->printCenter("Camera error!");
 	}
-	Battery.drawIcon(screen.getSprite());
+	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
+	Battery.drawIcon(canvas);
+
+	if(driver->camWorks() && (paramPopupActive || !firstStart)){
+		canvas->fillRoundRect(30, 93, 100, 27, 3, C_HEX(0x0082ff));
+		canvas->drawRoundRect(29, 92, 102, 29, 5, TFT_WHITE);
+
+		canvas->setTextColor(TFT_WHITE);
+		canvas->setTextSize(1);
+		canvas->setTextFont(1);
+
+		if(paramPopupActive){
+			driver->drawParamControl(*screen.getSprite(), 35, 108, 90, 8);
+			canvas->setCursor(105, 96);
+			canvas->printCenter(driver->getParamName());
+		}else if(!firstStart){
+			canvas->setCursor(0, 96);
+			canvas->printCenter("Press down to");
+			canvas->setCursor(0, 109);
+			canvas->printCenter("toggle motors");
+		}
+	}
+
 	screen.draw();
 }
 
@@ -80,16 +102,16 @@ void AutonomousDriving::deinit(){
 void AutonomousDriving::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
-		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", true));
+		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", false));
 		screenLayout->addChild(engines[i]);
 	}
 	screenLayout->reflow();
 	screen.addChild(screenLayout);
 	screen.repos();
 	engines[0]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 15);
-	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 95);
+	engines[1]->setPos(screen.getTotalX() + 3, screen.getTotalY() + 85);
 	engines[2]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 15);
-	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 95);
+	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 85);
 }
 
 void AutonomousDriving::loop(uint micros){
@@ -98,6 +120,7 @@ void AutonomousDriving::loop(uint micros){
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
 		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
+		percentage = map(percentage, -100, 100, -10, 10);
 		sprintf(buffer, "%d",percentage);
 		engines[i]->setText(buffer);
 	}
@@ -135,6 +158,15 @@ void AutonomousDriving::buttonPressed(uint i){
 					driver->setParam(min(driver->getParam() + 15, 255));
 				}
 			}
+			break;
+		case BTN_DOWN:
+			if(!driver->camWorks()) break;
+
+			if(!firstStart){
+				firstStart = true;
+			}
+			driver->toggleMotors();
+			DrivingElement::toggleMotors();
 			break;
 	}
 }

@@ -2,17 +2,20 @@
 #include <U8g2_for_TFT_eSPI.h>
 #include <SPIFFS.h>
 
-const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.raw"};
+const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.bw"};
+bool DrivingElement::motorStop = true;
 
-DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String text, bool needPercentage) : CustomElement(parent, 17, 15), icon(icon), text(text), needPercentage(needPercentage){
-
-	iconBuffer = static_cast<Color*>(ps_malloc(17 * 13 * 2));
+DrivingElement::DrivingElement(ElementContainer* parent, DrivingIcon icon, String text, bool needPercentage) : CustomElement(parent, 17, 15),
+																											   icon(icon), text(text),
+																											   needPercentage(needPercentage){
+	motorStop = true;
+	iconBuffer = (uint8_t*)ps_malloc(39);
 	if(iconBuffer == nullptr){
 		Serial.printf("Driving Element icon %s, unpack error\n", Icons[icon]);
 		return;
 	}
 	fs::File bgFile = SPIFFS.open(Icons[icon]);
-	bgFile.read(reinterpret_cast<uint8_t*>(iconBuffer), 17 * 13 * 2);
+	bgFile.read(iconBuffer, 39);
 	bgFile.close();
 
 	if(needPercentage){
@@ -33,23 +36,20 @@ DrivingElement::~DrivingElement(){
 }
 
 void DrivingElement::draw(){
-	uint yShift = 0;
-	getSprite()->drawIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, TFT_TRANSPARENT);
+	uint xShift = 0;
+	getSprite()->drawMonochromeIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, motorStop ? TFT_RED : TFT_WHITE);
 	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_5x7_tf);
+	u8f.setFont(u8g2_font_6x10_tn);
 	u8f.setForegroundColor(TFT_WHITE);
 	u8f.setFontMode(1);
 	if(text.length() == 1){
-		yShift = 30;
+		xShift = 5;
 	}else if(text.length() == 2){
-		yShift = 33;
+		xShift = 4;
 	}else if(text.length() == 3){
-		yShift = 38;
-	}else if(text.length() == 4){
-		yShift = 42;
+		xShift = 1;
 	}
-	u8f.setCursor(getTotalX() + 11, getTotalY() + yShift);
-	u8f.setFontDirection(3);
+	u8f.setCursor(getTotalX() + xShift, getTotalY() + 25);
 	u8f.print(text);
 	if(needPercentage){
 		getSprite()->drawIcon(percentageBuffer, (getTotalX() + 5), (getTotalY() + 16), 6, 6, 1, TFT_TRANSPARENT);
@@ -59,4 +59,8 @@ void DrivingElement::draw(){
 
 void DrivingElement::setText(const String& text){
 	DrivingElement::text = text;
+}
+
+void DrivingElement::toggleMotors(){
+	motorStop = !motorStop;
 }

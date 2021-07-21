@@ -29,26 +29,31 @@ public:
 	static void taskFunc(Task* task);
 
 	virtual void toggleDisplayMode();
+	void toggleMotors();
 
 	uint8_t getParam() const;
 	void setParam(uint8_t param);
 	virtual const char* getParamName();
-
 	virtual void drawParamControl(Sprite &sprite, int x, int y, uint w, uint h);
+
+	bool camWorks() const;
 
 protected:
 	virtual void process() = 0;
-	Color* processedBuffer = nullptr;
 	void setMotor(uint8_t id, int8_t state);
+
+	Color* processedBuffer = nullptr;
 
 	Mutex frameMutex;
 	Mutex resultMutex;
 
 	uint8_t param = 0;
+
 private:
 	Color* frameBuffer565 = nullptr;
 	uint8_t* frameBuffer888 = nullptr;
 	int8_t motors[4] = {0};
+	bool motorsStop = true;
 
 	Task task;
 

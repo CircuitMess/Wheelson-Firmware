@@ -17,6 +17,9 @@ Driver::~Driver(){
 }
 
 void Driver::start(){
+	for(uint8_t i = 0; i < 4; i++){
+		setMotor(i, 0);
+	}
 	task.start(1, 0);
 }
 
@@ -28,11 +31,17 @@ void Driver::taskFunc(Task* task){
 	Driver* driver = static_cast<Driver*>(task->arg);
 
 	while(task->running){
+		if(!driver->cam.isInited()){
+			delay(1);
+			continue;
+		}
+
 		driver->process();
 	}
 }
 
 void Driver::setMotor(uint8_t id, int8_t state){
+	if(motorsStop) return;
 	motors[id] = state;
 	Motors.setMotor(id, state);
 }
@@ -77,6 +86,25 @@ void Driver::drawParamControl(Sprite &sprite, int x, int y, uint w, uint h){
 	uint fill = w * param / 255;
 	sprite.fillRoundRect(x, y, fill, h, 3, TFT_WHITE);
 	sprite.drawRoundRect(x, y, w, h, 3, TFT_WHITE);
+}
+
+void Driver::toggleMotors(){
+	motorsStop = !motorsStop;
+
+	if(motorsStop){
+		delay(10);
+		Nuvo.getI2C().loop(0);
+
+		for(uint8_t i = 0; i < 4; i++){
+			motors[i] = 0;
+		}
+
+		Motors.stopAll();
+	}
+}
+
+bool Driver::camWorks() const{
+	return cam.isInited();
 }
 
 void Driver::prepareFrame(){

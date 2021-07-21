@@ -16,15 +16,19 @@ public:
 
 	void setText(const String& text);
 
+	static void toggleMotors();
+
 private:
 
 	DrivingIcon icon;
 	String text;
-	Color* iconBuffer = nullptr;
+	uint8_t* iconBuffer = nullptr;
 	Color* percentageBuffer = nullptr;
 	bool needPercentage = false;
 
 	static const char* const Icons[1];
+
+	static bool motorStop;
 };
 
 #endif //WHEELSON_FIRMWARE_DRIVINGELEMENT_H

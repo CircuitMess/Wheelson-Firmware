@@ -310,8 +310,6 @@ void LineDriver::process(){
 		setMotor(MOTOR_BL, lAmt);
 		setMotor(MOTOR_FR, rAmt);
 		setMotor(MOTOR_BR, rAmt);
-
-		printf("Motor L: %d, Motor R: %d\n", lAmt, rAmt);
 	}
 
 	lastx = xpos;

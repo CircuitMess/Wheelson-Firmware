@@ -233,10 +233,13 @@ void Simple::Edit::returned(void* data){
 
 	actions.push_back({type});
 	switch(type){
-		case Action::FORWARD:
-		case Action::BACKWARD:
 		case Action::LEFT:
 		case Action::RIGHT:
+			actions.back().time = 0.5;
+			actions.back().speed = 100;
+			break;
+		case Action::FORWARD:
+		case Action::BACKWARD:
 		case Action::PAUSE:
 			actions.back().time = 1;
 			actions.back().speed = 100;
