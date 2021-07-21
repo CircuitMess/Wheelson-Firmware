@@ -108,6 +108,8 @@ bool Driver::camWorks() const{
 }
 
 void Driver::prepareFrame(){
+	if(!camWorks()) return;
+
 	cam.loadFrame();
 	frameMutex.lock();
 	memcpy(frameBuffer565, cam.getRGB565(), 160 * 120 * sizeof(Color));
