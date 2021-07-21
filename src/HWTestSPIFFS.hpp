@@ -30,7 +30,7 @@ static const struct {
 		{"/MainMenu/mainmenu_bg.raw.hs", 91530},
 		{"/MainMenu/mainmenu_border.raw", 116440},
 
-		{"/AutoDrive/engine.raw", 5765},
+		{"/AutoDrive/engine.bw", 5765},
 		{"/AutoDrive/percentage.raw", 7866},
 		{"/AutoDrive/raw_bg.raw.hs", 6475},
 
