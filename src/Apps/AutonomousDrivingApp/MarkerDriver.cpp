@@ -84,10 +84,25 @@ void MarkerDriver::process(){
 
 	if(markers.empty() || actions.indexOf(markers[0].id) == (uint) -1){
 		if(state != IDLE){
-			setAll(0);
+			switch(state){
+				case BURNOUT:
+					if(millis() - actionMillis > 3000){
+						setAll(0);
+						state = IDLE;
+					}
+					break;
+				case DO360:
+					if(millis() - actionMillis > 1750){
+						setAll(0);
+						state = IDLE;
+					}
+					break;
+				default:
+					setAll(0);
+					state = IDLE;
+			}
 		}
 
-		state = IDLE;
 		return;
 	}
 
@@ -106,28 +121,33 @@ void MarkerDriver::process(){
 	}else if(action == 3 && state != LEDOFF){
 		LED.setHeadlight(0);
 		state = LEDOFF;
-	}else if(action == 4 && state != DO360){
-		// do 360
-		bool direction = random(0, 2);
-		int8_t intensity = 127;
-		if(direction){
+	}else if(action == 4){
+		actionMillis = millis();
+		if(state != DO360){
+			// do 360
+			bool direction = random(0, 2);
+			int8_t intensity = 127;
+			if(direction){
+				intensity *= -1;
+			}
+			setMotor(MOTOR_FR, intensity);
+			setMotor(MOTOR_BR, intensity);
 			intensity *= -1;
+			setMotor(MOTOR_FL, intensity);
+			setMotor(MOTOR_BL, intensity);
+			state = DO360;
 		}
-		Motors.setMotor(MOTOR_FR, intensity);
-		Motors.setMotor(MOTOR_BR, intensity);
-		intensity *= -1;
-		Motors.setMotor(MOTOR_FL, intensity);
-		Motors.setMotor(MOTOR_BL, intensity);
-		delay(1250);
-		state = DO360;
 	}
-	else if(action == 5 && state != BURNOUT){
-		// do burnout
-		setMotor(MOTOR_FL, -40);
-		setMotor(MOTOR_FR, -40);
-		setMotor(MOTOR_BL, 80);
-		setMotor(MOTOR_BR, 80);
-		state = BURNOUT;
+	else if(action == 5){
+		actionMillis = millis();
+		if(state != BURNOUT){
+			// do burnout
+			setMotor(MOTOR_FL, -40);
+			setMotor(MOTOR_FR, -40);
+			setMotor(MOTOR_BL, 80);
+			setMotor(MOTOR_BR, 80);
+			state = BURNOUT;
+		}
 	}
 }
 

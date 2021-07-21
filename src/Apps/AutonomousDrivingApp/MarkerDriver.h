@@ -37,6 +37,8 @@ private:
 		BW,
 		COUNT
 	} displayMode = RAW;
+
+	uint32_t actionMillis = 0;
 };
 
 
