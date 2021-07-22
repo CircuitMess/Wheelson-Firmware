@@ -168,5 +168,8 @@ void AutonomousDriving::buttonPressed(uint i){
 			driver->toggleMotors();
 			DrivingElement::toggleMotors();
 			break;
+		case BTN_UP:
+			LED.setHeadlight(!LED.getHeadlight());
+			break;
 	}
 }
