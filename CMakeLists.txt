@@ -47,9 +47,8 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/TFT_
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/TFT_eSPI/Extensions)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/U8g2_for_TFT_eSPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/JPEGDecoder/src)
-
-include_directories(${ArduinoLibs}/Wheelson-Library/src)
-include_directories(${ArduinoLibs}/OpenCV-ESP32/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/Wheelson-Library/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.2.1/libraries/OpenCV-ESP32/src)
 
 
 # Source directories
