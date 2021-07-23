@@ -54,7 +54,7 @@ void setup(){
 		test->unpack();
 		test->start();
 	}else{
-		IntroScreen::IntroScreen* intro = new IntroScreen::IntroScreen(Wheelson.getDisplay());
+		IntroScreen* intro = new IntroScreen(Wheelson.getDisplay());
 		intro->unpack();
 		intro->start();
 	}

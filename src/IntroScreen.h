@@ -8,30 +8,27 @@
 #include <Nuvoton/WheelsonLED.h>
 
 
-namespace IntroScreen {
+class IntroScreen: public Context, public LoopListener {
+public:
 
-	class IntroScreen: public Context, public LoopListener {
-	public:
+	IntroScreen(Display &display);
 
-		IntroScreen(Display &display);
+	virtual ~IntroScreen();
 
-		virtual ~IntroScreen();
+	void start();
 
-		void start();
+	void stop();
 
-		void stop();
+	void draw();
 
-		void draw();
+	void loop(uint micros) override;
 
-		void loop(uint micros) override;
+private:
+	static IntroScreen *instance;
+	AnimatedSprite* gif = nullptr;
+	uint16_t previousTime = 0;
+	WLEDColor lastColor = WHITE;
 
-	private:
-		static IntroScreen *instance;
-		AnimatedSprite* gif = nullptr;
-		uint16_t previousTime = 0;
-		WLEDColor lastColor = WHITE;
-
-	};
-}
+};
 
 #endif //WHEELSON_FIRMWARE_INTROSCREEN_H
