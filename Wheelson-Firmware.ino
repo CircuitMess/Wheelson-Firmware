@@ -4,7 +4,7 @@
 #include <Loop/LoopManager.h>
 #include <Support/Context.h>
 #include <Settings.h>
-#include "src/Services/BatteryPopupService/BatteryPopupService.h"
+#include "src/BatteryPopup/BatteryPopupService.h"
 #include "src/UserHWTest/UserHWTest.h"
 #include "src/HardwareTest.h"
 #include "src/IntroScreen.h"
