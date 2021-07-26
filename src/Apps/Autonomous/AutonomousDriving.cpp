@@ -1,23 +1,23 @@
 #include <FS/CompressedFile.h>
 #include <SPIFFS.h>
-#include "AutonomousDriving.h"
+#include "Autonomous.h"
 #include <Loop/LoopManager.h>
 #include <Input/Input.h>
 #include <Wheelson.h>
 
 #define paramPopupTime 3 //in seconds
 
-AutonomousDriving::AutonomousDriving(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
+Autonomous::Autonomous(Display& display, Driver* driver) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)), driver(driver){
 	buildUI();
-	AutonomousDriving::pack();
+	Autonomous::pack();
 }
 
-AutonomousDriving::~AutonomousDriving(){
+Autonomous::~Autonomous(){
 	delete driver;
 	free(backgroundBuffer);
 }
 
-void AutonomousDriving::start(){
+void Autonomous::start(){
 	LED.setHeadlight(255);
 	driver->start();
 	draw();
@@ -28,7 +28,7 @@ void AutonomousDriving::start(){
 	paramPopupMillis = millis();
 }
 
-void AutonomousDriving::stop(){
+void Autonomous::stop(){
 	LED.setHeadlight(0);
 	driver->stop();
 	Nuvo.getI2C().loop(0);
@@ -41,7 +41,7 @@ void AutonomousDriving::stop(){
 
 }
 
-void AutonomousDriving::draw(){
+void Autonomous::draw(){
 	Sprite* canvas = screen.getSprite();
 
 	canvas->clear(TFT_BLACK);
@@ -81,7 +81,7 @@ void AutonomousDriving::draw(){
 	screen.draw();
 }
 
-void AutonomousDriving::init(){
+void Autonomous::init(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("MainMenu background picture unpack error\n");
@@ -94,12 +94,12 @@ void AutonomousDriving::init(){
 	backgroundFile.close();
 }
 
-void AutonomousDriving::deinit(){
+void Autonomous::deinit(){
 	free(backgroundBuffer);
 	backgroundBuffer = nullptr;
 }
 
-void AutonomousDriving::buildUI(){
+void Autonomous::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	for(int i = 0; i < 4; i++){
 		engines.push_back(new DrivingElement(screenLayout, MOTOR, "", false));
@@ -114,7 +114,7 @@ void AutonomousDriving::buildUI(){
 	engines[3]->setPos(screen.getTotalX() + 140, screen.getTotalY() + 85);
 }
 
-void AutonomousDriving::loop(uint micros){
+void Autonomous::loop(uint micros){
 	driver->prepareFrame();
 	driver->draw();
 	char buffer[4];
@@ -131,7 +131,7 @@ void AutonomousDriving::loop(uint micros){
 	screen.commit();
 }
 
-void AutonomousDriving::buttonPressed(uint i){
+void Autonomous::buttonPressed(uint i){
 	switch(i){
 		case BTN_BACK:
 			this->pop();

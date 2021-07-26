@@ -1,5 +1,5 @@
-#ifndef WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H
-#define WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H
+#ifndef WHEELSON_FIRMWARE_AUTONOMOUS_H
+#define WHEELSON_FIRMWARE_AUTONOMOUS_H
 
 #include <Arduino.h>
 #include <Support/Context.h>
@@ -10,11 +10,11 @@
 #include "DrivingElement.h"
 #include "../../Components/Driver.h"
 
-class AutonomousDriving : public Context, public LoopListener, public InputListener {
+class Autonomous : public Context, public LoopListener, public InputListener {
 public:
-	AutonomousDriving(Display& display, Driver* driver);
+	Autonomous(Display& display, Driver* driver);
 
-	virtual ~AutonomousDriving();
+	virtual ~Autonomous();
 
 	void start() override;
 
@@ -30,7 +30,7 @@ protected:
 	void deinit() override;
 
 private:
-	static AutonomousDriving* instance;
+	static Autonomous* instance;
 
 	LinearLayout* screenLayout;
 	std::vector<DrivingElement*> engines;
@@ -46,4 +46,4 @@ private:
 	bool firstStart = false;
 };
 
-#endif //WHEELSON_FIRMWARE_AUTONOMOUSDRIVING_H
+#endif //WHEELSON_FIRMWARE_AUTONOMOUS_H
