@@ -2,7 +2,7 @@
 #define WHEELSON_FIRMWARE_BALLDRIVER_H
 
 
-#include "../../Components/Driver.h"
+#include "Driver.h"
 #include <BallTracker.h>
 
 class BallDriver : public Driver {

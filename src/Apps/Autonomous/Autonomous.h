@@ -8,7 +8,7 @@
 #include <Input/InputListener.h>
 #include <Loop/LoopListener.h>
 #include "DrivingElement.h"
-#include "../../Components/Driver.h"
+#include "Driver.h"
 
 class Autonomous : public Context, public LoopListener, public InputListener {
 public:

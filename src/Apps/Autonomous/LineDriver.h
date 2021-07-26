@@ -2,7 +2,7 @@
 #define WHEELSON_FIRMWARE_LINEDRIVER_H
 
 
-#include "../../Components/Driver.h"
+#include "Driver.h"
 #include <opencv2.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/core/mat.hpp>
