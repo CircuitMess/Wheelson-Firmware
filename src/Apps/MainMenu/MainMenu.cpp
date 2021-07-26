@@ -1,5 +1,5 @@
 #include "MainMenu.h"
-#include "../SimpleProgramming/App.h"
+#include "../Simple/Simple.h"
 #include "../Settings/SettingsScreen.h"
 #include "../Autonomous/Autonomous.h"
 #include "../Autonomous/MarkerDriver.h"
@@ -16,7 +16,7 @@
 const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Settings"};
 
 Context* (*MainMenu::AppLaunch[])(Display& display) = {
-		[](Display& display) -> Context* { return new Simple::App(display); },
+		[](Display& display) -> Context* { return new Simple::Simple(display); },
 		[](Display& display) -> Context* { return new Autonomous(display, new LineDriver()); },
 		[](Display& display) -> Context* { return new Autonomous(display, new BallDriver()); },
 		[](Display& display) -> Context* { return new Autonomous(display, new MarkerDriver()); },

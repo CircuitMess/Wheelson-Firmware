@@ -1,5 +1,5 @@
-#ifndef WHEELSON_FIRMWARE_APP_H
-#define WHEELSON_FIRMWARE_APP_H
+#ifndef WHEELSON_FIRMWARE_SIMPLE_H
+#define WHEELSON_FIRMWARE_SIMPLE_H
 
 #include <Support/Context.h>
 #include <UI/Screen.h>
@@ -12,12 +12,12 @@
 #include "Storage.h"
 
 namespace Simple {
-	class App : public Context, public LoopListener, public InputListener {
+	class Simple : public Context, public LoopListener, public InputListener {
 	public:
 
-		App(Display& display);
+		Simple(Display& display);
 
-		virtual ~App();
+		virtual ~Simple();
 
 		void start();
 
@@ -56,4 +56,4 @@ namespace Simple {
 		void selectAction(uint8_t num);
 	};
 }
-#endif //WHEELSON_FIRMWARE_APP_H
+#endif //WHEELSON_FIRMWARE_SIMPLE_H

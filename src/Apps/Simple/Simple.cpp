@@ -1,4 +1,4 @@
-#include "App.h"
+#include "Simple.h"
 #include "Edit.h"
 #include "Playback.h"
 #include <FS/CompressedFile.h>
@@ -8,27 +8,27 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 
-Simple::App::App(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
+Simple::Simple::Simple(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
 	buildUI();
-	App::pack();
+	Simple::pack();
 }
 
-Simple::App::~App(){
+Simple::Simple::~Simple(){
 
 }
 
-void Simple::App::start(){
+void Simple::Simple::start(){
 	Input::getInstance()->addListener(this);
 	draw();
 	screen.commit();
 }
 
-void Simple::App::stop(){
+void Simple::Simple::stop(){
 	Input::getInstance()->removeListener(this);
 }
 
-void Simple::App::draw(){
+void Simple::Simple::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	screen.draw();
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 19, 1);
@@ -43,11 +43,11 @@ void Simple::App::draw(){
 	u8f.println("Simple programming");
 }
 
-void Simple::App::deinit(){
+void Simple::Simple::deinit(){
 	free(backgroundBuffer);
 }
 
-void Simple::App::init(){
+void Simple::Simple::init(){
 	backgroundBuffer = static_cast<Color*>(ps_malloc(160 * 128 * 2));
 	if(backgroundBuffer == nullptr){
 		Serial.printf("App background picture unpack error\n");
@@ -61,7 +61,7 @@ void Simple::App::init(){
 	loadProgs();
 }
 
-void Simple::App::loadProgs(){
+void Simple::Simple::loadProgs(){
 	for(auto& prog : programs){
 		delete prog;
 	}
@@ -70,7 +70,7 @@ void Simple::App::loadProgs(){
 	list->getChildren().clear();
 
 	for(int i = 0; i < storage.getNumProgs(); i++){
-		const Simple::Program* prog = storage.getProg(i);
+		const Program* prog = storage.getProg(i);
 		programs.push_back(new ProgramElement(list, "Program " + String((long) prog->id + 1)));
 		list->addChild(programs.back());
 	}
@@ -92,7 +92,7 @@ void Simple::App::loadProgs(){
 	}
 }
 
-void Simple::App::buildUI(){
+void Simple::Simple::buildUI(){
 	scrollLayout->setWHType(PARENT, FIXED);
 	scrollLayout->setHeight(60);
 	scrollLayout->addChild(list);
@@ -113,7 +113,7 @@ void Simple::App::buildUI(){
 	addIcon->setX(70);
 }
 
-void Simple::App::loop(uint micros){
+void Simple::Simple::loop(uint micros){
 	if(midPressTime == 0 && backPressTime == 0){
 		LoopManager::removeListener(this);
 		return;
@@ -155,7 +155,7 @@ void Simple::App::loop(uint micros){
 	screen.commit();
 }
 
-void Simple::App::selectAction(uint8_t num){
+void Simple::Simple::selectAction(uint8_t num){
 	for(auto& prog : programs){
 		prog->setIsSelected(false);
 	}
@@ -176,7 +176,7 @@ void Simple::App::selectAction(uint8_t num){
 	}
 }
 
-void Simple::App::buttonPressed(uint id){
+void Simple::Simple::buttonPressed(uint id){
 	switch(id){
 		case BTN_UP:
 			if(programNum == 0){
@@ -223,7 +223,7 @@ void Simple::App::buttonPressed(uint id){
 	}
 }
 
-void Simple::App::buttonReleased(uint id){
+void Simple::Simple::buttonReleased(uint id){
 	if(id == BTN_BACK){
 		uint32_t elapsed = millis() - backPressTime;
 
