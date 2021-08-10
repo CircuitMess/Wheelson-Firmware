@@ -5,7 +5,7 @@ Autonomous cars are the future and we’ll show you how it works.
 
 This tiny wheeled robot has a camera and a microcomputer and can be programmed to autonomously navigate a small road while driving, just like an autonomous car would.
 
-Jay-D is also a part of [CircuitMess STEM Box](https://igg.me/at/stem-box/x#/) - a series of fun electronic kits to help children and adults understand the basics of technologies everybody's talking about.
+CircuitMess Wheelson is also a part of [CircuitMess STEM Box](https://igg.me/at/stem-box/x#/) - a series of fun electronic kits to help children and adults understand the basics of technologies everybody's talking about.
 
 
 <img src="https://www.circuitmess.com/wp-content/uploads/2020/06/Wheelson_1.jpg">
