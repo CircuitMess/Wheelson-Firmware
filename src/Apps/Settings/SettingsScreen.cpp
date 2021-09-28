@@ -105,26 +105,26 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			screen.commit();
 			break;
 
-				case BTN_UP:
-					selectedSetting--;
-				if(selectedSetting < 0){
-					selectedSetting = 2;
-				}
-				if(selectedSetting == 0){
-					shutDownSlider->setIsSelected(true);
-				}else{
-					shutDownSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 1){
-					inputTest->setIsSelected(true);
-				}else{
-					inputTest->setIsSelected(false);
-				}
-				if(selectedSetting == 2){
-					save->setIsSelected(true);
-				}else{
-					save->setIsSelected(false);
-				}
+		case BTN_UP:
+			selectedSetting--;
+			if(selectedSetting < 0){
+				selectedSetting = 2;
+			}
+			if(selectedSetting == 0){
+				shutDownSlider->setIsSelected(true);
+			}else{
+				shutDownSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 1){
+				inputTest->setIsSelected(true);
+			}else{
+				inputTest->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
+				save->setIsSelected(true);
+			}else{
+				save->setIsSelected(false);
+			}
 
 			draw();
 			screen.commit();
