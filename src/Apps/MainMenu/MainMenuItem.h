@@ -4,7 +4,7 @@
 #include <UI/CustomElement.h>
 
 enum MenuApp {
-	SIMPLE, AUTONOMOUS, BALL, OBJECT, SETTINGS
+	SIMPLE, AUTONOMOUS, BALL, OBJECT, RC, SETTINGS
 };
 
 class MainMenuItem : public CustomElement {
@@ -27,7 +27,7 @@ private:
 	Color* appIconBuffer = nullptr;
 	Color* borderBuffer = nullptr;
 
-	static const char* const AppIcons[5];
+	static const char* const AppIcons[6];
 };
 
 

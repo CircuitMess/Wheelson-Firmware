@@ -42,8 +42,8 @@ private:
 	void buildUI();
 	void buttonPressed(uint i) override;
 
-	static const char* const AppTitles[5];
-	static Context* (*AppLaunch[5])(Display& display);
+	static const char* const AppTitles[6];
+	static Context* (*AppLaunch[6])(Display& display);
 
 };
 

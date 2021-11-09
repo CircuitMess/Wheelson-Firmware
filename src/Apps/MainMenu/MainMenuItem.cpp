@@ -1,7 +1,7 @@
 #include <SPIFFS.h>
 #include "MainMenuItem.h"
 
-const char* const MainMenuItem::AppIcons[] = {"/MainMenu/app_simple.raw", "/MainMenu/app_autonomous.raw", "/MainMenu/app_ball.raw", "/MainMenu/app_object.raw", "/MainMenu/app_settings.raw"};
+const char* const MainMenuItem::AppIcons[] = {"/MainMenu/app_simple.raw", "/MainMenu/app_autonomous.raw", "/MainMenu/app_ball.raw", "/MainMenu/app_object.raw", "/MainMenu/app_remote.raw", "/MainMenu/app_settings.raw"};
 
 MainMenuItem::MainMenuItem(ElementContainer* parent, MenuApp app) : CustomElement(parent, 40, 40), app(app){
 

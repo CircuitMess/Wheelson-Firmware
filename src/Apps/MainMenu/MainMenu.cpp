@@ -5,6 +5,7 @@
 #include "../Autonomous/MarkerDriver.h"
 #include "../Autonomous/LineDriver.h"
 #include "../Autonomous/BallDriver.h"
+#include "../RemoteControl/RemoteControl.h"
 #include <FS/CompressedFile.h>
 #include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
@@ -13,13 +14,14 @@
 #include <SPIFFS.h>
 
 
-const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Settings"};
+const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Remote control", "Settings"};
 
 Context* (*MainMenu::AppLaunch[])(Display& display) = {
 		[](Display& display) -> Context* { return new Simple::Simple(display); },
 		[](Display& display) -> Context* { return new Autonomous(display, new LineDriver()); },
 		[](Display& display) -> Context* { return new Autonomous(display, new BallDriver()); },
 		[](Display& display) -> Context* { return new Autonomous(display, new MarkerDriver()); },
+		[](Display& display) -> Context* { return new RemoteControl(display); },
 		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
 };
 
@@ -88,21 +90,17 @@ void MainMenu::buildUI(){
 	layout.setWHType(PARENT, PARENT);
 	layout.setGutter(5);
 
-	for(int i = 0; i < 5; i++){
+	for(int i = 0; i < 6; i++){
 		MainMenuItem* app = new MainMenuItem(&screen, static_cast<MenuApp>(i));
 		apps.push_back(app);
 		layout.addChild(app);
 	}
-	apps[0]->setX(10);
-	apps[0]->setY(15);
-	apps[1]->setX(60);
-	apps[1]->setY(15);
-	apps[2]->setX(110);
-	apps[2]->setY(15);
-	apps[3]->setX(40);
-	apps[3]->setY(65);
-	apps[4]->setX(90);
-	apps[4]->setY(65);
+	apps[0]->setPos(10, 15);
+	apps[1]->setPos(60, 15);
+	apps[2]->setPos(110, 15);
+	apps[3]->setPos(10, 65);
+	apps[4]->setPos(60, 65);
+	apps[5]->setPos(110, 65);
 	layout.reflow();
 	screen.addChild(&layout);
 	screen.repos();
@@ -118,7 +116,7 @@ void MainMenu::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
 			if(appNum == 0){
-				selectApp(4);
+				selectApp(5);
 			}else{
 				selectApp(appNum - 1);
 			}
@@ -128,7 +126,7 @@ void MainMenu::buttonPressed(uint id){
 			break;
 
 		case BTN_RIGHT:
-			selectApp((appNum + 1) % 5);
+			selectApp((appNum + 1) % 6);
 
 			draw();
 			screen.commit();
@@ -136,12 +134,10 @@ void MainMenu::buttonPressed(uint id){
 
 		case BTN_UP:
 		case BTN_DOWN:
-			if(appNum == 2){
-				selectApp(4);
-			}else if(appNum > 2){
+			if(appNum > 2){
 				selectApp(appNum - 3);
 			}else{
-				selectApp((appNum + 3) % 5);
+				selectApp((appNum + 3) % 6);
 			}
 
 			draw();
