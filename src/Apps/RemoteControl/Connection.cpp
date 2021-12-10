@@ -49,7 +49,6 @@ void Connection::loop(uint micros){
 	}else if(state == WIFI){
 		if(WiFi.status() != WL_CONNECTED){
 			if(millis() - wifiTime >= 5000){
-				printf("reset wifi\n");
 				WiFi.disconnect();
 				wifiConnected = false;
 				delay(500);
@@ -58,7 +57,6 @@ void Connection::loop(uint micros){
 
 			return;
 		}else if(!wifiConnected){
-			printf("connected to wifi\n");
 			wifiConnected = true;
 			state = CONNECTING;
 			delay(500);
@@ -68,7 +66,6 @@ void Connection::loop(uint micros){
 	}else if(state == CONNECTING){
 		if(!connected()){
 			if(millis() - wifiTime > 5000){
-				printf("reset wifi 2\n");
 				feedClient.stop();
 				controlClient.stop();
 				WiFi.disconnect();
@@ -83,7 +80,6 @@ void Connection::loop(uint micros){
 	}
 
 	if(connected()){
-		printf("connected\n");
 		wifiTime = 0;
 		rcData.stop();
 		state = CONNECTED;
@@ -102,8 +98,6 @@ void Connection::startWifi(){
 	if(info.direct){
 		localIP = IPAddress(10, 0, 0, rand() % 256); // poor man's dhcp
 	}
-
-	localIP.toString();
 
 	WiFi.begin(info.ssid.c_str(), info.pass.c_str());
 	wifiTime = millis();

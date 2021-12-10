@@ -92,8 +92,6 @@ void RemoteControl::connected(){
 }
 
 void RemoteControl::disconnected(){
-	printf("dc\n");
-
 	delete driver;
 	driver = nullptr;
 
@@ -104,8 +102,6 @@ void RemoteControl::disconnected(){
 }
 
 void RemoteControl::buttonPressed(uint i){
-	printf("btn\n");
-
 	if(i == BTN_BACK){
 		pop();
 		return;
