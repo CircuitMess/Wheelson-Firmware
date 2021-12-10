@@ -100,81 +100,81 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_RIGHT:
 			if(selectedSetting == 0){
 				shutDownSlider->selectNext();
-				draw();
-				screen.commit();
-				break;
+			}
+			draw();
+			screen.commit();
+			break;
 
-				case BTN_UP:
-					selectedSetting--;
-				if(selectedSetting < 0){
-					selectedSetting = 2;
-				}
-				if(selectedSetting == 0){
-					shutDownSlider->setIsSelected(true);
-				}else{
-					shutDownSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 1){
-					inputTest->setIsSelected(true);
-				}else{
-					inputTest->setIsSelected(false);
-				}
-				if(selectedSetting == 2){
-					save->setIsSelected(true);
-				}else{
-					save->setIsSelected(false);
-				}
-
-				draw();
-				screen.commit();
-				break;
-
-				case BTN_DOWN:
-					selectedSetting++;
-				if(selectedSetting > 2){
-					selectedSetting = 0;
-				}
-				if(selectedSetting == 0){
-					shutDownSlider->setIsSelected(true);
-				}else{
-					shutDownSlider->setIsSelected(false);
-				}
-				if(selectedSetting == 1){
-					inputTest->setIsSelected(true);
-				}else{
-					inputTest->setIsSelected(false);
-				}
-				if(selectedSetting == 2){
-					save->setIsSelected(true);
-				}else{
-					save->setIsSelected(false);
-				}
-				draw();
-				screen.commit();
-
-				break;
-
-				case BTN_MID:
-					if(selectedSetting == 2){
-						Settings.get().shutdownTime = shutDownSlider->getIndex();
-						Settings.store();
-						this->pop();
-					}else if(selectedSetting == 1){
-						Display& display = *this->getScreen().getDisplay();
-						Context* hwTest = new UserHWTest(display);
-						hwTest->push(this);
-					}
-				draw();
-				screen.commit();
-				break;
-				case BTN_BACK:
-					Settings.get().shutdownTime = shutDownSlider->getIndex();
-				Settings.store();
-				this->pop();
-				draw();
-				screen.commit();
-				break;
+		case BTN_UP:
+			selectedSetting--;
+			if(selectedSetting < 0){
+				selectedSetting = 2;
+			}
+			if(selectedSetting == 0){
+				shutDownSlider->setIsSelected(true);
+			}else{
+				shutDownSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 1){
+				inputTest->setIsSelected(true);
+			}else{
+				inputTest->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
+				save->setIsSelected(true);
+			}else{
+				save->setIsSelected(false);
 			}
 
+			draw();
+			screen.commit();
+			break;
+
+		case BTN_DOWN:
+			selectedSetting++;
+			if(selectedSetting > 2){
+				selectedSetting = 0;
+			}
+			if(selectedSetting == 0){
+				shutDownSlider->setIsSelected(true);
+			}else{
+				shutDownSlider->setIsSelected(false);
+			}
+			if(selectedSetting == 1){
+				inputTest->setIsSelected(true);
+			}else{
+				inputTest->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
+				save->setIsSelected(true);
+			}else{
+				save->setIsSelected(false);
+			}
+			draw();
+			screen.commit();
+
+			break;
+
+		case BTN_MID:
+			if(selectedSetting == 2){
+				Settings.get().shutdownTime = shutDownSlider->getIndex();
+				Settings.store();
+				this->pop();
+			}else if(selectedSetting == 1){
+				Display& display = *this->getScreen().getDisplay();
+				Context* hwTest = new UserHWTest(display);
+				hwTest->push(this);
+			}
+			draw();
+			screen.commit();
+			break;
+		case BTN_BACK:
+			Settings.get().shutdownTime = shutDownSlider->getIndex();
+			Settings.store();
+			this->pop();
+			draw();
+			screen.commit();
+			break;
 	}
+
 }
