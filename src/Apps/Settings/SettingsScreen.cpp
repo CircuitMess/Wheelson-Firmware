@@ -34,7 +34,7 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextSize(1);
 	screen.getSprite()->setTextFont(1);
 	screen.getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
-	screen.getSprite()->printCenter("Version 1.0.1");
+	screen.getSprite()->printCenter("Version 1.1.0");
 
 	for(int i = 0; i < 3; i++){
 		if(!reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){
