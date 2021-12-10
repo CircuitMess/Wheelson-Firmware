@@ -167,7 +167,7 @@ bool HardwareTest::SPIFFSTest(){
 
 		if(fileBytesSum != check.sum){
 			char logBuffer[100];
-			sprintf(logBuffer, "%s - expected %d, got %d", check.name.c_str(), check.sum, fileBytesSum);
+			sprintf(logBuffer, "%s - expected %d, got %d", check.name, check.sum, fileBytesSum);
 			test->log("Checksum mismatch", logBuffer);
 			file.close();
 			return false;

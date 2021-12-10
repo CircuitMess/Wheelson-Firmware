@@ -1,7 +1,10 @@
+#include <Arduino.h>
+#include <pgmspace.h>
+
 static const struct {
-	String name;
+	const char* name;
 	uint32_t sum;
-} SPIFFSChecksums[] = {
+} SPIFFSChecksums[] PROGMEM = {
 		{"/Simple/actionBorder.raw",23592 },
 		{"/Simple/add.raw",42174 },
 		{"/Simple/add_button.raw",42862 },
