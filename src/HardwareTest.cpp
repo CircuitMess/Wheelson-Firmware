@@ -106,11 +106,11 @@ bool HardwareTest::psram(){
 bool HardwareTest::nuvotonTest(){
 
 	pinMode(WSNV_PIN_RESET, OUTPUT);
-	digitalWrite(WSNV_PIN_RESET, HIGH);
+	//digitalWrite(WSNV_PIN_RESET, HIGH);
 
 	/* Nuvoton reset */
 	digitalWrite(WSNV_PIN_RESET, LOW);
-	delay(5);
+	delay(50);
 	digitalWrite(WSNV_PIN_RESET, HIGH);
 	delay(500);
 	LED.setBacklight(true);
