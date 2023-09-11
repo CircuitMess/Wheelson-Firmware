@@ -42,6 +42,7 @@ void UserHWTest::currentTestDone(){
 		hwTestPart->stop();
 		delete hwTestPart;
 		hwTestPart = nullptr;
+		Input::getInstance()->loop(0);
 	}
 	nextTest();
 }
