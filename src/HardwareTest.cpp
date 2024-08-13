@@ -6,6 +6,7 @@
 #include <Wheelson.h>
 #include <SPIFFS.h>
 #include <Camera.h>
+#include <Util/HWRevision.h>
 
 HardwareTest *HardwareTest::test = nullptr;
 
@@ -17,6 +18,7 @@ HardwareTest::HardwareTest(Display &_display) : canvas(_display.getBaseSprite())
 	tests.push_back({HardwareTest::psram, "PSRAM"});
 	tests.push_back({HardwareTest::SPIFFSTest, "SPIFFS"});
 	tests.push_back({HardwareTest::camera, "Camera"});
+	tests.push_back({HardwareTest::hwRevision, "HW rev"});
 
 	Wire.begin(I2C_SDA, I2C_SCL);
 }
@@ -63,6 +65,8 @@ void HardwareTest::start(){
 	if(pass){
 		Serial.printf("TEST:pass:%s\n",currentTest);
 
+		vTaskDelay(1000);
+
 		Camera cam;
 
 		canvas->printf("\n");
@@ -71,12 +75,10 @@ void HardwareTest::start(){
 			canvas->setTextColor(TFT_RED);
 
 			canvas->setTextDatum(textdatum_t::top_center);
-			canvas->drawString("Camera error!", canvas->width()/2, canvas->getCursorY());
+			canvas->drawString("Camera error!", canvas->width()/2, 60);
 
 			display->commit();
 		}else{
-			int y = canvas->getCursorY();
-			canvas->setTextColor(TFT_GREEN);
 			canvas->clear(TFT_BLACK);
 
 			for(;;){
@@ -84,9 +86,16 @@ void HardwareTest::start(){
 				canvas->drawIcon(cam.getRGB565(), 0, 4, 160, 120);
 				cam.releaseFrame();
 
-				canvas->setCursor(0, y);
 				canvas->setTextDatum(textdatum_t::top_center);
-				canvas->drawString("Test successful!\n", canvas->width()/2, y);
+				canvas->setTextColor(TFT_GREEN);
+				canvas->drawString("Test successful!", canvas->width()/2, 40);
+
+				canvas->setTextDatum(textdatum_t::top_left);
+				canvas->setTextColor(TFT_BLACK);
+				canvas->drawString("HW revision:", 35, 60);
+				canvas->setTextColor(TFT_PURPLE);
+				canvas->drawString(String(HWRevision::get()), 120, 60);
+
 				display->commit();
 			}
 		}
@@ -183,6 +192,23 @@ bool HardwareTest::SPIFFSTest(){
 
 		file.close();
 	}
+
+	return true;
+}
+
+bool HardwareTest::hwRevision(){
+	const auto rev = HWRevision::get();
+	if(rev != 0){
+		test->canvas->printf("Fused: ");
+		test->canvas->setTextColor(TFT_GOLD);
+		test->canvas->printf("%d ", rev);
+		test->canvas->setTextColor(TFT_WHITE);
+
+		return rev == CurrentVersion;
+	}
+
+	HWRevision::write(CurrentVersion);
+	HWRevision::commit();
 
 	return true;
 }

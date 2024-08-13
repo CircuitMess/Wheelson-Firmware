@@ -37,6 +37,9 @@ private:
 	static bool nuvotonTest();
 	static bool SPIFFSTest();
 	static bool camera();
+	static bool hwRevision();
+
+	static constexpr uint8_t CurrentVersion = 1;
 
 
 };
