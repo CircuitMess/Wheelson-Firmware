@@ -1,6 +1,7 @@
 #include <Loop/LoopManager.h>
 #include <Wheelson.h>
 #include "InputHWTest.h"
+#include "../Fonts.h"
 
 InputHWTest::InputHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest), screenLayout(new LinearLayout(&userHwTest->getScreen(), HORIZONTAL)), leftLayout(new LinearLayout(screenLayout, VERTICAL)),
 																midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)){
@@ -21,21 +22,17 @@ InputHWTest::~InputHWTest(){
 
 void InputHWTest::draw(){
 	screenLayout->draw();
+
+	auto canvas = userHwTest->getScreen().getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+
 	if(!inputIsDone){
-		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
-		u8f.setFont(u8g2_font_HelvetiPixel_tr);
-		u8f.setForegroundColor(TFT_WHITE);
-		u8f.setFontMode(1);
-		u8f.setCursor((160 - u8f.getUTF8Width("Press buttons to test them.")) / 2, 13);
-		u8f.print("Press buttons to test them.");
+		canvas->drawString("Press buttons to test them.", canvas->width()/2, 3);
 	}
 	else{
-		FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
-		u8f.setFont(u8g2_font_HelvetiPixel_tr);
-		u8f.setForegroundColor(TFT_WHITE);
-		u8f.setFontMode(1);
-			u8f.setCursor((160 - u8f.getUTF8Width("All OK! Press any button.")) / 2, 13);
-			u8f.print("All OK! Press any button.");
+		canvas->drawString("All OK! Press any button.", canvas->width()/2, 3);
 	}
 }
 

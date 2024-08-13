@@ -1,6 +1,7 @@
 #include <Wheelson.h>
 #include <Loop/LoopManager.h>
 #include "CameraHWTest.h"
+#include "../Fonts.h"
 
 CameraHWTest::CameraHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest){
 
@@ -12,22 +13,21 @@ CameraHWTest::~CameraHWTest(){
 
 void CameraHWTest::draw(){
 	userHwTest->getScreen().getSprite()->clear(TFT_BLACK);
-	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_HelvetiPixel_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+
+	auto canvas = userHwTest->getScreen().getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+
 	if(cameraFeed.isInited()){
 		cameraFeed.loadFrame();
 		userHwTest->getScreen().getSprite()->drawIcon(reinterpret_cast<Color*>(cameraFeed.getRGB565()), 0, 4, 160, 120);
 		cameraFeed.releaseFrame();
-		
-		u8f.setCursor((160 - u8f.getUTF8Width("If camera works good")) / 2, 53);
-		u8f.print("If camera works good");
-		u8f.setCursor((130 - u8f.getUTF8Width("press any button.")) / 2, 63);
-		u8f.print("    press any button.");
+
+		canvas->drawString("If camera works good", canvas->width()/2, 43);
+		canvas->drawString("    press any button.", canvas->width()/2, 53);
 	}else{
-		u8f.setCursor((160 - u8f.getUTF8Width("Camera is not detected!")) / 2, 53);
-		u8f.print("Camera is not detected!");
+		canvas->drawString("Camera is not detected!", canvas->width()/2, 43);
 	}
 	userHwTest->getScreen().getSprite()->fillRect(0,0,160,5,TFT_BLACK);
 }

@@ -52,8 +52,8 @@ void Autonomous::draw(){
 		canvas->setTextColor(TFT_WHITE);
 		canvas->setTextSize(1);
 		canvas->setTextFont(1);
-		canvas->setCursor(0, 60);
-		canvas->printCenter("Camera error!");
+		canvas->setTextDatum(textdatum_t::top_center);
+		canvas->drawString("Camera error!", canvas->width()/2, 50);
 	}
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	Battery.drawIcon(canvas);
@@ -68,13 +68,12 @@ void Autonomous::draw(){
 
 		if(paramPopupActive){
 			driver->drawParamControl(*screen.getSprite(), 35, 108, 90, 8);
-			canvas->setCursor(105, 96);
-			canvas->printCenter(driver->getParamName());
+			canvas->setTextDatum(textdatum_t::top_center);
+			canvas->drawString(driver->getParamName(), canvas->width()/2, 96);
 		}else if(!firstStart){
-			canvas->setCursor(0, 96);
-			canvas->printCenter("Press down to");
-			canvas->setCursor(0, 109);
-			canvas->printCenter("toggle motors");
+			canvas->setTextDatum(textdatum_t::top_center);
+			canvas->drawString("Press down to", canvas->width()/2, 96);
+			canvas->drawString("toggle motors",canvas->width()/2, 109);
 		}
 	}
 

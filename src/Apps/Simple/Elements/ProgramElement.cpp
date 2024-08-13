@@ -1,6 +1,6 @@
 #include "ProgramElement.h"
 #include <SPIFFS.h>
-#include <U8g2_for_TFT_eSPI.h>
+#include "../../../Fonts.h"
 
 Simple::ProgramElement::ProgramElement::ProgramElement(ElementContainer* parent, String name) : CustomElement(parent, 150, 20), name(name){
 
@@ -24,14 +24,11 @@ void Simple::ProgramElement::ProgramElement::draw(){
 
 	getSprite()->drawRoundRect(getTotalX()-1, getTotalY(), getWidth()+2, getHeight(), 5, selected ? TFT_RED : TFT_WHITE);
 
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_profont12_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor(getTotalX() + 5, getTotalY() + 13);
-	u8f.println(name);
-
-
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_profont12_tf);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_left);
+	canvas->drawString(name, getTotalX() + 5, getTotalY() + 3);
 }
 
 void Simple::ProgramElement::ProgramElement::setIsSelected(bool isSelected){

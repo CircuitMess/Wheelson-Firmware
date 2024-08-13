@@ -56,11 +56,11 @@ void BatteryPopupService::loop(uint time){
 		}
 	}else{
 		if(blinkMicros >= shortBlinkInterval*1000000 && percentage <= 5){
-			LED.setRGB(RED);
+			LED.setRGB(WLEDColor::RED);
 			blinkActive = true;
 			blinkMicros = 0;
 		}else if(blinkMicros >= longBlinkInterval*1000000 && percentage <= 15){
-			LED.setRGB(RED);
+			LED.setRGB(WLEDColor::RED);
 			blinkActive = true;
 			blinkMicros = 0;
 		}

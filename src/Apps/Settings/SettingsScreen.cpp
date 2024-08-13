@@ -33,8 +33,9 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextColor(TFT_WHITE);
 	screen.getSprite()->setTextSize(1);
 	screen.getSprite()->setTextFont(1);
-	screen.getSprite()->setCursor(screenLayout->getTotalX() + 42, screenLayout->getTotalY() + 115);
-	screen.getSprite()->printCenter("Version 1.1.1");
+
+	screen.getSprite()->setTextDatum(textdatum_t::top_center);
+	screen.getSprite()->drawString("Version 1.1.1", screen.getWidth()/2, screenLayout->getTotalY() + 115);
 
 	for(int i = 0; i < 3; i++){
 		if(!reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){

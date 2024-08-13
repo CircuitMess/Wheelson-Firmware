@@ -33,7 +33,11 @@ void HardwareTest::start(){
 	canvas->setTextFont(2);
 	canvas->setTextSize(1);
 	canvas->setCursor(0, 0);
-	canvas->printCenter("Wheelson Hardware Test");
+
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString("Wheelson Hardware Test", canvas->width()/2, 0);
+	canvas->setTextDatum(textdatum_t::top_left);
+
 	canvas->setCursor(0, 10);
 	canvas->println();
 	display->commit();
@@ -65,7 +69,10 @@ void HardwareTest::start(){
 
 		if(!cam.isInited()){
 			canvas->setTextColor(TFT_RED);
-			canvas->printCenter("Camera error!");
+
+			canvas->setTextDatum(textdatum_t::top_center);
+			canvas->drawString("Camera error!", canvas->width()/2, canvas->getCursorY());
+
 			display->commit();
 		}else{
 			int y = canvas->getCursorY();
@@ -78,7 +85,8 @@ void HardwareTest::start(){
 				cam.releaseFrame();
 
 				canvas->setCursor(0, y);
-				canvas->printCenter("Test successful!\n");
+				canvas->setTextDatum(textdatum_t::top_center);
+				canvas->drawString("Test successful!\n", canvas->width()/2, y);
 				display->commit();
 			}
 		}

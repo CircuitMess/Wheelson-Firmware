@@ -1,7 +1,6 @@
 #include "AddIcon.hpp"
-#include <U8g2_for_TFT_eSPI.h>
 #include <SPIFFS.h>
-
+#include "../../../Fonts.h"
 
 Simple::AddIcon::AddIcon(ElementContainer* parent) : CustomElement(parent, 15, 15){
 	addBuffer = static_cast<Color*>(ps_malloc(15 * 15 * 2));
@@ -24,14 +23,12 @@ void Simple::AddIcon::draw(){
 	if(selected && borderBuffer != nullptr){
 		getSprite()->drawIcon(borderBuffer, getTotalX(), getTotalY()+3, getWidth(), getHeight(), 1, TFT_TRANSPARENT);
 	}
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_6x12_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete,")) / 2, getTotalY() + 35);
-	u8f.println("Hold BACK to delete,");
-	u8f.setCursor((160 - u8f.getUTF8Width("hold SELECT to play.")) / 2, getTotalY() + 45);
-	u8f.println("hold SELECT to play.");
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_6x12_tr);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString("Hold BACK to delete,", canvas->width()/2, getTotalY() + 25);
+	canvas->drawString("hold SELECT to play.", canvas->width()/2, getTotalY() + 35);
 
 }
 

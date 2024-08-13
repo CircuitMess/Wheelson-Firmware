@@ -1,6 +1,6 @@
 #include "DrivingElement.h"
-#include <U8g2_for_TFT_eSPI.h>
 #include <SPIFFS.h>
+#include "../../Fonts.h"
 
 const char* const DrivingElement::Icons[] = {"/AutoDrive/engine.bw"};
 bool DrivingElement::motorStop = true;
@@ -37,11 +37,10 @@ DrivingElement::~DrivingElement(){
 
 void DrivingElement::draw(){
 	uint xShift = 0;
+	auto canvas = getSprite();
 	getSprite()->drawMonochromeIcon(iconBuffer, getTotalX(), getTotalY(), 17, 13, 1, motorStop ? TFT_RED : TFT_WHITE);
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_6x10_tn);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
+	canvas->setFont(&u8g2_font_6x10_tn);
+	canvas->setTextColor(TFT_WHITE);
 	if(text.length() == 1){
 		xShift = 5;
 	}else if(text.length() == 2){
@@ -49,8 +48,8 @@ void DrivingElement::draw(){
 	}else if(text.length() == 3){
 		xShift = 1;
 	}
-	u8f.setCursor(getTotalX() + xShift, getTotalY() + 25);
-	u8f.print(text);
+	canvas->setTextDatum(textdatum_t::top_left);
+	canvas->drawString(text.c_str(), getTotalX() + xShift, getTotalY() + 15);
 	if(needPercentage){
 		getSprite()->drawIcon(percentageBuffer, (getTotalX() + 5), (getTotalY() + 16), 6, 6, 1, TFT_TRANSPARENT);
 	}

@@ -1,7 +1,7 @@
 #include "LEDHWTest.h"
 #include <Wheelson.h>
-#include <U8g2_for_TFT_eSPI.h>
 #include <Loop/LoopManager.h>
+#include "../Fonts.h"
 
 LEDHWTest::LEDHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest){
 }
@@ -11,18 +11,15 @@ LEDHWTest::~LEDHWTest(){
 }
 
 void LEDHWTest::draw(){
-	FontWriter u8f = userHwTest->getScreen().getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_HelvetiPixel_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Check the headlights and")) / 2, 43);
-	u8f.print("Check the headlights and");
-	u8f.setCursor((160 - u8f.getUTF8Width("RGB LED under the screen.")) / 2, 53);
-	u8f.print("RGB LED under the screen.");
-	u8f.setCursor((160 - u8f.getUTF8Width("Press any key")) / 2, 73);
-	u8f.print("Press any key");
-	u8f.setCursor((160 - u8f.getUTF8Width("if everything is A-OK.")) / 2, 83);
-	u8f.print("if everything is A-OK.");
+	auto canvas = userHwTest->getScreen().getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_WHITE);
+
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString("Check the headlights and", canvas->width()/2, 33);
+	canvas->drawString("RGB LED under the screen.", canvas->width()/2, 43);
+	canvas->drawString("Press any key", canvas->width()/2, 63);
+	canvas->drawString("if everything is A-OK.", canvas->width()/2, 73);
 }
 
 void LEDHWTest::start(){

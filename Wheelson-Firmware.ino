@@ -11,6 +11,7 @@
 
 
 bool checkJig(){
+	static constexpr int TFT_CS = 32;
 	pinMode(TFT_CS, INPUT_PULLUP);
 	digitalWrite(TFT_CS, HIGH);
 	delay(100);
@@ -22,6 +23,7 @@ void setup(){
 
 	if(checkJig()){
 		Display display(160, 128, -1, -1);
+		display.getTft()->setPanel(WheelsonDisplay::panel1());
 		display.begin();
 
 		Nuvo.begin();

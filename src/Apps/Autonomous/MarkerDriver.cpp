@@ -158,13 +158,13 @@ void MarkerDriver::toggleDisplayMode(){
 void MarkerDriver::draw(){
 
 	if(displayMode == RAW){
-		memcpy(resultSprite.getPointer(), getCameraImage(), 160*120*sizeof(Color));
+		memcpy(resultSprite.getBuffer(), getCameraImage(), 160*120*sizeof(Color));
 	}else{
-		memcpy(resultSprite.getPointer(), bwBuffer, 160*120*sizeof(Color));
+		memcpy(resultSprite.getBuffer(), bwBuffer, 160*120*sizeof(Color));
 	}
 
 	if(resultMarkers.empty()){
-		memcpy(processedBuffer, resultSprite.getPointer(), 160*120*sizeof(Color));
+		memcpy(processedBuffer, resultSprite.getBuffer(), 160*120*sizeof(Color));
 		return;
 	}
 
@@ -180,7 +180,7 @@ void MarkerDriver::draw(){
 			name = actionNames[actions.indexOf(marker.id)];
 		}
 
-		int textWidth = resultSprite.textWidth(name);
+		int textWidth = resultSprite.textWidth(name.c_str());
 		int markerX = marker.projected[0].x;
 		int markerY = marker.projected[0].y;
 		int x2 = marker.projected[0].x, y2 = marker.projected[0].y;
@@ -217,7 +217,8 @@ void MarkerDriver::draw(){
 		y = max(2, min(y, 100));
 
 
-		resultSprite.drawString(name, x, y);
+		resultSprite.setTextDatum(textdatum_t::top_left);
+		resultSprite.drawString(name.c_str(), x, y);
 
 		auto points = marker.projected;
 
@@ -227,5 +228,5 @@ void MarkerDriver::draw(){
 		resultSprite.drawLine(points[3].x * 2, points[3].y * 2, points[0].x * 2, points[0].y * 2, TFT_RED);
 	}
 
-	memcpy(processedBuffer, resultSprite.getPointer(), 160*120*sizeof(Color));
+	memcpy(processedBuffer, resultSprite.getBuffer(), 160*120*sizeof(Color));
 }

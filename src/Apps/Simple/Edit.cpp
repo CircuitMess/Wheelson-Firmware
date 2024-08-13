@@ -7,6 +7,7 @@
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
+#include "../../Fonts.h"
 
 Simple::Edit* Simple::Edit::instance = nullptr;
 
@@ -54,12 +55,11 @@ void Simple::Edit::draw(){
 	screen.getSprite()->drawLine(0, 113, screen.getWidth(), 113, TFT_WHITE);
 	Battery.drawIcon(screen.getSprite());
 
-	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_profont12_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Hold BACK to delete action")) / 2, screen.getTotalY() + 124);
-	u8f.println("Hold BACK to delete action");
+	auto canvas = screen.getSprite();
+	canvas->setFont(&u8g2_font_profont12_tf);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString("Hold BACK to delete action", screen.getWidth()/2, 114);
 
 }
 

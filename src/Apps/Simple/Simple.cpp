@@ -2,11 +2,11 @@
 #include "Edit.h"
 #include "Playback.h"
 #include <FS/CompressedFile.h>
-#include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
+#include "../../Fonts.h"
 
 Simple::Simple::Simple(Display& display) : Context(display), scrollLayout(new ScrollLayout(&screen)), list(new LinearLayout(scrollLayout, VERTICAL)), addIcon(new AddIcon(list)){
 
@@ -35,12 +35,11 @@ void Simple::Simple::draw(){
 	screen.getSprite()->drawLine(0, 19, screen.getWidth(), 19, TFT_WHITE);
 	Battery.drawIcon(screen.getSprite());
 
-	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_profont12_tf);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width("Simple programming")) / 2, screen.getTotalY() + 13);
-	u8f.println("Simple programming");
+	auto canvas = screen.getSprite();
+	canvas->setFont(&u8g2_font_profont12_tf);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString("Simple programming", canvas->width()/2, 4);
 }
 
 void Simple::Simple::deinit(){

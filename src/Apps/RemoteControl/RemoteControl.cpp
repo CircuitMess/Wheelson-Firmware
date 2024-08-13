@@ -25,9 +25,9 @@ void RemoteControl::draw(){
 	canvas->setTextFont(0);
 	canvas->setTextSize(1);
 	canvas->setTextColor(TFT_WHITE);
-	canvas->setCursor(0, 105);
+	canvas->setTextDatum(textdatum_t::top_center);
 
-	canvas->printCenter(driver ? "Connected" : "Connecting...");
+	canvas->drawString(driver ? "Connected" : "Connecting...", canvas->width()/2, 105);
 }
 
 void RemoteControl::start(){

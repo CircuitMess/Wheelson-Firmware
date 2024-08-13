@@ -7,12 +7,11 @@
 #include "../Autonomous/BallDriver.h"
 #include "../RemoteControl/RemoteControl.h"
 #include <FS/CompressedFile.h>
-#include <U8g2_for_TFT_eSPI.h>
 #include <Wheelson.h>
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
-
+#include "../../Fonts.h"
 
 const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Remote control", "Settings"};
 
@@ -76,12 +75,11 @@ void MainMenu::draw(){
 	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
 	Battery.drawIcon(screen.getSprite());
 
-	FontWriter u8f = screen.getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_HelvetiPixel_tr);
-	u8f.setForegroundColor(TFT_WHITE);
-	u8f.setFontMode(1);
-	u8f.setCursor((160 - u8f.getUTF8Width(AppTitles[appNum])) / 2, 120);
-	u8f.print(AppTitles[appNum]);
+	auto canvas = screen.getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextDatum(textdatum_t::top_center);
+	canvas->drawString(AppTitles[appNum], canvas->width()/2, 110);
 	screen.draw();
 
 }

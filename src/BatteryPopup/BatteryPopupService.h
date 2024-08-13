@@ -5,7 +5,11 @@
 #include <Input/InputListener.h>
 class WarningPopup;
 class ShutdownPopup;
-class TFT_eSPI;
+
+namespace lgfx {
+class LGFX;
+}
+using TFT_eSPI = lgfx::LGFX;
 
 class BatteryPopupService : public LoopListener, public InputListener{
 public:

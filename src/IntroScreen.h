@@ -27,7 +27,7 @@ private:
 	static IntroScreen *instance;
 	AnimatedSprite* gif = nullptr;
 	uint16_t previousTime = 0;
-	WLEDColor lastColor = WHITE;
+	WLEDColor lastColor = WLEDColor::WHITE;
 
 };
 

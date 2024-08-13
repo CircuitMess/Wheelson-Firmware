@@ -3,6 +3,7 @@
 #include <Wheelson.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
+#include "../../Fonts.h"
 
 Simple::Playback::Playback(Display& display, const Program* program) : Context(display), scrollLayout(new ScrollLayout(&screen)), layout(new LinearLayout(scrollLayout, VERTICAL)),
 												program(program), player(program){
@@ -21,12 +22,11 @@ void Simple::Playback::start(){
 	if(program->numActions == 0){
 		draw();
 
-		FontWriter& writer = screen.getSprite()->startU8g2Fonts();
-
-		writer.setForegroundColor(TFT_WHITE);
-		writer.setFont(u8g2_font_profont12_tf);
-		writer.setCursor((screen.getWidth() - writer.getUTF8Width("Program empty!")) / 2, 60);
-		writer.print("Program empty!");
+		auto canvas = screen.getSprite();
+		canvas->setFont(&u8g2_font_profont12_tf);
+		canvas->setTextColor(TFT_WHITE);
+		canvas->setTextDatum(textdatum_t::top_center);
+		canvas->drawString("Program empty!", canvas->width()/2, 50);
 		screen.commit();
 
 		delay(2000);

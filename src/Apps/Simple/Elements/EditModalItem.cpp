@@ -1,6 +1,5 @@
-#include <U8g2_for_TFT_eSPI.h>
 #include "EditModalItem.h"
-
+#include "../../../Fonts.h"
 
 Simple::EditModalItem::EditModalItem(ElementContainer* parent, String text, char unit, float value, float step) : CustomElement(parent, 100, 20), text(text), unit(unit), value(value), step(step){
 
@@ -11,16 +10,13 @@ Simple::EditModalItem::~EditModalItem(){
 }
 
 void Simple::EditModalItem::draw(){
-	FontWriter u8f = getSprite()->startU8g2Fonts();
-	u8f.setFont(u8g2_font_HelvetiPixel_tr);
-	u8f.setForegroundColor(TFT_BLACK);
-	u8f.setFontMode(1);
-	u8f.setCursor(getTotalX(), getTotalY() + 15);
-	u8f.print(text);
-	u8f.setCursor(getTotalX() + 40, getTotalY() + 15);
-	u8f.print(value);
-	u8f.setCursor(getTotalX() + 80, getTotalY() + 15);
-	u8f.print(unit);
+	auto canvas = getSprite();
+	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
+	canvas->setTextColor(TFT_BLACK);
+	canvas->setTextDatum(textdatum_t::top_left);
+	canvas->drawString(text, getTotalX() + 2, getTotalY() + 5);
+	canvas->drawString(String(value), getTotalX() + 40, getTotalY() + 5);
+	canvas->drawString(String(unit), getTotalX() + 80, getTotalY() + 5);
 	if(selected){
 		getSprite()->drawRect(getTotalX(), getTotalY(), getWidth(), getHeight(), TFT_WHITE);
 	}
