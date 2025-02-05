@@ -5,6 +5,7 @@
 #include <UI/LinearLayout.h>
 #include "SliderElement.h"
 #include "DiscreteSlider.h"
+#include "BooleanElement.h"
 #include <Input/InputListener.h>
 #include "TextElement.h"
 #include <FS.h>
@@ -34,6 +35,7 @@ namespace SettingsScreen {
 
 		LinearLayout* screenLayout;
 		DiscreteSlider* shutDownSlider;
+		BooleanElement* camRotate;
 		TextElement* inputTest;
 		TextElement* save;
 

@@ -7,12 +7,15 @@
 #include <SPIFFS.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
-																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", {0, 1, 5, 15, 30})), inputTest(new TextElement(screenLayout, "Hardware test")),
+																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", {0, 1, 5, 15, 30})),
+																   camRotate(new BooleanElement(screenLayout, "Cam rotation")),
+																   inputTest(new TextElement(screenLayout, "Hardware test")),
 																   save(new TextElement(screenLayout, "Save")){
 
 	buildUI();
 	shutDownSlider->setIsSelected(true);
 	shutDownSlider->setIndex(Settings.get().shutdownTime);
+	camRotate->setBooleanSwitch(Settings.get().camRotate);
 
 	SettingsScreen::pack();
 }
@@ -37,12 +40,12 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextDatum(textdatum_t::top_center);
 	screen.getSprite()->drawString("Version 1.2.0", screen.getWidth()/2, screenLayout->getTotalY() + 115);
 
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){
 			screenLayout->getChild(i)->draw();
 		}
 	}
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 4; i++){
 		if(reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){
 			screenLayout->getChild(i)->draw();
 		}
@@ -76,6 +79,7 @@ void SettingsScreen::SettingsScreen::buildUI(){
 	screenLayout->setWHType(PARENT, PARENT);
 	screenLayout->setGutter(5);
 	screenLayout->addChild(shutDownSlider);
+	screenLayout->addChild(camRotate);
 	screenLayout->addChild(inputTest);
 	screenLayout->addChild(save);
 
@@ -93,6 +97,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_LEFT:
 			if(selectedSetting == 0){
 				shutDownSlider->selectPrev();
+			}else if(selectedSetting == 1){
+				if(camRotate->getBooleanSwitch()){
+					camRotate->setBooleanSwitch(false);
+				}
 			}
 			draw();
 			screen.commit();
@@ -101,6 +109,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_RIGHT:
 			if(selectedSetting == 0){
 				shutDownSlider->selectNext();
+			}else if(selectedSetting == 1){
+				if(camRotate->getBooleanSwitch() == false){
+					camRotate->setBooleanSwitch(true);
+				}
 			}
 			draw();
 			screen.commit();
@@ -109,7 +121,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 		case BTN_UP:
 			selectedSetting--;
 			if(selectedSetting < 0){
-				selectedSetting = 2;
+				selectedSetting = 3;
 			}
 			if(selectedSetting == 0){
 				shutDownSlider->setIsSelected(true);
@@ -117,11 +129,16 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				shutDownSlider->setIsSelected(false);
 			}
 			if(selectedSetting == 1){
+				camRotate->setIsSelected(true);
+			}else{
+				camRotate->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
 				inputTest->setIsSelected(true);
 			}else{
 				inputTest->setIsSelected(false);
 			}
-			if(selectedSetting == 2){
+			if(selectedSetting == 3){
 				save->setIsSelected(true);
 			}else{
 				save->setIsSelected(false);
@@ -133,7 +150,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 
 		case BTN_DOWN:
 			selectedSetting++;
-			if(selectedSetting > 2){
+			if(selectedSetting > 3){
 				selectedSetting = 0;
 			}
 			if(selectedSetting == 0){
@@ -142,11 +159,16 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				shutDownSlider->setIsSelected(false);
 			}
 			if(selectedSetting == 1){
+				camRotate->setIsSelected(true);
+			}else{
+				camRotate->setIsSelected(false);
+			}
+			if(selectedSetting == 2){
 				inputTest->setIsSelected(true);
 			}else{
 				inputTest->setIsSelected(false);
 			}
-			if(selectedSetting == 2){
+			if(selectedSetting == 3){
 				save->setIsSelected(true);
 			}else{
 				save->setIsSelected(false);
@@ -157,21 +179,27 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_MID:
-			if(selectedSetting == 2){
+			if(selectedSetting == 3){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
+				Settings.get().camRotate = camRotate->getBooleanSwitch();
 				Settings.store();
+				Camera::initialize(false);
 				this->pop();
-			}else if(selectedSetting == 1){
+			}else if(selectedSetting == 2){
 				Display& display = *this->getScreen().getDisplay();
 				Context* hwTest = new UserHWTest(display);
 				hwTest->push(this);
+			}else if(selectedSetting == 1){
+				camRotate->setBooleanSwitch(!camRotate->getBooleanSwitch());
 			}
 			draw();
 			screen.commit();
 			break;
 		case BTN_BACK:
 			Settings.get().shutdownTime = shutDownSlider->getIndex();
+			Settings.get().camRotate = camRotate->getBooleanSwitch();
 			Settings.store();
+			Camera::initialize(false);
 			this->pop();
 			draw();
 			screen.commit();
