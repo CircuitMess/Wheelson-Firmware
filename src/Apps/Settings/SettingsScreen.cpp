@@ -38,7 +38,7 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextFont(1);
 
 	screen.getSprite()->setTextDatum(textdatum_t::top_center);
-	screen.getSprite()->drawString("Version 1.2.0", screen.getWidth()/2, screenLayout->getTotalY() + 115);
+	screen.getSprite()->drawString("Version 1.2.1", screen.getWidth()/2, screenLayout->getTotalY() + 115);
 
 	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){
