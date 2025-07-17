@@ -34,15 +34,13 @@ void HardwareTest::start(){
 	canvas->setTextColor(TFT_GOLD);
 	canvas->setTextFont(2);
 	canvas->setTextSize(1);
-	canvas->setCursor(0, 0);
-
-	canvas->setTextDatum(textdatum_t::top_center);
-	canvas->drawString("Wheelson Hardware Test", canvas->width()/2, 0);
-	canvas->setTextDatum(textdatum_t::top_left);
-
-	canvas->setCursor(0, 10);
+	canvas->setCursor(display->getWidth()/2, 0);
+	canvas->printCenter("Wheelson Hardware Test");
+	canvas->setCursor(display->getWidth()/2, 8);
 	canvas->println();
+	canvas->setTextFont(1);
 	display->commit();
+	canvas->setTextDatum(textdatum_t::top_center);
 
 	bool pass = true;
 	for(const Test &test : tests){
@@ -55,56 +53,87 @@ void HardwareTest::start(){
 
 		bool result = test.test();
 
-		canvas->setTextColor(result ? TFT_GREEN : TFT_RED);
-		canvas->printf("%s\n", result ? "PASSED" : "FAILED");
+		canvas->setTextColor(result ? TFT_SILVER : TFT_ORANGE);
+		canvas->printf("%s\n", result ? "PASS" : "FAIL");
 		display->commit();
 
 		if(!(pass &= result)) break;
 	}
 
+	canvas->print("\n\n");
+	canvas->setTextColor(pass ? TFT_BLUE : TFT_ORANGE);
+	canvas->printCenter(pass ? "All OK!" : "FAIL!");
+	display->commit();
+
 	if(pass){
-		Serial.printf("TEST:pass:%s\n",currentTest);
+		Serial.println("TEST:pass");
+		postTestPass();
+	}else{
+		Serial.printf("TEST:fail:%s\n", currentTest);
+		postTestFail();
+	}
+}
 
-		vTaskDelay(1000);
+void HardwareTest::postTestPass(){
+	vTaskDelay(1000);
 
-		Camera cam;
+	Camera cam;
 
-		canvas->printf("\n");
+	canvas->printf("\n");
 
-		if(!cam.isInited()){
-			canvas->setTextColor(TFT_RED);
+	if(!cam.isInited()){
+		canvas->setTextColor(TFT_ORANGE);
+		canvas->setTextDatum(textdatum_t::top_center);
+		canvas->fillRect(0, 75, 128, 20, TFT_BLACK);
+		canvas->drawString("Camera error!", canvas->width()/2, 80);
+		display->commit();
+
+		postTestFail();
+	}else{
+		canvas->clear(TFT_BLACK);
+
+		for(;;){
+			cam.loadFrame();
+			canvas->drawIcon(cam.getRGB565(), 0, 4, 160, 120);
+			cam.releaseFrame();
 
 			canvas->setTextDatum(textdatum_t::top_center);
-			canvas->drawString("Camera error!", canvas->width()/2, 60);
+			canvas->setTextColor(TFT_GREEN);
+			canvas->drawString("Test successful!", canvas->width()/2, 40);
+
+			canvas->setTextDatum(textdatum_t::top_left);
+			canvas->setTextColor(TFT_BLACK);
+			canvas->drawString("HW revision:", 35, 60);
+			canvas->setTextColor(TFT_PURPLE);
+			canvas->drawString(String(HWRevision::get()), 120, 60);
 
 			display->commit();
-		}else{
-			canvas->clear(TFT_BLACK);
+		}
+	}
+}
 
-			for(;;){
-				cam.loadFrame();
-				canvas->drawIcon(cam.getRGB565(), 0, 4, 160, 120);
-				cam.releaseFrame();
+void HardwareTest::postTestFail(){
+	bool painted = false;
+	const auto color = TFT_RED;
+	auto flashTime = 0;
 
-				canvas->setTextDatum(textdatum_t::top_center);
-				canvas->setTextColor(TFT_GREEN);
-				canvas->drawString("Test successful!", canvas->width()/2, 40);
+	for(;;){
+		if(millis() - flashTime < 500) continue;
 
-				canvas->setTextDatum(textdatum_t::top_left);
-				canvas->setTextColor(TFT_BLACK);
-				canvas->drawString("HW revision:", 35, 60);
-				canvas->setTextColor(TFT_PURPLE);
-				canvas->drawString(String(HWRevision::get()), 120, 60);
-
-				display->commit();
+		for(int x = 0; x < canvas->width(); x++){
+			for(int y = 0; y <  canvas->height(); y++){
+				if(!painted && canvas->readPixel(x, y) == TFT_BLACK){
+					canvas->drawPixel(x, y, color);
+				}else if(painted && canvas->readPixel(x, y) == color){
+					canvas->drawPixel(x, y, TFT_BLACK);
+				}
 			}
 		}
 
-	}else{
-		Serial.printf("TEST:fail:%s\n", currentTest);
+		flashTime = millis();
+		painted = !painted;
+		display->commit();
 	}
-
-	for(;;);
 }
 
 bool HardwareTest::psram(){

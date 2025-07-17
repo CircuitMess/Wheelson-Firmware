@@ -39,7 +39,10 @@ private:
 	static bool camera();
 	static bool hwRevision();
 
-	static constexpr uint8_t CurrentVersion = 1;
+	void postTestPass();
+	void postTestFail();
+
+	static constexpr uint8_t CurrentVersion = 2;
 
 
 };
