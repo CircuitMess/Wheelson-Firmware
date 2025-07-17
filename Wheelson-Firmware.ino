@@ -11,11 +11,31 @@
 
 
 bool checkJig(){
-	static constexpr int TFT_CS = 32;
-	pinMode(TFT_CS, INPUT_PULLUP);
-	digitalWrite(TFT_CS, HIGH);
-	delay(100);
-	return digitalRead(TFT_CS) == LOW;
+	char buf[7];
+	int wp = 0;
+
+	uint32_t start = millis();
+	int c;
+	while(millis() - start < 500){
+		vTaskDelay(1);
+		c = getchar();
+		if(c == EOF) continue;
+		buf[wp] = (char) c;
+		wp = (wp + 1) % 7;
+
+		for(int i = 0; i < 7; i++){
+			int match = 0;
+			static const char* target = "JIGTEST";
+
+			for(int j = 0; j < 7; j++){
+				match += buf[(i + j) % 7] == target[j];
+			}
+
+			if(match == 7) return true;
+		}
+	}
+
+	return false;
 }
 
 void setup(){
@@ -23,7 +43,7 @@ void setup(){
 
 	if(checkJig()){
 		Display display(160, 128, -1, -1);
-		display.getTft()->setPanel(WheelsonDisplay::panel1());
+		display.getTft()->setPanel(WheelsonDisplay::panel2());
 		display.begin();
 
 		Nuvo.begin();
