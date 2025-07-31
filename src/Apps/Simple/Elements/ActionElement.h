@@ -15,8 +15,10 @@ namespace Simple {
 
 		void setIsSelected(bool selected);
 
+		Action::Type getAction() const;
+
 	private:
-		Action::Type action;
+		const Action::Type action;
 		bool selected = false;
 		Color* iconActionBuffer = nullptr;
 		Color* borderBuffer = nullptr;

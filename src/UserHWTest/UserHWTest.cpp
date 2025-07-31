@@ -5,9 +5,10 @@
 #include "CameraHWTest.h"
 #include "MotorHWTest.h"
 #include "LEDHWTest.h"
+#include <Util/HWRevision.h>
 
 
-UserHWTest::UserHWTest(Display& display) : Context(display){
+UserHWTest::UserHWTest(Display& display) : Context(display), version(HWRevision::get()){
 	hwTestPart = new InputHWTest(this);
 	Context::pack();
 }
@@ -48,19 +49,37 @@ void UserHWTest::currentTestDone(){
 }
 
 void UserHWTest::nextTest(){
-	if(testCounter == 1){
-		hwTestPart = new CameraHWTest(this);
-	}else if(testCounter == 2){
-		hwTestPart = new LEDHWTest(this);
-	}else if(testCounter == 3){
-		hwTestPart = new MotorHWTest(this);
-	}else{
-		if(doneCallback){
-			doneCallback(this);
+	/**
+	 * Revision 2 doesn't have headlights, so skip the LEDHWTest part.
+	 */
+	if(version == 2){
+		if(testCounter == 1){
+			hwTestPart = new CameraHWTest(this);
+		}else if(testCounter == 2){
+			hwTestPart = new MotorHWTest(this);
 		}else{
-			this->pop();
+			if(doneCallback){
+				doneCallback(this);
+			}else{
+				this->pop();
+			}
+			return;
 		}
-		return;
+	}else{
+		if(testCounter == 1){
+			hwTestPart = new CameraHWTest(this);
+		}else if(testCounter == 2){
+			hwTestPart = new LEDHWTest(this);
+		}else if(testCounter == 3){
+			hwTestPart = new MotorHWTest(this);
+		}else{
+			if(doneCallback){
+				doneCallback(this);
+			}else{
+				this->pop();
+			}
+			return;
+		}
 	}
 	hwTestPart->start();
 }

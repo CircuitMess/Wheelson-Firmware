@@ -17,7 +17,7 @@ namespace Simple {
 	public:
 		ActionSelector(Context& context);
 
-		virtual ~ActionSelector();
+		~ActionSelector() override = default;
 
 		void draw();
 
@@ -35,11 +35,11 @@ namespace Simple {
 		static ActionSelector* instance;
 
 		GridLayout* gridLayout;
-		std::vector<ActionElement*> actions;
+		std::vector<ActionElement*> actionElements;
 
 		ModalBackground modalBg;
 
-		uint8_t selectedAction = 0;
+		uint8_t selection = 0;
 		SimpleEdit* parent = nullptr;
 
 		void selectApp(int8_t num);
@@ -47,6 +47,15 @@ namespace Simple {
 		void buildUI();
 
 		void buttonPressed(uint id) override;
+
+		uint8_t actionsNum;
+
+		/**
+		 * Number of elements in last (possibly uneven row)
+		 */
+		uint8_t lastRowElements;
+
+		static constexpr uint8_t Cols = 3;
 
 		static const char* const ActionTitles[7];
 	};

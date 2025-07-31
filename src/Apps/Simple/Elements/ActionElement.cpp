@@ -45,3 +45,7 @@ void Simple::ActionElement::setIsSelected(bool selected){
 		borderBuffer = nullptr;
 	}
 }
+
+Simple::Action::Type Simple::ActionElement::getAction() const{
+	return action;
+}

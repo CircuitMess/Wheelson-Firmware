@@ -14,7 +14,7 @@ class UserHWTest : public Context {
 public:
 	UserHWTest(Display& display);
 
-	virtual ~UserHWTest();
+	~UserHWTest() override;
 
 	void draw() override;
 
@@ -33,6 +33,8 @@ protected:
 
 private:
 	HWTestPart* hwTestPart;
+
+	const uint8_t version;
 
 	uint8_t testCounter = 0;
 	void nextTest();
