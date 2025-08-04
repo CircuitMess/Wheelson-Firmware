@@ -138,12 +138,14 @@ Open this project in Arduino and select your board in the `Tools > Board` dropdo
 Then select the appropriate firmware under `Tools > Programmer` and click the `Tools > Burn 
 bootloader` option.
 
+
 ### 3) Restoring using CircuitBlocks
 
 [CircuitBlocks](https://code.circuitmess.com/) is our educational block-based coding platform.
 
-You can also restore your firmware here by logging in, clicking the "Restore Firmware" button in
-the top-right corner, and following the on-screen instructions.
+You can also restore your firmware here by logging in, clicking the "Restore Firmware" button in the top-right corner,
+and following the on-screen instructions.
+
 ---
 Copyright © 2025 CircuitMess
 
