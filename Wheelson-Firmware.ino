@@ -41,7 +41,7 @@ bool checkJig(){
 void setup(){
 	Serial.begin(115200);
 
-	if(checkJig() || true){
+	if(checkJig()){
 
 		Wheelson.initVer(2);
 		Wheelson.begin();
