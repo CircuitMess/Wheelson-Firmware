@@ -7,7 +7,7 @@
 #include <SPIFFS.h>
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : Context(display), screenLayout(new LinearLayout(&screen, VERTICAL)),
-																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", {0, 1, 5, 15, 30})),
+																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", { 0, 1, 5, 15, 30 })),
 																   camRotate(new BooleanElement(screenLayout, "Cam rotation")),
 																   inputTest(new TextElement(screenLayout, "Hardware test")),
 																   save(new TextElement(screenLayout, "Save")){
@@ -38,7 +38,7 @@ void SettingsScreen::SettingsScreen::draw(){
 	screen.getSprite()->setTextFont(1);
 
 	screen.getSprite()->setTextDatum(textdatum_t::top_center);
-	screen.getSprite()->drawString("Version 1.3", screen.getWidth()/2, screenLayout->getTotalY() + 115);
+	screen.getSprite()->drawString("Version 1.3", screen.getWidth() / 2, screenLayout->getTotalY() + 115);
 
 	for(int i = 0; i < 4; i++){
 		if(!reinterpret_cast<SettingsElement*>(screenLayout->getChild(i))->isSelected()){
@@ -93,117 +93,105 @@ void SettingsScreen::SettingsScreen::selectApp(int8_t num){
 }
 
 void SettingsScreen::SettingsScreen::buttonPressed(uint id){
-	switch(id){
-		case BTN_LEFT:
-			if(selectedSetting == 0){
-				shutDownSlider->selectPrev();
-			}else if(selectedSetting == 1){
-				if(camRotate->getBooleanSwitch()){
-					camRotate->setBooleanSwitch(false);
-				}
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(selectedSetting == 0){
+			shutDownSlider->selectPrev();
+		}else if(selectedSetting == 1){
+			if(camRotate->getBooleanSwitch()){
+				camRotate->setBooleanSwitch(false);
 			}
-			draw();
-			screen.commit();
-			break;
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		if(selectedSetting == 0){
+			shutDownSlider->selectNext();
+		}else if(selectedSetting == 1){
+			if(camRotate->getBooleanSwitch() == false){
+				camRotate->setBooleanSwitch(true);
+			}
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnUp)){
+		selectedSetting--;
+		if(selectedSetting < 0){
+			selectedSetting = 3;
+		}
+		if(selectedSetting == 0){
+			shutDownSlider->setIsSelected(true);
+		}else{
+			shutDownSlider->setIsSelected(false);
+		}
+		if(selectedSetting == 1){
+			camRotate->setIsSelected(true);
+		}else{
+			camRotate->setIsSelected(false);
+		}
+		if(selectedSetting == 2){
+			inputTest->setIsSelected(true);
+		}else{
+			inputTest->setIsSelected(false);
+		}
+		if(selectedSetting == 3){
+			save->setIsSelected(true);
+		}else{
+			save->setIsSelected(false);
+		}
 
-		case BTN_RIGHT:
-			if(selectedSetting == 0){
-				shutDownSlider->selectNext();
-			}else if(selectedSetting == 1){
-				if(camRotate->getBooleanSwitch() == false){
-					camRotate->setBooleanSwitch(true);
-				}
-			}
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_UP:
-			selectedSetting--;
-			if(selectedSetting < 0){
-				selectedSetting = 3;
-			}
-			if(selectedSetting == 0){
-				shutDownSlider->setIsSelected(true);
-			}else{
-				shutDownSlider->setIsSelected(false);
-			}
-			if(selectedSetting == 1){
-				camRotate->setIsSelected(true);
-			}else{
-				camRotate->setIsSelected(false);
-			}
-			if(selectedSetting == 2){
-				inputTest->setIsSelected(true);
-			}else{
-				inputTest->setIsSelected(false);
-			}
-			if(selectedSetting == 3){
-				save->setIsSelected(true);
-			}else{
-				save->setIsSelected(false);
-			}
-
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_DOWN:
-			selectedSetting++;
-			if(selectedSetting > 3){
-				selectedSetting = 0;
-			}
-			if(selectedSetting == 0){
-				shutDownSlider->setIsSelected(true);
-			}else{
-				shutDownSlider->setIsSelected(false);
-			}
-			if(selectedSetting == 1){
-				camRotate->setIsSelected(true);
-			}else{
-				camRotate->setIsSelected(false);
-			}
-			if(selectedSetting == 2){
-				inputTest->setIsSelected(true);
-			}else{
-				inputTest->setIsSelected(false);
-			}
-			if(selectedSetting == 3){
-				save->setIsSelected(true);
-			}else{
-				save->setIsSelected(false);
-			}
-			draw();
-			screen.commit();
-
-			break;
-
-		case BTN_MID:
-			if(selectedSetting == 3){
-				Settings.get().shutdownTime = shutDownSlider->getIndex();
-				Settings.get().camRotate = camRotate->getBooleanSwitch();
-				Settings.store();
-				Camera::initialize(false);
-				this->pop();
-			}else if(selectedSetting == 2){
-				Display& display = *this->getScreen().getDisplay();
-				Context* hwTest = new UserHWTest(display);
-				hwTest->push(this);
-			}else if(selectedSetting == 1){
-				camRotate->setBooleanSwitch(!camRotate->getBooleanSwitch());
-			}
-			draw();
-			screen.commit();
-			break;
-		case BTN_BACK:
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnDown)){
+		selectedSetting++;
+		if(selectedSetting > 3){
+			selectedSetting = 0;
+		}
+		if(selectedSetting == 0){
+			shutDownSlider->setIsSelected(true);
+		}else{
+			shutDownSlider->setIsSelected(false);
+		}
+		if(selectedSetting == 1){
+			camRotate->setIsSelected(true);
+		}else{
+			camRotate->setIsSelected(false);
+		}
+		if(selectedSetting == 2){
+			inputTest->setIsSelected(true);
+		}else{
+			inputTest->setIsSelected(false);
+		}
+		if(selectedSetting == 3){
+			save->setIsSelected(true);
+		}else{
+			save->setIsSelected(false);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnMid)){
+		if(selectedSetting == 3){
 			Settings.get().shutdownTime = shutDownSlider->getIndex();
 			Settings.get().camRotate = camRotate->getBooleanSwitch();
 			Settings.store();
 			Camera::initialize(false);
 			this->pop();
-			draw();
-			screen.commit();
-			break;
+		}else if(selectedSetting == 2){
+			Display& display = *this->getScreen().getDisplay();
+			Context* hwTest = new UserHWTest(display);
+			hwTest->push(this);
+		}else if(selectedSetting == 1){
+			camRotate->setBooleanSwitch(!camRotate->getBooleanSwitch());
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnBack)){
+		Settings.get().shutdownTime = shutDownSlider->getIndex();
+		Settings.get().camRotate = camRotate->getBooleanSwitch();
+		Settings.store();
+		Camera::initialize(false);
+		this->pop();
+		draw();
+		screen.commit();
 	}
 
 }

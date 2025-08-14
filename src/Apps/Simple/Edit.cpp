@@ -27,7 +27,7 @@ Simple::Edit::Edit(Display& display, Storage* storage, int16_t programIndex) : C
 	actionNum = program->numActions;
 
 	buildUI();
-	scrollLayout->scrollIntoView(actionNum,10);
+	scrollLayout->scrollIntoView(actionNum, 10);
 	Edit::pack();
 
 }
@@ -59,7 +59,7 @@ void Simple::Edit::draw(){
 	canvas->setFont(&u8g2_font_profont12_tf);
 	canvas->setTextColor(TFT_WHITE);
 	canvas->setTextDatum(textdatum_t::top_center);
-	canvas->drawString("Hold BACK to delete action", screen.getWidth()/2, 114);
+	canvas->drawString("Hold BACK to delete action", screen.getWidth() / 2, 114);
 
 }
 
@@ -117,7 +117,7 @@ void Simple::Edit::loop(uint micros){
 		list->getChildren().erase(list->getChildren().begin() + actionNum);
 		list->reflow();
 		list->repos();
-		if(actionNum>1){
+		if(actionNum > 1){
 			selectAction(actionNum - 1);
 		}else{
 			selectAction(0);
@@ -137,82 +137,69 @@ void Simple::Edit::selectAction(uint8_t num){
 void Simple::Edit::buttonPressed(uint id){
 	uint8_t totalNumActions = list->getChildren().size();
 	int16_t num;
-	switch(id){
-		case BTN_LEFT:
-			if(actionNum == 0){
-				selectAction(totalNumActions - 1);
-			}else{
-				selectAction(actionNum - 1);
-			}
-			if(totalNumActions > 24){
-				scrollLayout->scrollIntoView(actionNum, 2);
-			}
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_RIGHT:
-			if(actionNum == totalNumActions - 1){
-				selectAction(0);
-			}else{
-				selectAction(actionNum + 1);
-			}
-			if(totalNumActions > 24){
-				scrollLayout->scrollIntoView(actionNum, 2);
-			}
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_UP:
-			if(actionNum < 5){
-				num = totalNumActions - (totalNumActions % 5) + actionNum;
-				if(actionNum >= totalNumActions % 5){
-					num -= 5;
-				}
-			}else{
-				num = actionNum - 5;
-			}
-
-			selectAction(num);
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(actionNum == 0){
+			selectAction(totalNumActions - 1);
+		}else{
+			selectAction(actionNum - 1);
+		}
+		if(totalNumActions > 24){
 			scrollLayout->scrollIntoView(actionNum, 2);
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_DOWN:
-
-			if(actionNum >= totalNumActions - 5){
-				selectAction(actionNum % 5);
-			}else{
-				selectAction(actionNum + 5);
-			}
-
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		if(actionNum == totalNumActions - 1){
+			selectAction(0);
+		}else{
+			selectAction(actionNum + 1);
+		}
+		if(totalNumActions > 24){
 			scrollLayout->scrollIntoView(actionNum, 2);
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_MID:
-			if(totalNumActions == 1 || actionNum == totalNumActions - 1){
-				ActionSelector* popUpModul = new ActionSelector(*this);
-				popUpModul->push(this);
-			}else{
-				if(actions[actionNum].type == Action::LED_OFF || actions[actionNum].type == Action::LED_ON) return;
-				EditModal* editModal = new EditModal(*this, &actions[actionNum]);
-				editModal->push(this);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnUp)){
+		if(actionNum < 5){
+			num = totalNumActions - (totalNumActions % 5) + actionNum;
+			if(actionNum >= totalNumActions % 5){
+				num -= 5;
 			}
-			break;
+		}else{
+			num = actionNum - 5;
+		}
 
-		case BTN_BACK:
-			delPressStart = millis();
-			LoopManager::addListener(this);
-			break;
+		selectAction(num);
+		scrollLayout->scrollIntoView(actionNum, 2);
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnDown)){
+		if(actionNum >= totalNumActions - 5){
+			selectAction(actionNum % 5);
+		}else{
+			selectAction(actionNum + 5);
+		}
+
+		scrollLayout->scrollIntoView(actionNum, 2);
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnMid)){
+		if(totalNumActions == 1 || actionNum == totalNumActions - 1){
+			ActionSelector* popUpModul = new ActionSelector(*this);
+			popUpModul->push(this);
+		}else{
+			if(actions[actionNum].type == Action::LED_OFF || actions[actionNum].type == Action::LED_ON) return;
+			EditModal* editModal = new EditModal(*this, &actions[actionNum]);
+			editModal->push(this);
+		}
+	}else if(id == Pins.get(Pin::BtnBack)){
+		delPressStart = millis();
+		LoopManager::addListener(this);
 	}
 }
 
 void Simple::Edit::buttonReleased(uint id){
-	if(id != BTN_BACK) return;
+	if(id != Pins.get(Pin::BtnBack)) return;
 
 	uint32_t elapsed = millis() - delPressStart;
 
@@ -231,7 +218,7 @@ void Simple::Edit::returned(void* data){
 	Action::Type type = *podatakPtr;
 	delete podatakPtr;
 
-	actions.push_back({type});
+	actions.push_back({ type });
 	switch(type){
 		case Action::LEFT:
 		case Action::RIGHT:

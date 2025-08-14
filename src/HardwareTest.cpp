@@ -141,7 +141,7 @@ bool HardwareTest::psram(){
 
 	uint32_t free = ESP.getFreePsram();
 
-	if(free != 4153272){
+	if(free != 4152352){
 		test->log("free", free);
 		return false;
 	}

@@ -102,7 +102,7 @@ void RemoteControl::disconnected(){
 }
 
 void RemoteControl::buttonPressed(uint i){
-	if(i == BTN_BACK){
+	if(i == Pins.get(Pin::BtnBack)){
 		pop();
 		return;
 	}

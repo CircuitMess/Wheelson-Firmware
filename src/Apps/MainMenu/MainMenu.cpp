@@ -13,15 +13,15 @@
 #include <SPIFFS.h>
 #include "../../Fonts.h"
 
-const char* const MainMenu::AppTitles[] = {"Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Remote control", "Settings"};
+const char* const MainMenu::AppTitles[] = { "Simple programming", "Line tracking", "Ball tracking", "Marker tracking", "Remote control", "Settings" };
 
-Context* (*MainMenu::AppLaunch[])(Display& display) = {
-		[](Display& display) -> Context* { return new Simple::Simple(display); },
-		[](Display& display) -> Context* { return new Autonomous(display, new LineDriver()); },
-		[](Display& display) -> Context* { return new Autonomous(display, new BallDriver()); },
-		[](Display& display) -> Context* { return new Autonomous(display, new MarkerDriver()); },
-		[](Display& display) -> Context* { return new RemoteControl(display); },
-		[](Display& display) -> Context* { return new SettingsScreen::SettingsScreen(display); }
+Context* (* MainMenu::AppLaunch[])(Display& display) = {
+		[](Display& display) -> Context*{ return new Simple::Simple(display); },
+		[](Display& display) -> Context*{ return new Autonomous(display, new LineDriver()); },
+		[](Display& display) -> Context*{ return new Autonomous(display, new BallDriver()); },
+		[](Display& display) -> Context*{ return new Autonomous(display, new MarkerDriver()); },
+		[](Display& display) -> Context*{ return new RemoteControl(display); },
+		[](Display& display) -> Context*{ return new SettingsScreen::SettingsScreen(display); }
 };
 
 MainMenu* MainMenu::instance = nullptr;
@@ -79,7 +79,7 @@ void MainMenu::draw(){
 	canvas->setFont(&u8g2_font_HelvetiPixel_tr);
 	canvas->setTextColor(TFT_WHITE);
 	canvas->setTextDatum(textdatum_t::top_center);
-	canvas->drawString(AppTitles[appNum], canvas->width()/2, 110);
+	canvas->drawString(AppTitles[appNum], canvas->width() / 2, 110);
 	screen.draw();
 
 }
@@ -111,42 +111,33 @@ void MainMenu::selectApp(int8_t num){
 }
 
 void MainMenu::buttonPressed(uint id){
-	switch(id){
-		case BTN_LEFT:
-			if(appNum == 0){
-				selectApp(5);
-			}else{
-				selectApp(appNum - 1);
-			}
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(appNum == 0){
+			selectApp(5);
+		}else{
+			selectApp(appNum - 1);
+		}
 
-			draw();
-			screen.commit();
-			break;
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		selectApp((appNum + 1) % 6);
 
-		case BTN_RIGHT:
-			selectApp((appNum + 1) % 6);
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnUp) || id == Pins.get(Pin::BtnDown)){
+		if(appNum > 2){
+			selectApp(appNum - 3);
+		}else{
+			selectApp((appNum + 3) % 6);
+		}
 
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_UP:
-		case BTN_DOWN:
-			if(appNum > 2){
-				selectApp(appNum - 3);
-			}else{
-				selectApp((appNum + 3) % 6);
-			}
-
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_MID:
-			Context* app = AppLaunch[appNum](*screen.getDisplay());
-			if(app == nullptr) break;
-			app->push(this);
-			break;
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnMid)){
+		Context* app = AppLaunch[appNum](*screen.getDisplay());
+		if(app == nullptr) return;
+		app->push(this);
 	}
 }
 

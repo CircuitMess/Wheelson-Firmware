@@ -4,7 +4,7 @@
 #include "../Fonts.h"
 
 InputHWTest::InputHWTest(UserHWTest* userHwTest) : HWTestPart(userHwTest), screenLayout(new LinearLayout(&userHwTest->getScreen(), HORIZONTAL)), leftLayout(new LinearLayout(screenLayout, VERTICAL)),
-																midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)){
+												   midLayout(new LinearLayout(screenLayout, VERTICAL)), rightLayout(new LinearLayout(screenLayout, VERTICAL)){
 
 	leftBtnTest.push_back(new BtnTestElement(leftLayout));
 	for(int i = 0; i < 3; i++){
@@ -29,10 +29,9 @@ void InputHWTest::draw(){
 	canvas->setTextDatum(textdatum_t::top_center);
 
 	if(!inputIsDone){
-		canvas->drawString("Press buttons to test them.", canvas->width()/2, 3);
-	}
-	else{
-		canvas->drawString("All OK! Press any button.", canvas->width()/2, 3);
+		canvas->drawString("Press buttons to test them.", canvas->width() / 2, 3);
+	}else{
+		canvas->drawString("All OK! Press any button.", canvas->width() / 2, 3);
 	}
 }
 
@@ -83,97 +82,90 @@ void InputHWTest::buttonPressed(uint id){
 		userHwTest->currentTestDone();
 		return;
 	}
-	switch(id){
-		case BTN_LEFT:
-			if(leftBtnTest[0]->isBtnPressed()) return;
-			leftBtnTest[0]->btnPress();
-			if(leftBtnTest[0]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(leftBtnTest[0]->isBtnPressed()) return;
+		leftBtnTest[0]->btnPress();
+		if(leftBtnTest[0]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
-		case BTN_RIGHT:
-			if(rightBtnTest[1]->isBtnPressed()) return;
-			rightBtnTest[1]->btnPress();
-			if(rightBtnTest[1]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		if(rightBtnTest[1]->isBtnPressed()) return;
+		rightBtnTest[1]->btnPress();
+		if(rightBtnTest[1]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
-		case BTN_UP:
-			if(midBtnTest[0]->isBtnPressed()) return;
-			midBtnTest[0]->btnPress();
-			if(midBtnTest[0]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
+	}else if(id == Pins.get(Pin::BtnUp)){
+		if(midBtnTest[0]->isBtnPressed()) return;
+		midBtnTest[0]->btnPress();
+		if(midBtnTest[0]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
-		case BTN_DOWN:
-			if(midBtnTest[2]->isBtnPressed()) return;
-			midBtnTest[2]->btnPress();
-			if(midBtnTest[2]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
+	}else if(id == Pins.get(Pin::BtnDown)){
+		if(midBtnTest[2]->isBtnPressed()) return;
+		midBtnTest[2]->btnPress();
+		if(midBtnTest[2]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
-		case BTN_MID:
-			if(midBtnTest[1]->isBtnPressed()) return;
-			midBtnTest[1]->btnPress();
-			if(midBtnTest[1]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
+	}else if(id == Pins.get(Pin::BtnMid)){
+		if(midBtnTest[1]->isBtnPressed()) return;
+		midBtnTest[1]->btnPress();
+		if(midBtnTest[1]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
-		case BTN_BACK:
-			if(rightBtnTest[0]->isBtnPressed()) return;
-			rightBtnTest[0]->btnPress();
-			if(rightBtnTest[0]->isBtnPressed()){
-				doneCounter++;
-			}
-			if(doneCounter >=6){
-				inputIsDone = true;
-				userHwTest->draw();
-				userHwTest->getScreen().commit();
-				break;
-			}
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
+	}else if(id == Pins.get(Pin::BtnBack)){
+		if(rightBtnTest[0]->isBtnPressed()) return;
+		rightBtnTest[0]->btnPress();
+		if(rightBtnTest[0]->isBtnPressed()){
+			doneCounter++;
+		}
+		if(doneCounter >= 6){
+			inputIsDone = true;
 			userHwTest->draw();
 			userHwTest->getScreen().commit();
-			break;
+			return;
+		}
+		userHwTest->draw();
+		userHwTest->getScreen().commit();
 	}
 }
 

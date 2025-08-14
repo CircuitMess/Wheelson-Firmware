@@ -52,15 +52,6 @@ void LEDHWTest::loop(uint micros){
 }
 
 void LEDHWTest::buttonPressed(uint id){
-	switch(id){
-		case BTN_UP:
-		case BTN_DOWN:
-		case BTN_LEFT:
-		case BTN_RIGHT:
-		case BTN_MID:
-		case BTN_BACK:
-			userHwTest->currentTestDone();
-			break;
-	}
+	userHwTest->currentTestDone();
 }
 

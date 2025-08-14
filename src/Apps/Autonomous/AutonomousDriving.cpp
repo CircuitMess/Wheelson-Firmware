@@ -47,13 +47,13 @@ void Autonomous::draw(){
 	canvas->clear(TFT_BLACK);
 
 	if(driver->camWorks()){
-		canvas->drawIcon( driver->getProcessedImage(), 0, 4, 160, 120);
+		canvas->drawIcon(driver->getProcessedImage(), 0, 4, 160, 120);
 	}else{
 		canvas->setTextColor(TFT_WHITE);
 		canvas->setTextSize(1);
 		canvas->setTextFont(1);
 		canvas->setTextDatum(textdatum_t::top_center);
-		canvas->drawString("Camera error!", canvas->width()/2, 50);
+		canvas->drawString("Camera error!", canvas->width() / 2, 50);
 	}
 	canvas->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1, TFT_TRANSPARENT);
 	Battery.drawIcon(canvas);
@@ -69,11 +69,11 @@ void Autonomous::draw(){
 		if(paramPopupActive){
 			driver->drawParamControl(*screen.getSprite(), 35, 108, 90, 8);
 			canvas->setTextDatum(textdatum_t::top_center);
-			canvas->drawString(driver->getParamName(), canvas->width()/2, 96);
+			canvas->drawString(driver->getParamName(), canvas->width() / 2, 96);
 		}else if(!firstStart){
 			canvas->setTextDatum(textdatum_t::top_center);
-			canvas->drawString("Press down to", canvas->width()/2, 96);
-			canvas->drawString("toggle motors",canvas->width()/2, 109);
+			canvas->drawString("Press down to", canvas->width() / 2, 96);
+			canvas->drawString("toggle motors", canvas->width() / 2, 109);
 		}
 	}
 
@@ -118,12 +118,12 @@ void Autonomous::loop(uint micros){
 	driver->draw();
 	char buffer[4];
 	for(int i = 0; i < 4; i++){
-		int8_t percentage = (((float)driver->getMotorState(i))/127)*100;
+		int8_t percentage = (((float) driver->getMotorState(i)) / 127) * 100;
 		percentage = map(percentage, -100, 100, -10, 10);
-		sprintf(buffer, "%d",percentage);
+		sprintf(buffer, "%d", percentage);
 		engines[i]->setText(buffer);
 	}
-	if(paramPopupActive && millis() - paramPopupMillis >= paramPopupTime*1000){
+	if(paramPopupActive && millis() - paramPopupMillis >= paramPopupTime * 1000){
 		paramPopupActive = false;
 	}
 	draw();
@@ -131,44 +131,37 @@ void Autonomous::loop(uint micros){
 }
 
 void Autonomous::buttonPressed(uint i){
-	switch(i){
-		case BTN_BACK:
-			this->pop();
-			break;
-		case BTN_MID:
-			driver->toggleDisplayMode();
-			break;
-		case BTN_LEFT:
-			if(driver->getParamName() != nullptr){
-				paramPopupMillis = millis();
-				if(!paramPopupActive){
-					paramPopupActive = true;
-				}else{
-					driver->setParam(max(driver->getParam() - 15, 0));
-				}
+	if(i == Pins.get(Pin::BtnBack)){
+		this->pop();
+	}else if(i == Pins.get(Pin::BtnMid)){
+		driver->toggleDisplayMode();
+	}else if(i == Pins.get(Pin::BtnLeft)){
+		if(driver->getParamName() != nullptr){
+			paramPopupMillis = millis();
+			if(!paramPopupActive){
+				paramPopupActive = true;
+			}else{
+				driver->setParam(max(driver->getParam() - 15, 0));
 			}
-			break;
-		case BTN_RIGHT:
-			if(driver->getParamName() != nullptr){
-				paramPopupMillis = millis();
-				if(!paramPopupActive){
-					paramPopupActive = true;
-				}else{
-					driver->setParam(min(driver->getParam() + 15, 255));
-				}
+		}
+	}else if(i == Pins.get(Pin::BtnRight)){
+		if(driver->getParamName() != nullptr){
+			paramPopupMillis = millis();
+			if(!paramPopupActive){
+				paramPopupActive = true;
+			}else{
+				driver->setParam(min(driver->getParam() + 15, 255));
 			}
-			break;
-		case BTN_DOWN:
-			if(!driver->camWorks()) break;
+		}
+	}else if(i == Pins.get(Pin::BtnDown)){
+		if(!driver->camWorks()) return;
 
-			if(!firstStart){
-				firstStart = true;
-			}
-			driver->toggleMotors();
-			DrivingElement::toggleMotors();
-			break;
-		case BTN_UP:
-			LED.setHeadlight(!LED.getHeadlight());
-			break;
+		if(!firstStart){
+			firstStart = true;
+		}
+		driver->toggleMotors();
+		DrivingElement::toggleMotors();
+	}else if(i == Pins.get(Pin::BtnUp)){
+		LED.setHeadlight(!LED.getHeadlight());
 	}
 }

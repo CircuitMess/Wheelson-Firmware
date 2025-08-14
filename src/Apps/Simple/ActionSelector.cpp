@@ -99,67 +99,57 @@ void Simple::ActionSelector::buttonPressed(uint id){
 	/**
 	 * This navigation logic needs a proper refactor.
 	 */
-	switch(id){
-		case BTN_LEFT:
-			if(selection == 0){
-				selectApp(actionsNum - 1);
-			}else{
-				selectApp(selection - 1);
-			}
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(selection == 0){
+			selectApp(actionsNum - 1);
+		}else{
+			selectApp(selection - 1);
+		}
 
-			draw();
-			screen.commit();
-			break;
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		if(selection == actionsNum - 1){
+			selectApp(0);
+		}else{
+			selectApp(selection + 1);
+		}
 
-		case BTN_RIGHT:
-			if(selection == actionsNum - 1){
-				selectApp(0);
-			}else{
-				selectApp(selection + 1);
-			}
-
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_UP:
-			if(selection < Cols){
-				selectApp(constrain(actionsNum - lastRowElements + selection, actionsNum - lastRowElements, actionsNum - 1));
-			}else if(selection >= actionsNum - lastRowElements){
-				if(lastRowElements % 2 == 0){
-					selectApp(selection - Cols);
-				}else{
-					selectApp(selection - Cols + lastRowElements);
-				}
-			}else{
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnUp)){
+		if(selection < Cols){
+			selectApp(constrain(actionsNum - lastRowElements + selection, actionsNum - lastRowElements, actionsNum - 1));
+		}else if(selection >= actionsNum - lastRowElements){
+			if(lastRowElements % 2 == 0){
 				selectApp(selection - Cols);
-			}
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_DOWN:
-			if(selection >= actionsNum - lastRowElements){
-				if(lastRowElements % 2 == 0){
-					selectApp(selection - (actionsNum - lastRowElements));
-				}else{
-					selectApp(selection - (actionsNum - lastRowElements) + lastRowElements);
-				}
-			}else if(selection > actionsNum - lastRowElements - Cols){
-				selectApp(constrain(selection + Cols, actionsNum - lastRowElements, actionsNum - 1));
 			}else{
-				selectApp(selection + Cols);
+				selectApp(selection - Cols + lastRowElements);
 			}
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_MID:
-			this->pop(new Action::Type((Action::Type) actionElements[selection]->getAction()));
-			break;
-		case BTN_BACK:
-			this->pop();
-			break;
-
+		}else{
+			selectApp(selection - Cols);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnDown)){
+		if(selection >= actionsNum - lastRowElements){
+			if(lastRowElements % 2 == 0){
+				selectApp(selection - (actionsNum - lastRowElements));
+			}else{
+				selectApp(selection - (actionsNum - lastRowElements) + lastRowElements);
+			}
+		}else if(selection > actionsNum - lastRowElements - Cols){
+			selectApp(constrain(selection + Cols, actionsNum - lastRowElements, actionsNum - 1));
+		}else{
+			selectApp(selection + Cols);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnMid)){
+		this->pop(new Action::Type((Action::Type) actionElements[selection]->getAction()));
+		return;
+	}else if(id == Pins.get(Pin::BtnBack)){
+		this->pop();
+		return;
 	}
 }

@@ -114,7 +114,7 @@ void Simple::Playback::selectAction(uint8_t num){
 }
 
 void Simple::Playback::buttonPressed(uint id){
-	if(id == BTN_BACK){
+	if(id == Pins.get(Pin::BtnBack)){
 		pop();
 	}
 }

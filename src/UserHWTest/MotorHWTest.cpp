@@ -17,13 +17,13 @@ void MotorHWTest::draw(){
 	canvas->setTextColor(TFT_WHITE);
 	canvas->setTextDatum(textdatum_t::top_center);
 
-	canvas->drawString("Motor test", canvas->width()/2, 0);
+	canvas->drawString("Motor test", canvas->width() / 2, 0);
 
 	canvas->setTextColor(TFT_RED);
-	canvas->drawString("Grab your Wheelson!", canvas->width()/2, 10);
+	canvas->drawString("Grab your Wheelson!", canvas->width() / 2, 10);
 
 	canvas->setTextColor(TFT_GREEN);
-	canvas->drawString("Motors should go forward", canvas->width()/2, 22);
+	canvas->drawString("Motors should go forward", canvas->width() / 2, 22);
 
 	canvas->setTextColor(TFT_WHITE);
 	canvas->setTextDatum(textdatum_t::top_left);
@@ -53,55 +53,40 @@ void MotorHWTest::stop(){
 }
 
 void MotorHWTest::buttonPressed(uint id){
-	switch(id){
-		case BTN_UP:
-			Motors.setMotor(MOTOR_FR, 127);
-			break;
-		case BTN_DOWN:
-			Motors.setMotor(MOTOR_BL, 127);
-			break;
-		case BTN_LEFT:
-			Motors.setMotor(MOTOR_FL, 127);
-			break;
-		case BTN_RIGHT:
-			Motors.setMotor(MOTOR_BR, 127);
-			break;
-		case BTN_MID:
-			Motors.setMotor(MOTOR_FR, 127);
-			Motors.setMotor(MOTOR_BL, 127);
-			Motors.setMotor(MOTOR_FL, 127);
-			Motors.setMotor(MOTOR_BR, 127);
-			break;
-		case BTN_BACK:
-			userHwTest->currentTestDone();
-			break;
+	if(id == Pins.get(Pin::BtnUp)){
+		Motors.setMotor(MOTOR_FR, 127);
+	}else if(id == Pins.get(Pin::BtnDown)){
+		Motors.setMotor(MOTOR_BL, 127);
+	}else if(id == Pins.get(Pin::BtnLeft)){
+		Motors.setMotor(MOTOR_FL, 127);
+	}else if(id == Pins.get(Pin::BtnRight)){
+		Motors.setMotor(MOTOR_BR, 127);
+	}else if(id == Pins.get(Pin::BtnMid)){
+		Motors.setMotor(MOTOR_FR, 127);
+		Motors.setMotor(MOTOR_BL, 127);
+		Motors.setMotor(MOTOR_FL, 127);
+		Motors.setMotor(MOTOR_BR, 127);
+	}else if(id == Pins.get(Pin::BtnBack)){
+		userHwTest->currentTestDone();
 	}
-
 }
 
 void MotorHWTest::buttonReleased(uint i){
-	switch(i){
-		case BTN_UP:
-			Motors.setMotor(MOTOR_FR, 0);
-			break;
-		case BTN_DOWN:
-			Motors.setMotor(MOTOR_BL, 0);
-			break;
-		case BTN_LEFT:
-			Motors.setMotor(MOTOR_FL, 0);
-			break;
-		case BTN_RIGHT:
-			Motors.setMotor(MOTOR_BR, 0);
-			break;
-		case BTN_MID:
-			Motors.setMotor(MOTOR_FR, 0);
-			Motors.setMotor(MOTOR_BL, 0);
-			Motors.setMotor(MOTOR_FL, 0);
-			Motors.setMotor(MOTOR_BR, 0);
-			break;
-		case BTN_BACK:
-			userHwTest->currentTestDone();
-			break;
+	if(i == Pins.get(Pin::BtnUp)){
+		Motors.setMotor(MOTOR_FR, 0);
+	}else if(i == Pins.get(Pin::BtnDown)){
+		Motors.setMotor(MOTOR_BL, 0);
+	}else if(i == Pins.get(Pin::BtnLeft)){
+		Motors.setMotor(MOTOR_FL, 0);
+	}else if(i == Pins.get(Pin::BtnRight)){
+		Motors.setMotor(MOTOR_BR, 0);
+	}else if(i == Pins.get(Pin::BtnMid)){
+		Motors.setMotor(MOTOR_FR, 0);
+		Motors.setMotor(MOTOR_BL, 0);
+		Motors.setMotor(MOTOR_FL, 0);
+		Motors.setMotor(MOTOR_BR, 0);
+	}else if(i == Pins.get(Pin::BtnBack)){
+		userHwTest->currentTestDone();
 	}
 }
 

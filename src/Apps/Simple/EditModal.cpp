@@ -7,7 +7,7 @@ Simple::EditModal::EditModal(Context& context, Action* action) :
 		Modal(context, 100, 80), layout(new LinearLayout(&screen, VERTICAL)),
 		speed(new EditModalItem(layout, "Speed", '%', action->speed, 5)),
 		time(new EditModalItem(layout, "Time", 's', action->time, 0.5)), action(action),
-		modalBg(&screen,100,80, C_HEX(0x00beff), C_HEX(0x00ffff), C_HEX(0x0082ff)){
+		modalBg(&screen, 100, 80, C_HEX(0x00beff), C_HEX(0x00ffff), C_HEX(0x0082ff)){
 
 	buildUI();
 }
@@ -62,49 +62,38 @@ void Simple::EditModal::buildUI(){
 }
 
 void Simple::EditModal::buttonPressed(uint id){
-	switch(id){
-		case BTN_LEFT:
-			if(speed->isSelected()){
-				speed->down();
-			}else if(time->isSelected()){
-				time->down();
-			}
+	if(id == Pins.get(Pin::BtnLeft)){
+		if(speed->isSelected()){
+			speed->down();
+		}else if(time->isSelected()){
+			time->down();
+		}
 
-			draw();
-			screen.commit();
-			break;
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnRight)){
+		if(speed->isSelected()){
+			speed->up();
+		}else if(time->isSelected()){
+			time->up();
+		}
 
-		case BTN_RIGHT:
-			if(speed->isSelected()){
-				speed->up();
-			}else if(time->isSelected()){
-				time->up();
-			}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnUp) || id == Pins.get(Pin::BtnDown)){
+		if(action->type == Action::PAUSE) return;
+		if(speed->isSelected()){
+			speed->setSelected(false);
+			time->setSelected(true);
+		}else if(time->isSelected()){
+			time->setSelected(false);
+			speed->setSelected(true);
+		}
 
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_UP:
-		case BTN_DOWN:
-			if(action->type == Action::PAUSE) return;
-			if(speed->isSelected()){
-				speed->setSelected(false);
-				time->setSelected(true);
-			}else if(time->isSelected()){
-				time->setSelected(false);
-				speed->setSelected(true);
-			}
-
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_MID:
-		case BTN_BACK:
-			this->pop();
-			break;
-
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnMid) || id == Pins.get(Pin::BtnBack)){
+		this->pop();
 	}
 }
 

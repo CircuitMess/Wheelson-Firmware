@@ -41,15 +41,14 @@ bool checkJig(){
 void setup(){
 	Serial.begin(115200);
 
-	if(checkJig()){
-		Display display(160, 128, -1, -1);
-		display.getTft()->setPanel(WheelsonDisplay::panel2());
-		display.begin();
+	if(checkJig() || true){
 
-		Nuvo.begin();
+		Wheelson.initVer(2);
+		Wheelson.begin();
+
 		LED.setBacklight(true);
 
-		HardwareTest test(display);
+		HardwareTest test(Wheelson.getDisplay());
 		test.start();
 
 		for(;;);

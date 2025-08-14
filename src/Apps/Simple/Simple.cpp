@@ -39,7 +39,7 @@ void Simple::Simple::draw(){
 	canvas->setFont(&u8g2_font_profont12_tf);
 	canvas->setTextColor(TFT_WHITE);
 	canvas->setTextDatum(textdatum_t::top_center);
-	canvas->drawString("Simple programming", canvas->width()/2, 4);
+	canvas->drawString("Simple programming", canvas->width() / 2, 4);
 }
 
 void Simple::Simple::deinit(){
@@ -168,68 +168,57 @@ void Simple::Simple::selectAction(uint8_t num){
 
 	programNum = num;
 
-	if(programNum == list->getChildren().size()-1 && list->getChildren().size() != 1){
-		scrollLayout->scrollIntoView(programNum-1, 5);
+	if(programNum == list->getChildren().size() - 1 && list->getChildren().size() != 1){
+		scrollLayout->scrollIntoView(programNum - 1, 5);
 	}else{
 		scrollLayout->scrollIntoView(programNum, 5);
 	}
 }
 
 void Simple::Simple::buttonPressed(uint id){
-	switch(id){
-		case BTN_UP:
-			if(programNum == 0){
-				selectAction(list->getChildren().size() - 1);
-			}else{
-				selectAction(programNum - 1);
-			}
-			draw();
-			screen.commit();
-			break;
+	if(id == Pins.get(Pin::BtnUp)){
+		if(programNum == 0){
+			selectAction(list->getChildren().size() - 1);
+		}else{
+			selectAction(programNum - 1);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnDown)){
+		if(programNum == list->getChildren().size() - 1){
+			selectAction(0);
+		}else{
+			selectAction(programNum + 1);
+		}
+		draw();
+		screen.commit();
+	}else if(id == Pins.get(Pin::BtnBack)){
+		if(midPressTime != 0) return;
+		backPressTime = millis();
+		LoopManager::addListener(this);
 
-		case BTN_DOWN:
-			if(programNum == list->getChildren().size() - 1){
-				selectAction(0);
-			}else{
-				selectAction(programNum + 1);
-			}
+		if(programNum < list->getChildren().size() - 1){
+			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(TFT_RED);
+		}
+	}else if(id == Pins.get(Pin::BtnMid)){
+		if(backPressTime != 0) return;
+		midPressTime = millis();
+		LoopManager::addListener(this);
 
-			draw();
-			screen.commit();
-			break;
-
-		case BTN_BACK:
-			if(midPressTime != 0) break;
-			backPressTime = millis();
-			LoopManager::addListener(this);
-
-			if(programNum < list->getChildren().size()-1){
-				reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(TFT_RED);
-			}
-
-			break;
-
-		case BTN_MID:
-			if(backPressTime != 0) break;
-			midPressTime = millis();
-			LoopManager::addListener(this);
-
-			if(programNum < list->getChildren().size()-1){
-				reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(C_RGB(0, 170, 0));
-			}
-
-			break;
+		if(programNum < list->getChildren().size() - 1){
+			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchStart(C_RGB(0, 170, 0));
+		}
 	}
 }
 
 void Simple::Simple::buttonReleased(uint id){
-	if(id == BTN_BACK){
+	if(id == Pins.get(Pin::BtnBack)){
 		uint32_t elapsed = millis() - backPressTime;
 
 		backPressTime = 0;
 		LoopManager::removeListener(this);
 
-		if(programNum < list->getChildren().size()-1){
+		if(programNum < list->getChildren().size() - 1){
 			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchEnd();
 			draw();
 			screen.commit();
@@ -239,13 +228,13 @@ void Simple::Simple::buttonReleased(uint id){
 			pop();
 			return;
 		}
-	}else if(id == BTN_MID){
+	}else if(id == Pins.get(Pin::BtnMid)){
 		uint32_t elapsed = millis() - midPressTime;
 
 		midPressTime = 0;
 		LoopManager::removeListener(this);
 
-		if(programNum < list->getChildren().size()-1){
+		if(programNum < list->getChildren().size() - 1){
 			reinterpret_cast<ProgramElement*>(list->getChildren()[programNum])->touchEnd();
 			draw();
 			screen.commit();
