@@ -17,9 +17,11 @@ bool checkJig(){
 	uint32_t start = millis();
 	int c;
 	while(millis() - start < 500){
-		vTaskDelay(1);
-		c = getchar();
-		if(c == EOF) continue;
+		if(!Serial.available()){
+			vTaskDelay(1);
+			continue;
+		}
+		c = Serial.read();
 		buf[wp] = (char) c;
 		wp = (wp + 1) % 7;
 
@@ -33,7 +35,7 @@ bool checkJig(){
 
 			if(match == 7){
 				// This is important, desktop app freezes otherwise if the UART/JTAG buffer isn't emptied when it tries to write something again
-				while(int c2 = getchar() != EOF) {}
+				while(Serial.available()) Serial.read();
 
 				return true;
 			}
